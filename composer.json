@@ -1,0 +1,22 @@
+{
+    "name": "bigfoot/core-bundle",
+    "type": "symfony-bundle",
+    "description": "Bigfoot core bundle",
+    "keywords": [],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Guillaume Manen",
+            "email": "g.manen@c2is.fr"
+        }
+    ],
+    "require": {
+        "php":                      ">=5.3.3",
+        "symfony/framework-bundle": ">=2.3"
+    },
+    "autoload": {
+        "psr-0": { "Bigfoot\\Bundle\\CoreBundle": "" }
+    },
+    "target-dir": "Bigfoot/Bundle/CoreBundle",
+    "minimum-stability": "dev"
+}

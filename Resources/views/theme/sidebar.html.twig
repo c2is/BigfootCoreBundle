@@ -1,0 +1,33 @@
+<!-- Sidebar -->
+<div class="sidebar">
+    <!--- Sidebar navigation -->
+    <ul id="nav">
+        {% for section in menu.items %}
+        {% if section.childs|length %}
+        <li class="has_sub">
+            <a href="#"><i class="icon-list-alt"></i> {{ section.label }}  <span class="pull-right"><i class="icon-chevron-right"></i></span></a>
+            <ul>
+                {% for item in section.childs %}
+                    {%  if item.childs|length %}
+                <li class="has_sub">
+                    <a href="#">{{ item.label }} <span class="pull-right"><i class="icon-chevron-right"></i></span></a>
+                    <ul>
+                        {% for item in item.childs %}
+                        <li{% if app.request.get('_route') == item.route %} class="active"{% endif %}><a href="{{ path(item.route) }}">{{ item.label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    {%  elseif item.route %}
+                <li{% if app.request.get('_route') == item.route %} class="active"{% endif %}><a href="{{ path(item.route) }}">{{ item.label }}</a></li>
+                    {%  endif %}
+                {% endfor %}
+            </ul>
+        </li>
+        {% elseif section.route %}
+        <li>
+            <a href="{{ path(section.route) }}"><i class="icon-list-alt"></i>{{ section.label }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+<!-- Sidebar ends -->

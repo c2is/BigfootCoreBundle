@@ -1,0 +1,21 @@
+<!-- Navigation starts -->
+<div class="nav-collapse collapse">
+
+    <!-- Links -->
+    {% if user_menu.items|length %}
+    <ul class="nav pull-right">
+        <li class="dropdown pull-right">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                <i class="icon-user"></i> {{ app.security.token.user.name }} <b class="caret"></b>
+            </a>
+
+            <!-- Dropdown menu -->
+            <ul class="dropdown-menu">
+                {% for item in user_menu.items %}
+                <li><a href="{{ path(item.route, item.parameters) }}"><i class="icon-{{ item.icon }}"></i> {{ item.label }}</a></li>
+                {%  endfor %}
+            </ul>
+        </li>
+    </ul>
+    {% endif %}
+</div>

@@ -1,0 +1,8 @@
+{% use 'form_div_layout.html.twig' %}
+
+{% block collection_widget %}
+{{ parent() }}
+    {% if prototype is defined %}
+    <a href="#" class="addCollectionItem" data-collection-id="#{{ id }}">Ajouter</a>
+    {% endif %}
+{% endblock %}

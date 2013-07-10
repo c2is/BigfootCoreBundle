@@ -1,0 +1,53 @@
+parameters:
+    theme.class:                  "Bigfoot\\Bundle\\CoreBundle\\Theme\\Theme"
+    theme.twig_namespace:         "BigfootCoreBundle"
+    theme.section.toolbar:        "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\ToolbarSection"
+    theme.section.header:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\HeaderSection"
+    theme.section.sidebar:        "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\SidebarSection"
+    theme.section.page_header:    "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageHeaderSection"
+    theme.section.page_content:   "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageContentSection"
+    theme.section.footer:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\FooterSection"
+    menu.class:                   "Bigfoot\\Bundle\\CoreBundle\\Theme\\MenuFactory"
+    kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
+    route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
+services:
+    theme:
+        class:        "%theme.class%"
+        arguments:    [@service_container, @section_toolbar, @section_header, @section_sidebar, @section_page_header, @section_page_content, @section_footer]
+        calls:
+            - [ setTwigNamespace, [ %theme.twig_namespace% ] ]
+    section_toolbar:
+        class:        "%theme.section.toolbar%"
+        arguments:    [@service_container]
+        public: false
+    section_header:
+        class:        "%theme.section.header%"
+        arguments:    [@service_container]
+        public: false
+    section_sidebar:
+        class:        "%theme.section.sidebar%"
+        arguments:    [@service_container]
+        public: false
+    section_page_header:
+        class:        "%theme.section.page_header%"
+        arguments:    [@service_container]
+        public: false
+    section_page_content:
+        class:        "%theme.section.page_content%"
+        arguments:    [@service_container]
+        public: false
+    section_footer:
+        class:        "%theme.section.footer%"
+        arguments:    [@service_container]
+        public: false
+    menu_factory:
+        class:        "%menu.class%"
+        arguments:    [@service_container]
+    route_manager:
+        class:        "%route_manager.class%"
+        arguments:    [@service_container]
+    c2is_bundle_corebundle_routeparametertype:
+        class:        Bigfoot\Bundle\CoreBundle\Form\RouteParameterType
+        arguments:    [@service_container]
+        tags:
+            - { name: form.type, alias: route_parameter }
