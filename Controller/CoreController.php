@@ -22,13 +22,4 @@ class CoreController extends ContainerAware
     {
         return array();
     }
-
-    /**
-     * @Route("/admin/test", name="test_route")
-     * @Template("BigfootCoreBundle::base.html.twig")
-     */
-    function testAction()
-    {
-        return array();
-    }
 }

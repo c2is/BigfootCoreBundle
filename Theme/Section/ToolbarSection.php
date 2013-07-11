@@ -1,15 +1,6 @@
 <?php
 
-/*
- * This file is part of the c2is/silex-bootstrap.
- *
- * (c) Morgan Brunot <m.brunot@c2is.fr>
- * (c) Guillaume Manen <g.manen@c2is.fr>
- */
-
 namespace Bigfoot\Bundle\CoreBundle\Theme\Section;
-
-use Bigfoot\Core\Theme\Menu\Menu;
 
 class ToolbarSection extends AbstractSection
 {

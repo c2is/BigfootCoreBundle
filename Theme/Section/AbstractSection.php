@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the c2is/silex-bootstrap.
- *
- * (c) Morgan Brunot <m.brunot@c2is.fr>
- * (c) Guillaume Manen <g.manen@c2is.fr>
- */
-
 namespace Bigfoot\Bundle\CoreBundle\Theme\Section;
 
 use Bigfoot\Bundle\CoreBundle\Theme\Theme;
@@ -20,8 +13,6 @@ abstract class AbstractSection implements ArrayAccess
 {
     protected $container;
 
-    protected $view;
-
     protected $theme;
 
     protected $parameters = array();
@@ -30,23 +21,11 @@ abstract class AbstractSection implements ArrayAccess
 
     abstract protected function setDefaultParameters();
 
-    public function __construct($container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
 
         $this->setDefaultParameters();
-    }
-
-    public function getView()
-    {
-        return $this->view ?: sprintf('%s:theme:%s.html.twig', $this->theme->getTwigNamespace(), $this->getName());
-    }
-
-    public function setView($view)
-    {
-        $this->view = $view;
-
-        return $this;
     }
 
     public function getTheme()
@@ -88,13 +67,6 @@ abstract class AbstractSection implements ArrayAccess
     public function getAllParameters()
     {
         return $this->parameters;
-    }
-
-    public function render()
-    {
-        $view = $this->getView();
-
-        return $this->container->get('twig')->render($view, $this->parameters);
     }
 
     public function offsetSet($offset, $value) {
