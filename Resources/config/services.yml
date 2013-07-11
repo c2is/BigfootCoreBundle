@@ -46,7 +46,7 @@ services:
     route_manager:
         class:        "%route_manager.class%"
         arguments:    [@service_container]
-    c2is_bundle_corebundle_routeparametertype:
+    bigfoot_bundle_corebundle_routeparametertype:
         class:        Bigfoot\Bundle\CoreBundle\Form\RouteParameterType
         arguments:    [@service_container]
         tags:
