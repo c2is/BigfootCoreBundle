@@ -15,19 +15,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class CoreController extends ContainerAware
 {
     /**
-     * @Route("/admin", name="admin_home", options={"label"="Page d'accueil"})
+     * @Route("/", name="admin_home", options={"label"="Page d'accueil"})
      * @Template("BigfootCoreBundle::base.html.twig")
      */
     function homeAction()
-    {
-        return array();
-    }
-
-    /**
-     * @Route("/admin/test", name="test_route")
-     * @Template("BigfootCoreBundle::base.html.twig")
-     */
-    function testAction()
     {
         return array();
     }

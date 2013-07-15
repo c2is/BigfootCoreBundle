@@ -1,15 +1,8 @@
 <?php
 
-/*
- * This file is part of the c2is/silex-bootstrap.
- *
- * (c) Morgan Brunot <m.brunot@c2is.fr>
- * (c) Guillaume Manen <g.manen@c2is.fr>
- */
-
 namespace Bigfoot\Bundle\CoreBundle\Theme\Section;
 
-use Bigfoot\Core\Theme\Menu\Menu;
+use Bigfoot\Bundle\CoreBundle\Event\MenuEvent;
 
 class ToolbarSection extends AbstractSection
 {
@@ -20,9 +13,13 @@ class ToolbarSection extends AbstractSection
 
     protected function setDefaultParameters()
     {
+        $menu = $this->container->get('menu_factory')->getMenu('toolbar_menu');
+        $menuEvent = new MenuEvent($menu);
+        $this->container->get('event_dispatcher')->dispatch('bigfoot.menu.generate', $menuEvent);
+
         $this->parameters = array(
             'title' => '',
-            'user_menu'    => $this->container->get('menu_factory')->getMenu('user_menu'),
+            'menu'    => $menu,
         );
     }
 }
