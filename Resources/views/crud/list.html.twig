@@ -1,13 +1,12 @@
 <div class="widget">
     <div class="widget-head">
-        <div class="pull-left">{{ title }}</div>
-        {% if globalActions is defined and globalActions|length %}
-        <div class="widget-icons pull-right">
-            {% set roleMenu = app['config_role']['menu'] %}
-            {% for item in app.getAccessibleMenuItems(globalActions.items) %}
-            {% include '@backend/menu/item.html.twig' %}
-            {% endfor %}
-        </div>
+        <div class="pull-left">{{ list_title }}</div>
+        {% if theme.page_content.globalActions is defined and theme.page_content.globalActions|length %}
+            <div class="widget-icons pull-right">
+                {% for item in theme.page_content.globalActions.items %}
+                    {% include 'BigfootCoreBundle:menu:item.html.twig' %}
+                {% endfor %}
+            </div>
         {% endif %}
         <div class="clearfix"></div>
     </div>
@@ -15,46 +14,27 @@
     <div class="widget-content">
         <table class="table table-striped table-bordered table-hover">
             <thead>
-                <tr>
-                    {% for attr, field in fieldsList %}
+            <tr>
+                {% for attr, field in fieldsList %}
                     <th>{{ field }}</th>
-                    {% endfor %}
-                    <th>Actions</th>
-                </tr>
+                {% endfor %}
+                <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
-                {% for item in collection %}
+            {% for entity in entities %}
                 <tr>
                     {% for attr, field in fieldsList %}
-                    <td>{{ attribute(item, attr) }}</td>
+                        <td>{{ attribute(entity, attr) }}</td>
                     {% endfor %}
                     <td>
                         <div class="btn-group">
-                            <a class="btn btn-mini" href="{{ path(editRoute, {object: item.id}) }}"><i class="icon-pencil"></i></a>
-                            {% if not disable_delete is defined %}
-                            <a class="btn btn-mini" href="{{ path(deleteRoute, {object: item.id}) }}"><i class="icon-remove"></i></a>
-                            {% endif %}
+                            <a class="btn btn-mini" href="{{ path(action_edit, { 'id': entity.id }) }}"><i class="icon-pencil"></i></a>
                         </div>
                     </td>
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
-        <div class="widget-foot">
-            <div class="pagination pull-right">
-                <ul>
-                    {% if collection.page != collection.previousPage %}
-                    <li><a href="?page={{ collection.previousPage }}">Prev</a></li>
-                    {% endif %}
-                    {% for link in collection.links %}
-                    <li {% if collection.page == link %}class="active"{% endif %}><a href="?page={{ link }}">{{ link }}</a></li>
-                    {% endfor %}
-                    {% if collection.page != collection.nextPage %}
-                    <li><a href="?page={{ collection.nextPage }}">Next</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="clearfix"></div>
-        </div>
     </div>
 </div>
