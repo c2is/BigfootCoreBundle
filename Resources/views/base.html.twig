@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/jqtree.css') }}" />
     <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/screen.css') }}" />
+    {% block head %}{% endblock %}
 </head>
 
 <body>
@@ -144,5 +145,6 @@
 <script src="{{ asset('bundles/bigfootcore/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('bundles/bigfootcore/js/custom.js') }}"></script>
 <script src="{{ asset('bundles/bigfootcore/js/tree.jquery.js') }}"></script>
+{% block javascripts %}{% endblock %}
 </body>
 </html>
