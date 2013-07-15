@@ -30,4 +30,17 @@ class RouteManager
     {
         return $this->routes;
     }
+
+    public function getArrayRoutes()
+    {
+        $tabRoutes = array();
+
+        foreach ($this->routes as $key => $route){
+            if ($label = $route->getOption('label')){
+                $tabRoutes[$key] = $label;
+            }
+        }
+
+        return $tabRoutes;
+    }
 }
