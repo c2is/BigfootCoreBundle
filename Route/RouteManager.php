@@ -8,13 +8,20 @@ class RouteManager
 
     protected $routes;
 
+    protected $bundles;
+
     public function __construct($container)
     {
         $this->container = $container;
+        $this->bundles = array();
+        $this->routes = array();
+    }
 
+    protected function loadRoutes()
+    {
         $routeLoader = $this->container->get('routing.loader');
         $routes = array();
-        foreach ($this->container->getParameter('bigfoot.routes.paths') as $path) {
+        foreach ($this->bundles as $path) {
             $resource = $this->container->get('kernel')->locateResource(sprintf('@%s/Controller/', $path));
             $routes = array_merge($routes, $routeLoader->load($resource)->all());
         }
@@ -28,6 +35,10 @@ class RouteManager
 
     public function getRoutes()
     {
+        if (!count($this->routes)) {
+            $this->loadRoutes();
+        }
+
         return $this->routes;
     }
 
@@ -35,12 +46,19 @@ class RouteManager
     {
         $tabRoutes = array();
 
-        foreach ($this->routes as $key => $route){
+        foreach ($this->getRoutes() as $key => $route){
             if ($label = $route->getOption('label')){
                 $tabRoutes[$key] = $label;
             }
         }
 
         return $tabRoutes;
+    }
+
+    public function addBundle($bundleName)
+    {
+        $this->bundles[] = $bundleName;
+
+        return $this;
     }
 }

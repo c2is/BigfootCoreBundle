@@ -11,6 +11,12 @@ parameters:
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
     route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
 services:
+    # Core menu listener ; adds or renames the Sidebar > Settings menu
+    kernel.listener.bigfoot_core_menu_listener:
+        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
+        tags:
+            - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate }
+    # Services dedicated to the BackOffice theme
     theme:
         class:        "%theme.class%"
         arguments:    [@service_container, @section_toolbar, @section_header, @section_sidebar, @section_page_header, @section_page_content, @section_footer]
@@ -43,10 +49,7 @@ services:
     menu_factory:
         class:        "%menu.class%"
         arguments:    [@service_container]
+    # Route management
     route_manager:
         class:        "%route_manager.class%"
         arguments:    [@service_container]
-    kernel.listener.bigfoot_core_menu_listener:
-        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
-        tags:
-            - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate }

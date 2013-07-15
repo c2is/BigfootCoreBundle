@@ -29,12 +29,6 @@ class BigfootCoreExtension extends Extension implements PrependExtensionInterfac
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-
-        $routePaths = array();
-        if ($container->hasParameter('bigfoot.routes.paths')) {
-            $routePaths = $container->getParameter('bigfoot.routes.paths');
-        }
-        $container->setParameter('bigfoot.routes.paths', array_merge($routePaths, array('BigfootCoreBundle')));
     }
 
     public function prepend(ContainerBuilder $container)
