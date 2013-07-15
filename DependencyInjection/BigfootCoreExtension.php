@@ -34,6 +34,6 @@ class BigfootCoreExtension extends Extension implements PrependExtensionInterfac
     public function prepend(ContainerBuilder $container)
     {
         $container->prependExtensionConfig('assetic', array('bundles' => array('BigfootCoreBundle')));
-        $container->prependExtensionConfig('twig', array('globals' => array('theme' => '@theme')));
+        $container->prependExtensionConfig('twig', array('globals' => array('theme' => '@bigfoot.theme')));
     }
 }

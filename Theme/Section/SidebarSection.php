@@ -13,7 +13,7 @@ class SidebarSection extends AbstractSection
 
     protected function setDefaultParameters()
     {
-        $menu = $this->container->get('menu_factory')->getMenu('sidebar_menu');
+        $menu = $this->container->get('bigfoot.menu_factory')->getMenu('sidebar_menu');
         $menuEvent = new MenuEvent($menu);
         $this->container->get('event_dispatcher')->dispatch('bigfoot.menu.generate', $menuEvent);
 

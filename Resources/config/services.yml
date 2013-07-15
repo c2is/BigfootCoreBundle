@@ -17,39 +17,39 @@ services:
         tags:
             - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate }
     # Services dedicated to the BackOffice theme
-    theme:
+    bigfoot.theme:
         class:        "%theme.class%"
-        arguments:    [@service_container, @section_toolbar, @section_header, @section_sidebar, @section_page_header, @section_page_content, @section_footer]
+        arguments:    [@service_container, @bigfoot.section_toolbar, @bigfoot.section_header, @bigfoot.section_sidebar, @bigfoot.section_page_header, @bigfoot.section_page_content, @bigfoot.section_footer]
         calls:
             - [ setTwigNamespace, [ %theme.twig_namespace% ] ]
-    section_toolbar:
+    bigfoot.section_toolbar:
         class:        "%theme.section.toolbar%"
         arguments:    [@service_container]
         public: false
-    section_header:
+    bigfoot.section_header:
         class:        "%theme.section.header%"
         arguments:    [@service_container]
         public: false
-    section_sidebar:
+    bigfoot.section_sidebar:
         class:        "%theme.section.sidebar%"
         arguments:    [@service_container]
         public: false
-    section_page_header:
+    bigfoot.section_page_header:
         class:        "%theme.section.page_header%"
         arguments:    [@service_container]
         public: false
-    section_page_content:
+    bigfoot.section_page_content:
         class:        "%theme.section.page_content%"
         arguments:    [@service_container]
         public: false
-    section_footer:
+    bigfoot.section_footer:
         class:        "%theme.section.footer%"
         arguments:    [@service_container]
         public: false
-    menu_factory:
+    bigfoot.menu_factory:
         class:        "%menu.class%"
         arguments:    [@service_container]
     # Route management
-    route_manager:
+    bigfoot.route_manager:
         class:        "%route_manager.class%"
         arguments:    [@service_container]
