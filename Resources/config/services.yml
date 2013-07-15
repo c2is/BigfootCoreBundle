@@ -46,3 +46,7 @@ services:
     route_manager:
         class:        "%route_manager.class%"
         arguments:    [@service_container]
+    kernel.listener.bigfoot_core_menu_listener:
+        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
+        tags:
+            - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate }
