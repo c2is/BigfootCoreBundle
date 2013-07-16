@@ -23,10 +23,6 @@ class BigfootCoreExtension extends Extension implements PrependExtensionInterfac
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('bigfoot.theme.sitename', $config['sitename']);
-        $container->setParameter('bigfoot.theme.backend.name', $config['backend']['name']);
-        $container->setParameter('bigfoot.theme.backend.provided_by', $config['backend']['provided_by']);
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

@@ -12,7 +12,7 @@ class FooterSection extends AbstractSection
     protected function setDefaultParameters()
     {
         $this->parameters = array(
-            'title' => $this->container->getParameter('bigfoot.theme.backend.provided_by'),
+            'title' => $this->container->getParameter('bigfoot.theme.values')['provided_by'],
         );
     }
 }

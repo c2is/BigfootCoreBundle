@@ -16,7 +16,7 @@ class CoreController extends ContainerAware
 {
     /**
      * @Route("/", name="admin_home", options={"label"="Page d'accueil"})
-     * @Template("BigfootCoreBundle::base.html.twig")
+     * @Template("::base.html.twig")
      */
     function homeAction()
     {

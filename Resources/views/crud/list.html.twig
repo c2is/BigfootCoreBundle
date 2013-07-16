@@ -1,6 +1,6 @@
 <div class="widget">
     <div class="widget-head">
-        <div class="pull-left">{{ list_title }}</div>
+        <div class="pull-left">{{ list_title | trans }}</div>
         {% if theme.page_content.globalActions is defined and theme.page_content.globalActions|length %}
             <div class="widget-icons pull-right">
                 {% for item in theme.page_content.globalActions.items %}
@@ -16,7 +16,7 @@
             <thead>
             <tr>
                 {% for attr, field in fieldsList %}
-                    <th>{{ field }}</th>
+                    <th>{{ field | trans }}</th>
                 {% endfor %}
                 <th>Actions</th>
             </tr>
