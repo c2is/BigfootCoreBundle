@@ -10,20 +10,25 @@ class RouteManager
 
     protected $bundles;
 
+    protected $loaded;
+
     public function __construct($container)
     {
         $this->container = $container;
         $this->bundles = array();
         $this->routes = array();
+        $this->loaded = array();
     }
 
     protected function loadRoutes()
     {
         $routeLoader = $this->container->get('routing.loader');
-        $routes = array();
-        foreach ($this->bundles as $path) {
-            $resource = $this->container->get('kernel')->locateResource(sprintf('@%s/Controller/', $path));
-            $routes = array_merge($routes, $routeLoader->load($resource)->all());
+        $routes = $this->routes;
+        foreach ($this->bundles as $bundle) {
+            if (!$this->loaded[$bundle]) {
+                $resource = $this->container->get('kernel')->locateResource(sprintf('@%s/Controller/', $bundle));
+                $routes = array_merge($routes, $routeLoader->load($resource)->all());
+            }
         }
 
         foreach($routes as $routeName => $route) {
@@ -35,7 +40,7 @@ class RouteManager
 
     public function getRoutes()
     {
-        if (!count($this->routes)) {
+        if (in_array(false, $this->loaded)) {
             $this->loadRoutes();
         }
 
@@ -58,6 +63,7 @@ class RouteManager
     public function addBundle($bundleName)
     {
         $this->bundles[] = $bundleName;
+        $this->loaded[$bundleName] = false;
 
         return $this;
     }
