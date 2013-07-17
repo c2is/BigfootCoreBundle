@@ -16,7 +16,7 @@
 
         <div class="widget-foot">
             <button class="btn" type="submit">{{ action_name | trans }}</button>
-            <a href="{{ path(cancel_route) }}" class="btn">{{ 'Cancel' | trans }}</a>
+            {% if cancel_route is defined %}<a href="{{ path(cancel_route) }}" class="btn">{{ 'Cancel' | trans }}</a>{% endif %}
             <div class="clearfix"></div>
         </div>
     </div>
