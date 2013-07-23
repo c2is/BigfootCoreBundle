@@ -38,6 +38,30 @@
                 <source>Logout</source>
                 <target>Déconnexion</target>
             </trans-unit>
+            <trans-unit id="10">
+                <source>Add a tag</source>
+                <target>Ajouter un tag</target>
+            </trans-unit>
+            <trans-unit id="11">
+                <source>Categories</source>
+                <target>Catégories</target>
+            </trans-unit>
+            <trans-unit id="12">
+                <source>Add a category</source>
+                <target>Ajouter une catégorie</target>
+            </trans-unit>
+            <trans-unit id="13">
+                <source>Category creation</source>
+                <target>Création une catégorie</target>
+            </trans-unit>
+            <trans-unit id="14">
+                <source>Category edit</source>
+                <target>Edition une catégorie</target>
+            </trans-unit>
+            <trans-unit id="15">
+                <source>Category edition</source>
+                <target>Edition une catégorie</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
