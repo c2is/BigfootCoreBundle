@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ bigfoot_theme_values.title | trans }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="{{ bigfoot_theme_values.provided_by | trans }}">
+
+    <script type="text/javascript">
+        var defaultPortfolioRoute = "{{ path('portfolio_dashboard') }}";
+    </script>
+
+    {% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/jqtree.css') }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/screen.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/select2/select2.css') }}" />
+    {% endblock %}
+</head>
+
+<body>
+<div class="navbar navbar-fixed-top">
+    {% block toolbar %}
+        <div class="navbar-inner">
+            <div class="container">
+                <!-- Navigation starts -->
+                <div class="nav-collapse collapse">
+
+                    <!-- Links -->
+                    {% if theme.toolbar.menu is defined and theme.toolbar.menu.items|length and app.security.token %}
+                        <ul class="nav pull-right">
+                            <li class="dropdown pull-right">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                    <i class="icon-user"></i> {{ app.security.token.user.fullName }} <b class="caret"></b>
+                                </a>
+
+                                <!-- Dropdown menu -->
+                                <ul class="dropdown-menu">
+                                    {% for item in theme.toolbar.menu.items %}
+                                        <li><a href="{{ path(item.route, item.parameters) }}"><i class="icon-{{ item.icon }}"></i> {{ item.label | trans }}</a></li>
+                                    {%  endfor %}
+                                </ul>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    {% endblock %}
+</div>
+
+<header>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            {% block header %}
+                <div class="span4">
+                    <div class="logo">
+                        <h1><a href="{{ path('admin_home') }}">{{ theme.header.title | trans }}</a></h1>
+                        <p class="meta">{{ theme.header.subtitle | trans }}</p>
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+</header>
+
+<div class="content">
+    {% block sidebar %}
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!--- Sidebar navigation -->
+            <ul id="nav">
+                {% for section in theme.sidebar.menu.items %}
+                    {% if section.childs|length %}
+                        <li class="has_sub">
+                            <a href="#"><i class="icon-list-alt"></i> {{ section.label | trans }}  <span class="pull-right"><i class="icon-chevron-right"></i></span></a>
+                            <ul>
+                                {% for item in section.childs %}
+                                    {%  if item.childs|length %}
+                                        <li class="has_sub">
+                                        <a href="#">{{ item.label | trans }} <span class="pull-right"><i class="icon-chevron-right"></i></span></a>
+                                        <ul>
+                                            {% for item in item.childs %}
+                                                <li{% if app.request.get('_route') == item.route %} class="active"{% endif %}><a href="{{ path(item.route) }}">{{ item.label | trans }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    {%  elseif item.route %}
+                                        <li{% if app.request.get('_route') == item.route %} class="active"{% endif %}><a href="{{ path(item.route) }}">{{ item.label | trans }}</a></li>
+                                    {%  endif %}
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% elseif section.route %}
+                        <li>
+                            <a href="{{ path(section.route) }}"><i class="icon-list-alt"></i>{{ section.label | trans }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- Sidebar ends -->
+    {% endblock %}
+
+    <!-- Main bar -->
+    <div class="mainbar">
+        <div class="page-head">
+            {% block page_header %}
+                <h2 class="pull-left">{{ theme.page_header.title | default( bigfoot_theme_values.title ) | trans }}</h2>
+            {% endblock %}
+            <div class="clearfix"></div>
+        </div>
+        <div class="matter">
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    {% block body %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Mainbar ends -->
+    <div class="clearfix"></div>
+    <footer>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                {% block footer %}
+                    <div class="span12">
+                        <p class="copy">{{ bigfoot_theme_values.copyright | trans }} | <a href="#">{{ theme.footer.title | default(bigfoot_theme_values.title) | trans }}</a></p>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    </footer>
+
+</div>
+{% block javascripts %}
+<script src="{{ asset('bundles/bigfootcore/js/jquery-1.10.0.js') }}"></script>
+<script src="{{ asset('bundles/bigfootcore/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('bundles/bigfootcore/js/jquery-ui-1.10.1.custom.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/select2/select2.min.js') }}"></script>
+<script src="{{ asset('bundles/bigfootcore/js/tree.jquery.js') }}"></script>
+<script src="{{ asset('bundles/bigfootcore/js/jquery.portfolio.js') }}"></script>
+<script src="{{ asset('bundles/bigfootcore/js/custom.js') }}"></script>
+    <script>
+        function initSelects() {
+            $("select").width($("select").width()).select2();
+
+            var tags = [];
+
+            $.ajax({
+                url: '{{ path('admin_tag_get') }}',
+                async: false,
+                success: function(json) {
+                    tags = $.parseJSON(json);
+                }
+            });
+
+            var arrayTags = new Array();
+            if (tags != undefined && $.isArray(tags) && tags.length > 0) {
+                arrayTags = tags;
+            }
+            var $tagsSelect = $('input.bigfoot_tags_field', $(base.options['portfolioPopinClass']));
+            $tagsSelect.width($tagsSelect.width()).select2({tags: arrayTags});
+        }
+    </script>
+{% endblock %}
+</body>
+</html>

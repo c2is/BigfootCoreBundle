@@ -53,3 +53,9 @@ services:
     bigfoot.route_manager:
         class:        "%route_manager.class%"
         arguments:    [@service_container]
+    # Tags management
+    bigfoot.form.type.bigfoot_tag:
+        class: Bigfoot\Bundle\CoreBundle\Form\Type\BigfootTagType
+        arguments: [ @doctrine.orm.entity_manager ]
+        tags:
+            - { name: form.type, alias: bigfoot_tag }

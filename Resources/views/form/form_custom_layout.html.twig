@@ -1,8 +1,22 @@
 {% use 'form_div_layout.html.twig' %}
 
+{% block bigfoot_media_widget %}
+    {% spaceless %}
+        <div class="field-media">
+        {% if value %}
+            <a class="portfolio-popin-open" href="{{ path('portfolio_popin', {'id': value}) }}" data-base-href="{{ path('portfolio_popin') }}"><img class="crud-column-media" src="" /></a>
+        {% else %}
+            <a class="portfolio-popin-open btn" href="{{ path('portfolio_popin') }}" data-base-href="{{ path('portfolio_popin') }}">{{ 'Upload or select medias' }}</a>
+        {% endif %}
+        {% set type = 'hidden' %}
+        {{ block('form_widget_simple') }}
+    {% endspaceless %}
+    </div>
+{% endblock %}
+
 {% block collection_widget %}
-{{ parent() }}
+    {{ parent() }}
     {% if prototype is defined %}
-    <a href="#" class="addCollectionItem" data-collection-id="#{{ id }}">Ajouter</a>
+    <a href="#" class="addCollectionItem" data-collection-id="#{{ id }}">{{ 'Add' | trans }}</a>
     {% endif %}
 {% endblock %}

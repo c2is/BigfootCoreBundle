@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Tag
@@ -24,13 +25,15 @@ class Tag
     /**
      * @var integer
      *
-     * @ORM\Column(name="category_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="TagCategory")
+     * @ORM\JoinColumn(name="category_id")
      */
-    private $categoryId;
+    private $category;
 
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
@@ -38,9 +41,17 @@ class Tag
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text")
+     * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
+
+    /**
+     * @var string
+     *
+     * @Gedmo\Slug(fields={"name"}, unique=true)
+     * @ORM\Column(length=255, unique=true)
+     */
+    private $slug;
 
 
     /**
@@ -54,26 +65,26 @@ class Tag
     }
 
     /**
-     * Set categoryId
+     * Set category
      *
-     * @param integer $categoryId
+     * @param TagCategory $category
      * @return Tag
      */
-    public function setCategoryId($categoryId)
+    public function setCategory(TagCategory $category)
     {
-        $this->categoryId = $categoryId;
+        $this->category = $category;
     
         return $this;
     }
 
     /**
-     * Get categoryId
+     * Get category
      *
-     * @return integer 
+     * @return TagCategory
      */
-    public function getCategoryId()
+    public function getCategory()
     {
-        return $this->categoryId;
+        return $this->category;
     }
 
     /**
@@ -120,5 +131,28 @@ class Tag
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $description
+     * @return Tag
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }
