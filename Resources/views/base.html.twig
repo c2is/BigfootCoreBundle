@@ -145,24 +145,27 @@
 <script src="{{ asset('bundles/bigfootcore/js/jquery.portfolio.js') }}"></script>
 <script src="{{ asset('bundles/bigfootcore/js/custom.js') }}"></script>
     <script>
+        window.tags = [];
         function initSelects() {
             $("select").width($("select").width()).select2();
 
-            var tags = [];
+            var tags = window.tags;
 
-            $.ajax({
-                url: '{{ path('admin_tag_get') }}',
-                async: false,
-                success: function(json) {
-                    tags = $.parseJSON(json);
-                }
-            });
+            if (tags.length == 0) {
+                $.ajax({
+                    url: '{{ path('admin_tag_get') }}',
+                    async: false,
+                    success: function(json) {
+                        tags = window.tags = $.parseJSON(json);
+                    }
+                });
+            }
 
             var arrayTags = new Array();
             if (tags != undefined && $.isArray(tags) && tags.length > 0) {
                 arrayTags = tags;
             }
-            var $tagsSelect = $('input.bigfoot_tags_field', $(base.options['portfolioPopinClass']));
+            var $tagsSelect = $('input.bigfoot_tags_field');
             $tagsSelect.width($tagsSelect.width()).select2({tags: arrayTags});
         }
     </script>

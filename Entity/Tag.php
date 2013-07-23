@@ -25,7 +25,7 @@ class Tag
     /**
      * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="TagCategory")
+     * @ORM\ManyToOne(targetEntity="TagCategory", cascade={"persist"})
      * @ORM\JoinColumn(name="category_id")
      */
     private $category;

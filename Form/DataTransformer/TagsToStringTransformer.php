@@ -49,13 +49,15 @@ class TagsToStringTransformer implements DataTransformerInterface
         $em = $this->entityManager;
         $tagRepo = $em->getRepository('BigfootCoreBundle:Tag');
         foreach ($arrayTags as $tag) {
-            if (!$tagEntity = $tagRepo->findOneByName($tag)) {
-                $tagEntity = new Tag();
-                $tagEntity->setName($tag);
-                $tagEntity->setCategory($defaultCategory);
-            }
+            if ($tag) {
+                if (!$tagEntity = $tagRepo->findOneByName($tag)) {
+                    $tagEntity = new Tag();
+                    $tagEntity->setName($tag);
+                    $tagEntity->setCategory($defaultCategory);
+                }
 
-            $tags->add($tagEntity);
+                $tags->add($tagEntity);
+            }
         }
 
         return $tags;
