@@ -68,9 +68,9 @@ class TagsToStringTransformer implements DataTransformerInterface
         $em = $this->entityManager;
 
         $tagCategoryRepo = $em->getRepository('BigfootCoreBundle:TagCategory');
-        if (!$defaultCategory = $tagCategoryRepo->findOneBySlug('_default')) {
+        if (!$defaultCategory = $tagCategoryRepo->findOneBySlug('default')) {
             $defaultCategory = new TagCategory();
-            $defaultCategory->setName('Default category')->setSlug('_default');
+            $defaultCategory->setName('Default category')->setSlug('default');
         }
 
         return $defaultCategory;

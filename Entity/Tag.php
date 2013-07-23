@@ -53,6 +53,13 @@ class Tag
      */
     private $slug;
 
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
 
     /**
      * Get id

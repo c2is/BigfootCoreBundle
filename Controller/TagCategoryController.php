@@ -8,21 +8,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Bigfoot\Bundle\CoreBundle\Entity\Tag;
-use Bigfoot\Bundle\CoreBundle\Form\TagType;
+use Bigfoot\Bundle\CoreBundle\Entity\TagCategory;
+use Bigfoot\Bundle\CoreBundle\Form\TagCategoryType;
 
 /**
- * Tag controller.
+ * TagCategory controller.
  *
- * @Route("/admin/tag")
+ * @Route("/admin/tag/category")
  */
-class TagController extends Controller
+class TagCategoryController extends Controller
 {
 
     /**
-     * Lists all Tag entities.
+     * Lists all TagCategory entities.
      *
-     * @Route("/", name="admin_tag")
+     * @Route("/", name="admin_tag_category")
      * @Method("GET")
      * @Template()
      */
@@ -30,33 +30,34 @@ class TagController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('BigfootCoreBundle:Tag')->findAll();
+        $entities = $em->getRepository('BigfootCoreBundle:TagCategory')->findAll();
 
-        $this->container->get('bigfoot.theme')['page_content']['globalActions']->addItem(new Item('crud_add', 'Add a tag', 'admin_tag_new'));
+        $this->container->get('bigfoot.theme')['page_content']['globalActions']->addItem(new Item('crud_add', 'Add a category', 'admin_tag_category_new'));
 
         return array(
             'entities' => $entities,
         );
     }
+
     /**
-     * Creates a new Tag entity.
+     * Creates a new TagCategory entity.
      *
-     * @Route("/", name="admin_tag_create")
+     * @Route("/", name="admin_tag_category_create")
      * @Method("POST")
-     * @Template("BigfootCoreBundle:Tag:new.html.twig")
+     * @Template("BigfootCoreBundle:TagCategory:new.html.twig")
      */
     public function createAction(Request $request)
     {
-        $entity  = new Tag();
-        $form = $this->createForm(new TagType(), $entity);
-        $form->submit($request);
+        $entity  = new TagCategory();
+        $form = $this->createForm(new TagCategoryType(), $entity);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('admin_tag'));
+            return $this->redirect($this->generateUrl('admin_tag_category'));
         }
 
         return array(
@@ -66,16 +67,16 @@ class TagController extends Controller
     }
 
     /**
-     * Displays a form to create a new Tag entity.
+     * Displays a form to create a new TagCategory entity.
      *
-     * @Route("/new", name="admin_tag_new")
+     * @Route("/new", name="admin_tag_category_new")
      * @Method("GET")
      * @Template()
      */
     public function newAction()
     {
-        $entity = new Tag();
-        $form   = $this->createForm(new TagType(), $entity);
+        $entity = new TagCategory();
+        $form   = $this->createForm(new TagCategoryType(), $entity);
 
         return array(
             'entity' => $entity,
@@ -84,9 +85,9 @@ class TagController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Tag entity.
+     * Displays a form to edit an existing TagCategory entity.
      *
-     * @Route("/{id}/edit", name="admin_tag_edit")
+     * @Route("/{id}/edit", name="admin_tag_category_edit")
      * @Method("GET")
      * @Template()
      */
@@ -94,13 +95,13 @@ class TagController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('BigfootCoreBundle:Tag')->find($id);
+        $entity = $em->getRepository('BigfootCoreBundle:TagCategory')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Tag entity.');
+            throw $this->createNotFoundException('Unable to find TagCategory entity.');
         }
 
-        $editForm = $this->createForm(new TagType(), $entity);
+        $editForm = $this->createForm(new TagCategoryType(), $entity);
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
@@ -111,31 +112,31 @@ class TagController extends Controller
     }
 
     /**
-     * Edits an existing Tag entity.
+     * Edits an existing TagCategory entity.
      *
-     * @Route("/{id}", name="admin_tag_update")
+     * @Route("/{id}", name="admin_tag_category_update")
      * @Method("PUT")
-     * @Template("BigfootCoreBundle:Tag:edit.html.twig")
+     * @Template("BigfootCoreBundle:TagCategory:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('BigfootCoreBundle:Tag')->find($id);
+        $entity = $em->getRepository('BigfootCoreBundle:TagCategory')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Tag entity.');
+            throw $this->createNotFoundException('Unable to find TagCategory entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createForm(new TagType(), $entity);
-        $editForm->submit($request);
+        $editForm = $this->createForm(new TagCategoryType(), $entity);
+        $editForm->bind($request);
 
         if ($editForm->isValid()) {
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('admin_tag_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('admin_tag_category_edit', array('id' => $id)));
         }
 
         return array(
@@ -145,33 +146,33 @@ class TagController extends Controller
         );
     }
     /**
-     * Deletes a Tag entity.
+     * Deletes a TagCategory entity.
      *
-     * @Route("/{id}", name="admin_tag_delete")
+     * @Route("/{id}", name="admin_tag_category_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)
     {
         $form = $this->createDeleteForm($id);
-        $form->submit($request);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('BigfootCoreBundle:Tag')->find($id);
+            $entity = $em->getRepository('BigfootCoreBundle:TagCategory')->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Tag entity.');
+                throw $this->createNotFoundException('Unable to find TagCategory entity.');
             }
 
             $em->remove($entity);
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('admin_tag'));
+        return $this->redirect($this->generateUrl('admin_tag_category'));
     }
 
     /**
-     * Creates a form to delete a Tag entity by id.
+     * Creates a form to delete a TagCategory entity by id.
      *
      * @param mixed $id The entity id
      *
@@ -183,21 +184,5 @@ class TagController extends Controller
             ->add('id', 'hidden')
             ->getForm()
         ;
-    }
-    
-    /**
-     * @Route("/get", name="admin_tag_get")
-     */
-    function homeAction()
-    {
-        $em = $this->container->get('doctrine')->getManager();
-
-        $tagRepository = $em->getRepository('BigfootCoreBundle:Tag');
-        $tagsToJson = array();
-        foreach ($tagRepository->findAll() as $tag) {
-            $tagsToJson[] = $tag->getName();
-        }
-
-        return new Response(json_encode($tagsToJson), 200, array('Content-Type', 'application/json'));
     }
 }

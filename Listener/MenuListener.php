@@ -16,8 +16,14 @@ class MenuListener
             if ($settings = $menu->getItem('sidebar_settings')) {
                 $settings->setLabel('Settings');
             } else {
-                $menu->addItem(new Item('sidebar_settings', 'Settings'));
+                $settings = new Item('sidebar_settings', 'Settings');
+                $menu->addItem($settings);
             }
+
+            $tagsMenu = new Item('sidebar_tags', 'Tags');
+            $tagsMenu->addChild(new Item('sidebar_settings_tags_category', 'Categories', 'admin_tag_category'));
+            $tagsMenu->addChild(new Item('sidebar_settings_tags_tag', 'Tags', 'admin_tag'));
+            $menu->addItem($tagsMenu);
         }
     }
 }

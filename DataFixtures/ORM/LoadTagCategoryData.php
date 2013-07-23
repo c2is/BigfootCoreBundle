@@ -17,7 +17,7 @@ class LoadTagCategoryData implements FixtureInterface
     {
         $defaultCategory = new TagCategory();
         $defaultCategory->setName('Default category');
-        $defaultCategory->setSlug('_default');
+        $defaultCategory->setSlug('default');
 
         $manager->persist($defaultCategory);
 
