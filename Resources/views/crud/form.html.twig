@@ -1,5 +1,5 @@
 <form action="{{ action_route }}" method="post" {{ form_enctype(form) }}>
-    {% if method %}
+    {% if method is defined %}
     <input type="hidden" name="_method" value="{{ method }}" />
     {% endif %}
     <div class="widget">
