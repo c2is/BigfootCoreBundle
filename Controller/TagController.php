@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Bigfoot\Bundle\CoreBundle\Entity\Tag;
 use Bigfoot\Bundle\CoreBundle\Form\TagType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tag controller.
