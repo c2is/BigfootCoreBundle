@@ -4,7 +4,7 @@
     {% spaceless %}
         <div class="field-media">
         {% if value %}
-            <a class="portfolio-popin-open" href="{{ path('portfolio_popin', {'id': value}) }}" data-base-href="{{ path('portfolio_popin') }}"><img class="crud-column-media" src="" /></a>
+            <a class="portfolio-popin-open" href="{{ path('portfolio_popin', {'id': value}) }}" data-base-href="{{ path('portfolio_popin') }}"><img class="crud-column-media" src="{{ value | media }}" /></a>
         {% else %}
             <a class="portfolio-popin-open btn" href="{{ path('portfolio_popin') }}" data-base-href="{{ path('portfolio_popin') }}">{{ 'Upload or select medias' | trans }}</a>
         {% endif %}
