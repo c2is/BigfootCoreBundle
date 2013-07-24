@@ -10,6 +10,8 @@ parameters:
     menu.class:                   "Bigfoot\\Bundle\\CoreBundle\\Theme\\MenuFactory"
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
     route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
+    translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
+    available_languages:          [ 'fr_fr','en_en','it_it', 'de_de' ]
 services:
     # Core menu listener ; adds or renames the Sidebar > Settings menu
     kernel.listener.bigfoot_core_menu_listener:
@@ -59,3 +61,9 @@ services:
         arguments: [ @doctrine.orm.entity_manager ]
         tags:
             - { name: form.type, alias: bigfoot_tag }
+
+    form.type.translatable:
+        class: %translatable_type.class%
+        arguments: [ @service_container, '%available_languages%' ]
+        tags:
+            - { name: form.type, alias: translatable_entity }
