@@ -6,7 +6,7 @@
         {% if value %}
             <a class="portfolio-popin-open" href="{{ path('portfolio_popin', {'id': value}) }}" data-base-href="{{ path('portfolio_popin') }}"><img class="crud-column-media" src="" /></a>
         {% else %}
-            <a class="portfolio-popin-open btn" href="{{ path('portfolio_popin') }}" data-base-href="{{ path('portfolio_popin') }}">{{ 'Upload or select medias' }}</a>
+            <a class="portfolio-popin-open btn" href="{{ path('portfolio_popin') }}" data-base-href="{{ path('portfolio_popin') }}">{{ 'Upload or select medias' | trans }}</a>
         {% endif %}
         {% set type = 'hidden' %}
         {{ block('form_widget_simple') }}

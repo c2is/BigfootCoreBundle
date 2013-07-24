@@ -62,6 +62,10 @@
                 <source>Category edition</source>
                 <target>Edition une catégorie</target>
             </trans-unit>
+            <trans-unit id="16">
+                <source>Submit</source>
+                <target>Valider</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
