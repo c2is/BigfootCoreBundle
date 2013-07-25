@@ -38,6 +38,9 @@ class TranslatedEntityType extends AbstractType
             'translation_class' => null,
             'mapped' => false,
             'label' => false,
+            'attr' => array(
+                'class' => 'translatable-fields'
+            ),
         ));
     }
 

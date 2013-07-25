@@ -81,7 +81,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                                 // Here we have to first retrieve the field type in the parent form
                                 $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
                                 // and then set the form type and the data
-                                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('data' => $translation, 'required' => false, 'attr' => array('class' => 'translated-field')));
+                                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('data' => $translation, 'required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale)));
                             }
                         }
                     }
@@ -160,8 +160,10 @@ class TranslationSubscriber implements EventSubscriberInterface {
     private function addTranslationlessFieldsForLocale($translatableFields, $parentForm, $form, $locale)
     {
         foreach ($translatableFields as $field => $type) {
-            $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
-            $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('required' => false, 'attr' => array('class' => 'translated-field')));
+            if ($parentForm->has($field)) {
+                $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
+                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale)));
+            }
         }
     }
 

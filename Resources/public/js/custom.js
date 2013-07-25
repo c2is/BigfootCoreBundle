@@ -160,7 +160,27 @@ $(function() {
 })
 
 $(function() {
-    $('input.translated-field').parent().parent().parent().hide();
+    var $translatedFields = $('.translatable-fields');
+    if ($translatedFields.length) {
+        var locales = [currentLocale];
+
+        $translatedFields.hide();
+        // Getting all translated fields to set their parent's data attributes (default locale fields aren't intiialized by the translationsubscriber)
+        $('input[type="text"], textarea', $translatedFields).each(function() {
+            var elementId = $(this).attr('id')
+            var parentElementId = elementId.substr(0, elementId.lastIndexOf('-')).replace('_translation', '');
+
+            var $parentElement = $('#'+parentElementId);
+
+            $parentElement.data('field-name', $(this).data('field-name')).data('locale', currentLocale);
+
+            if (!$.inArray($(this).data('locale'), locales)) {
+                locales.push($(this).data('locale'));
+            }
+        });
+
+        $translatedFields.parent().parent().prepend();
+    }
 })
 
 function strpos (haystack, needle, offset) {
