@@ -124,8 +124,8 @@ $(document).ready(function () {
             $.get(url, function (data) {
                 $('<div class="modal hide fade">' + data + '</div>').modal();
             }).success(function () {
-                $('input:text:visible:first').focus();
-            });
+                    $('input:text:visible:first').focus();
+                });
         }
     });
 
@@ -165,21 +165,40 @@ $(function() {
         var locales = [currentLocale];
 
         $translatedFields.hide();
-        // Getting all translated fields to set their parent's data attributes (default locale fields aren't intiialized by the translationsubscriber)
+        // Getting all translated fields to set their parent's data attributes (default locale fields aren't initialized by the translationsubscriber)
         $('input[type="text"], textarea', $translatedFields).each(function() {
             var elementId = $(this).attr('id')
             var parentElementId = elementId.substr(0, elementId.lastIndexOf('-')).replace('_translation', '');
 
             var $parentElement = $('#'+parentElementId);
 
-            $parentElement.data('field-name', $(this).data('field-name')).data('locale', currentLocale);
+            $parentElement
+                .data('locale', currentLocale)
+                .attr('data-locale', currentLocale);
 
-            if (!$.inArray($(this).data('locale'), locales)) {
+            $(this).appendTo($parentElement.parent()).hide();
+
+            if ($.inArray($(this).data('locale'), locales) < 0) {
                 locales.push($(this).data('locale'));
             }
         });
 
-        $translatedFields.parent().parent().prepend();
+        $translatedFields.parent().parent().prepend(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));
+
+        var $localeTab = $('#locale-tabs');
+        $localeTab.on('click', 'a', function(event) {
+            event.stopPropagation();
+
+            if (!$(this).hasClass('active')) {
+                var newLocale = $(this).data('locale');
+                $('input[data-locale="'+newLocale+'"], textarea[data-locale="'+newLocale+'"]').show();
+                $('input[data-locale="'+currentLocale+'"], textarea[data-locale="'+currentLocale+'"]').hide();
+
+                $('a', $localeTab).removeClass('active');
+                $(this).addClass('active');
+                currentLocale = newLocale;
+            }
+        });
     }
 })
 

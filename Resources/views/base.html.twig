@@ -10,6 +10,7 @@
     <script type="text/javascript">
         var defaultPortfolioRoute = "{{ path('portfolio_dashboard') }}";
         var currentLocale = "{{ app.request.locale }}";
+        var basePath = "{{ app.request.basePath }}";
     </script>
 
     {% block stylesheets %}
@@ -145,31 +146,38 @@
 <script src="{{ asset('bundles/bigfootcore/js/tree.jquery.js') }}"></script>
 <script src="{{ asset('bundles/bigfootcore/js/jquery.portfolio.js') }}"></script>
 <script src="{{ asset('bundles/bigfootcore/js/custom.js') }}"></script>
-    <script>
-        window.tags = [];
-        function initSelects() {
-            $("select").width($("select").width()).select2();
-
-            var tags = window.tags;
-
-            if (tags.length == 0) {
-                $.ajax({
-                    url: '{{ path('admin_tag_get') }}',
-                    async: false,
-                    success: function(json) {
-                        tags = window.tags = $.parseJSON(json);
-                    }
-                });
-            }
-
-            var arrayTags = new Array();
-            if (tags != undefined && $.isArray(tags) && tags.length > 0) {
-                arrayTags = tags;
-            }
-            var $tagsSelect = $('input.bigfoot_tags_field');
-            $tagsSelect.width($tagsSelect.width()).select2({tags: arrayTags});
-        }
-    </script>
 {% endblock %}
+<script>
+    window.tags = [];
+    function initSelects() {
+        $("select").width($("select").width()).select2();
+
+        var tags = window.tags;
+
+        if (tags.length == 0) {
+            $.ajax({
+                url: '{{ path('admin_tag_get') }}',
+                async: false,
+                success: function(json) {
+                    tags = window.tags = $.parseJSON(json);
+                }
+            });
+        }
+
+        var arrayTags = new Array();
+        if (tags != undefined && $.isArray(tags) && tags.length > 0) {
+            arrayTags = tags;
+        }
+        var $tagsSelect = $('input.bigfoot_tags_field');
+        $tagsSelect.width($tagsSelect.width()).select2({tags: arrayTags});
+    }
+</script>
+{% javascripts '%kernel.root_dir%/../vendor/jms/twig-js/twig.js' %}
+<script language="javascript" src="{{ asset_url }}"></script>
+{% endjavascripts %}
+{% javascripts "@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig"
+filter="twig_js" %}
+<script language="javascript" src="{{ asset_url }}"></script>
+{% endjavascripts %}
 </body>
 </html>
