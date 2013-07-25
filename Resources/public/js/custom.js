@@ -159,6 +159,10 @@ $(function() {
     initSelects();
 })
 
+$(function() {
+    $('input.translated-field').parent().parent().parent().hide();
+})
+
 function strpos (haystack, needle, offset) {
     var i = (haystack + '').indexOf(needle, (offset || 0));
 

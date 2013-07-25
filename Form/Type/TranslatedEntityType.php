@@ -43,7 +43,6 @@ class TranslatedEntityType extends AbstractType
 
     public function getDefaultOptions(array $options = array())
     {
-
         return $options;
     }
 
