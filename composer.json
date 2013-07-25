@@ -11,9 +11,9 @@
         }
     ],
     "require": {
-        "php":                      ">=5.3.3",
-        "symfony/framework-bundle": ">=2.3",
-        "stof/doctrine-extensions-bundle": "~1.1@dev"
+        "php":                              ">=5.3.3",
+        "symfony/framework-bundle":         ">=2.3",
+        "jms/twig-js":                      "dev-master"
     },
     "autoload": {
         "psr-0": { "Bigfoot\\Bundle\\CoreBundle": "" }
