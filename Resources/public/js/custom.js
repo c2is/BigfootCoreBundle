@@ -179,7 +179,7 @@ $(function() {
 
         $translatedFields.parent().parent().prepend(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));
 
-        var $localeTab = $('#locale-tabs');
+        var $localeTab = $('.locale-tabs');
         $localeTab.on('click', 'a', function(event) {
             event.stopPropagation();
 
@@ -192,6 +192,8 @@ $(function() {
                 $(this).addClass('active');
                 currentLocale = newLocale;
             }
+
+            return false;
         });
     }
 })
