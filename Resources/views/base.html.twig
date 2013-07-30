@@ -10,6 +10,7 @@
     <script type="text/javascript">
         var defaultPortfolioRoute = "{{ path('portfolio_dashboard') }}";
         var currentLocale = "{{ app.request.locale }}";
+        {% if locales is defined and locales | length %}var locales = ["{{ locales | join('","') | raw }}"];{% endif %}
         var basePath = "{{ app.request.basePath }}";
     </script>
 

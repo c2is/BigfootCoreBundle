@@ -162,8 +162,6 @@ $(function() {
 $(function() {
     var $translatedFields = $('.translatable-fields');
     if ($translatedFields.length) {
-        var locales = [currentLocale];
-
         $translatedFields.hide();
         // Getting all translated fields to set their parent's data attributes (default locale fields aren't initialized by the translationsubscriber)
         $('input[type="text"], textarea', $translatedFields).each(function() {
@@ -177,10 +175,6 @@ $(function() {
                 .attr('data-locale', currentLocale);
 
             $(this).appendTo($parentElement.parent()).hide();
-
-            if ($.inArray($(this).data('locale'), locales) < 0) {
-                locales.push($(this).data('locale'));
-            }
         });
 
         $translatedFields.parent().parent().prepend(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));

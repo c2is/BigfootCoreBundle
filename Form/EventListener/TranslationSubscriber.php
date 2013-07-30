@@ -57,7 +57,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
             // Then, we get the field list from the entity class metadata using the annotation reader
             $translatableFields = $this->getTranslatableFields($entityClass);
 
-            //Case where there is data (edit)
+            //Case where there is data (edit);
             if ($parentData && $parentData->getId()) {
 
                 // We get the entity manager and its translations
@@ -78,10 +78,12 @@ class TranslationSubscriber implements EventSubscriberInterface {
                             // then we get its data per field
                             // this way if a field has a translation it will automatically be filled
                             foreach($translations[$locale] as $field => $translation) {
-                                // Here we have to first retrieve the field type in the parent form
-                                $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
-                                // and then set the form type and the data
-                                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('data' => $translation, 'required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale)));
+                                if ($parentForm->has($field)) {
+                                    // Here we have to first retrieve the field type in the parent form
+                                    $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
+                                    // and then set the form type and the data
+                                    $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('data' => $translation, 'required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale)));
+                                }
                             }
                         }
                     }
@@ -96,7 +98,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
 
         } catch (\Exception $e) {
             // Case of a non entity object given to the parent form.
-            // Unstranslatable case, throw exception.
+            // Unstranslatable case, throw exception
             $secondException = new \Exception("The object that was given to the form you wanted to translate isn't an entity one. Untranslatable in this case.", $e->getCode(), $e);
             throw $secondException;
         }
@@ -126,7 +128,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 // Gets the translatable fields and their content
                 $translatableFields = $this->getTranslatableFields($entityClass);
                 $data = $event->getData();
-                var_dump($data);
 
                 foreach ($this->localeList as $locale) {
                     if ($locale != $this->defaultLocale) {

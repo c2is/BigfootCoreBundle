@@ -1,5 +1,5 @@
 {% twig_js name="localeTabs" %}
-<div id="locale-tabs">
+<div class="locale-tabs">
     {% for locale in locales %}
         <a href="#"{% if locale == currentLocale %} class="active"{% endif %} data-locale="{{ locale }}"><img src="{{ basepath }}/bundles/bigfootcore/img/flags/{{ locale }}.gif" title="{{ locale }}" /></a>
     {% endfor %}
