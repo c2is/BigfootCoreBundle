@@ -16,7 +16,8 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class SortableEntityType extends AbstractType
 {
 
-    public function getParent() {
+    public function getParent()
+    {
         return 'hidden';
     }
 
