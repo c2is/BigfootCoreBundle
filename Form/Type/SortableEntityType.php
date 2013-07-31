@@ -28,7 +28,6 @@ class SortableEntityType extends AbstractType
                 'class' => 'sortable-field'
             ),
             'data'      => 0
-
         ));
     }
 

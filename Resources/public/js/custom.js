@@ -80,7 +80,6 @@ $(document).ready(function () {
 $(document).ready(function () {
     AddCollectionItemEvent();
     DeleteCollectionItemEvent();
-
     sortCollection();
 });
 
