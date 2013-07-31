@@ -21,13 +21,15 @@ class TranslationSubscriber implements EventSubscriberInterface {
     protected $localeList;
     protected $doctrineService;
     protected $annotationReader;
+    protected $currentLocale;
     protected $defaultLocale;
 
-    public function __construct($localeList, RegistryInterface $doctrineService, Reader $annotationReader, $defaultLocale)
+    public function __construct($localeList, RegistryInterface $doctrineService, Reader $annotationReader, $currentLocale, $defaultLocale)
     {
         $this->localeList = $localeList;
         $this->doctrineService = $doctrineService;
         $this->annotationReader = $annotationReader;
+        $this->currentLocale = $currentLocale;
         $this->defaultLocale = $defaultLocale;
     }
 
@@ -68,7 +70,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 // Iterating over the enabled locales
                 foreach ($this->localeList as $locale) {
                     // Case of the default locale : do not display the form
-                    if ($locale != $this->defaultLocale){
+                    if ($locale != $this->currentLocale) {
 
                         // We first add the fields without translation
                         $this->addTranslationlessFieldsForLocale($translatableFields, $parentForm, $form, $locale);
@@ -82,6 +84,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                                     // Here we have to first retrieve the field type in the parent form
                                     $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
                                     // and then set the form type and the data
+
                                     $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('data' => $translation, 'required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale)));
                                 }
                             }
@@ -130,7 +133,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $data = $event->getData();
 
                 foreach ($this->localeList as $locale) {
-                    if ($locale != $this->defaultLocale) {
+                    if ($locale != $this->currentLocale) {
                         // Here we extract the field values from the submitted data
                         // Here type is useless, just used for getting the field
                         foreach ($translatableFields as $field => $type) {
@@ -153,7 +156,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
     {
         foreach ($this->localeList as $locale) {
             // We  add the fields without translation
-            if ($locale != $this->defaultLocale)
+            if ($locale != $this->currentLocale)
                 $this->addTranslationlessFieldsForLocale($translatableFields, $parentForm, $form, $locale);
         }
     }
@@ -163,7 +166,19 @@ class TranslationSubscriber implements EventSubscriberInterface {
         foreach ($translatableFields as $field => $type) {
             if ($parentForm->has($field)) {
                 $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
-                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale)));
+
+                $params = array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale));
+                if ($this->currentLocale != $this->defaultLocale) {
+                    $parentData = $parentForm->getData();
+                    $parentData->setTranslatableLocale($this->defaultLocale);
+                    $em = $this->doctrineService->getManagerForClass(get_class($parentData));
+                    $em->refresh($parentData);
+                    $method = 'get'.ucfirst($field);
+                    $params['data'] = $parentData->$method();
+                    $parentData->setTranslatableLocale($this->currentLocale);
+                }
+
+                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $params);
             }
         }
     }

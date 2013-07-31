@@ -29,7 +29,7 @@ class TranslatedEntityType extends AbstractType
     {
         $builder->add('translatedEntity', 'hidden' );
 
-        $builder->addEventSubscriber(new TranslationSubscriber($this->localeList, $this->container->get('doctrine'), $this->container->get('annotation_reader'), $this->container->getParameter('locale')));
+        $builder->addEventSubscriber(new TranslationSubscriber($this->localeList, $this->container->get('doctrine'), $this->container->get('annotation_reader'), $this->container->get('request')->getLocale(), $this->container->getParameter('locale')));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
