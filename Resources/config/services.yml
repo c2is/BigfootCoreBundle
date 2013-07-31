@@ -11,6 +11,7 @@ parameters:
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
     route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
     translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
+    sortable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
     available_languages:          [ 'fr_fr','en_en','it_it', 'de_de' ]
 services:
     # Core menu listener ; adds or renames the Sidebar > Settings menu
@@ -67,3 +68,7 @@ services:
         arguments: [ @service_container, '%available_languages%' ]
         tags:
             - { name: form.type, alias: translatable_entity }
+    form.type.sortable:
+            class: %sortable_type.class%
+            tags:
+                - { name: form.type, alias: sortable_entity }

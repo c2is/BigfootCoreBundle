@@ -80,6 +80,8 @@ $(document).ready(function () {
 $(document).ready(function () {
     AddCollectionItemEvent();
     DeleteCollectionItemEvent();
+
+    sortCollection();
 });
 
 function AddCollectionItemEvent() {
@@ -224,4 +226,27 @@ function strpos (haystack, needle, offset) {
     var i = (haystack + '').indexOf(needle, (offset || 0));
 
     return i === -1 ? false : i;
+}
+
+function sortCollection() {
+
+    if ($('input.sortable-field').length > 0) {
+
+        $('input.sortable-field').parent('div').parent('div').parent('div').each(function() {
+            $(this).sortable({
+                update: function () {
+                    var inputs = $('input.sortable-field');
+                    var nbElems = inputs.length;
+                    $('input.sortable-field').each(function(idx) {
+                        $(this).val(idx);
+                    });
+                }
+            });
+        });
+
+        $('input.sortable-field').each(function() {
+            $(this).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" );
+        });
+    }
+
 }
