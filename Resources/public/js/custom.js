@@ -78,18 +78,40 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    function addCollectionItem(id) {
-        var collectionHolder = $(id);
-        var prototype = collectionHolder.attr('data-prototype');
-        form = prototype.replace(/__name__/g, collectionHolder.children().length);
-        collectionHolder.append(form);
-    }
+    AddCollectionItemEvent();
+    DeleteCollectionItemEvent();
+});
 
+function AddCollectionItemEvent() {
     $('a.addCollectionItem').on('click', function (event) {
         event.preventDefault();
         addCollectionItem($(this).data('collection-id'));
     });
-});
+}
+
+function DeleteCollectionItemEvent() {
+    $('a.deleteCollectionItem').on('click', function (event) {
+        event.preventDefault();
+        $(this).parent('div').remove();
+    });
+}
+
+function addCollectionItem(id) {
+
+    var collectionHolder = $(id);
+
+    var prototype = collectionHolder.attr('data-prototype');
+    form = prototype.replace(/__name__/g, collectionHolder.children().length);
+
+    collectionHolder.append(form);
+
+    DeleteCollectionItemEvent();
+
+    $(id).find('a.addCollectionItem').on('click', function (event) {
+        event.preventDefault();
+        addCollectionItem($(this).data('collection-id'));
+    });
+}
 
 $(document).ready(function () {
     $('form').on('change', '.choice-load-embeded-form', function () {
@@ -179,7 +201,7 @@ $(function() {
 
         $translatedFields.parent().parent().prepend(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));
 
-        var $localeTab = $('.locale-tabs');
+        var $localeTab = $('#locale-tabs');
         $localeTab.on('click', 'a', function(event) {
             event.stopPropagation();
 
@@ -192,8 +214,6 @@ $(function() {
                 $(this).addClass('active');
                 currentLocale = newLocale;
             }
-
-            return false;
         });
     }
 })

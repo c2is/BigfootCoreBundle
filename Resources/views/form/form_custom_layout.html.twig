@@ -17,6 +17,7 @@
 {% block collection_widget %}
     {{ parent() }}
     {% if prototype is defined %}
-    <a href="#" class="addCollectionItem" data-collection-id="#{{ id }}">{{ 'Add' | trans }}</a>
+        <a href="#" class="addCollectionItem btn" data-collection-id="#{{ id }}">{{ 'Add' | trans }}</a>
     {% endif %}
 {% endblock %}
+
