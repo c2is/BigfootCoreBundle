@@ -168,8 +168,8 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
 
                 $params = array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale));
-                if ($this->currentLocale != $this->defaultLocale) {
-                    $parentData = $parentForm->getData();
+                $parentData = $parentForm->getData();
+                if ($parentData->getId() and $this->currentLocale != $this->defaultLocale) {
                     $parentData->setTranslatableLocale($this->defaultLocale);
                     $em = $this->doctrineService->getManagerForClass(get_class($parentData));
                     $em->refresh($parentData);
