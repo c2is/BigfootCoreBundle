@@ -81,7 +81,23 @@ $(document).ready(function () {
     AddCollectionItemEvent();
     DeleteCollectionItemEvent();
     sortCollection();
+    setupSortable();
+    $( ".portlet-content" ).toggle();
 });
+
+function setupSortable() {
+    $( ".portlet" ).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
+        .find( ".portlet-header" )
+        .addClass( "ui-widget-header ui-corner-all" )
+        .prepend( "<span class='ui-icon ui-icon-plusthick'></span>")
+        .end()
+        .find( ".portlet-content" );
+
+    $( ".portlet-header .ui-icon" ).click(function() {
+        $( this ).toggleClass( "ui-icon-minusthick" ).toggleClass( "ui-icon-plusthick" );
+        $( this ).parents( ".portlet:first" ).find( ".portlet-content:first" ).toggle();
+    });
+}
 
 function AddCollectionItemEvent() {
     $('a.addCollectionItem').on('click', function (event) {
@@ -93,7 +109,7 @@ function AddCollectionItemEvent() {
 function DeleteCollectionItemEvent() {
     $('a.deleteCollectionItem').on('click', function (event) {
         event.preventDefault();
-        $(this).parent('div').remove();
+        $(this).parent('div').parent('div').remove();
     });
 }
 
@@ -114,6 +130,7 @@ function addCollectionItem(id) {
     });
 
     setupTranslatableFields($('.translatable-fields'))
+    setupSortable();
 }
 
 $(document).ready(function () {
@@ -237,7 +254,7 @@ function sortCollection() {
 
     if ($('input.sortable-field').length > 0) {
 
-        $('input.sortable-field').parent('div').parent('div').parent('div').each(function() {
+        $('input.sortable-field').closest('div.portlet').parent('div').parent('div').each(function() {
             $(this).sortable({
                 update: function () {
                     var inputs = $('input.sortable-field');
