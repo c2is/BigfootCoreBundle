@@ -37,7 +37,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
     {
         // Tells the dispatcher that you want to listen on the form.pre_set_data
         // event and that the preSetData method should be called.
-        return array(FormEvents::PRE_SET_DATA => 'preSetData', FormEvents::SUBMIT => 'submit');
+        return array(FormEvents::PRE_SET_DATA => 'preSetData', FormEvents::POST_SUBMIT => array('submit', -500));
     }
 
     /**
@@ -51,7 +51,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
         try{
             $form = $event->getForm();
             $parentForm = $form->getParent();
-            $parentData = $parentForm->getData();
+            $parentData = $this->getParentData($parentForm);
 
             // First, we get the entity class
             $entityClass = get_class($parentData);
@@ -120,11 +120,11 @@ class TranslationSubscriber implements EventSubscriberInterface {
             $parentForm = $form->getParent();
             $parentData = $parentForm->getData();
 
-            // First, we get the entity class
-            $entityClass = get_class($parentData);
-
             // Edit case
             if ($parentData) {
+                // First, we get the entity class
+                $entityClass = get_class($parentData);
+
                 $em = $this->doctrineService->getManagerForClass($entityClass);
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
 
@@ -168,7 +168,8 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
 
                 $params = array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale));
-                $parentData = $parentForm->getData();
+                $parentData = $this->getParentData($parentForm);
+
                 if ($parentData->getId() and $this->currentLocale != $this->defaultLocale) {
                     $parentData->setTranslatableLocale($this->defaultLocale);
                     $em = $this->doctrineService->getManagerForClass(get_class($parentData));
@@ -206,5 +207,16 @@ class TranslationSubscriber implements EventSubscriberInterface {
             }
         }
         return $translatableFields;
+    }
+
+    private function getParentData($parentForm)
+    {
+        $parentData = $parentForm->getData();
+        if(null === $parentData) {
+            $dataClass = $parentForm->getConfig()->getOption('data_class');
+            $parentData = new $dataClass();
+        }
+
+        return $parentData;
     }
 }

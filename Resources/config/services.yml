@@ -61,6 +61,10 @@ services:
         arguments: [ @doctrine.orm.entity_manager ]
         tags:
             - { name: form.type, alias: bigfoot_tag }
+    bigfoot.form.type.collection_type_extension:
+        class: Bigfoot\Bundle\CoreBundle\Form\Extension\CollectionTypeExtension
+        tags:
+            - { name: form.type_extension, alias: collection }
 
     form.type.translatable:
         class: %translatable_type.class%
