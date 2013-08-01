@@ -21,7 +21,13 @@
     {% endif %}
 {% endblock %}
 
-{% block bigfoot_collection_widget %}
-    {{ block('collection_widget') }}
+{% block bigfoot_collection_item_widget %}
+    <div class="portlet">
+        <div class="portlet-header">
+            {{ value.__toString() | default('new item') | trans }}
+            <a href="#_" class="deleteCollectionItem">{{ 'Delete' | trans }}</a>
+        </div>
+        <div class="portlet-content">{{ block('form_widget') }}</div>
+    </div>
 {% endblock %}
 
