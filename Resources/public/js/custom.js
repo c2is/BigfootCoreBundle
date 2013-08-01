@@ -77,86 +77,23 @@ $(document).ready(function () {
         .parent().parent().children('a').click();
 });
 
+/* Form collections */
 $(document).ready(function () {
-    AddCollectionItemEvent();
-    DeleteCollectionItemEvent();
+    addCollectionItemEvent();
+    deleteCollectionItemEvent();
     sortCollection();
-    setupSortable();
-    $( ".portlet-content" ).toggle();
+
+    setupCollectionItem();
+    $('body').on('click', '.portlet-header > span.toggle-portlet', function() {
+        $(this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
+        $(this).closest(".portlet").find(".portlet-content").toggle();
+    });
+    $(".portlet-content").toggle();
 });
 
-function setupSortable() {
-    $( ".portlet" ).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
-        .find( ".portlet-header" )
-        .addClass( "ui-widget-header ui-corner-all" )
-        .prepend( "<span class='ui-icon ui-icon-plusthick'></span>")
-        .end()
-        .find( ".portlet-content" );
-
-    $( ".portlet-header .ui-icon" ).click(function() {
-        $( this ).toggleClass( "ui-icon-minusthick" ).toggleClass( "ui-icon-plusthick" );
-        $( this ).parents( ".portlet:first" ).find( ".portlet-content:first" ).toggle();
-    });
-}
-
-function AddCollectionItemEvent() {
-    $('a.addCollectionItem').on('click', function (event) {
-        event.preventDefault();
-        addCollectionItem($(this).data('collection-id'));
-    });
-}
-
-function DeleteCollectionItemEvent() {
-    $('a.deleteCollectionItem').on('click', function (event) {
-        event.preventDefault();
-        $(this).parent('div').parent('div').remove();
-    });
-}
-
-function addCollectionItem(id) {
-
-    var collectionHolder = $(id);
-
-    var prototype = collectionHolder.attr('data-prototype');
-    form = prototype.replace(/__name__/g, collectionHolder.children().length);
-
-    collectionHolder.append(form);
-
-    DeleteCollectionItemEvent();
-
-    $(id).find('a.addCollectionItem').on('click', function (event) {
-        event.preventDefault();
-        addCollectionItem($(this).data('collection-id'));
-    });
-
-    setupTranslatableFields($('.translatable-fields'))
-    setupSortable();
-}
-
+// Support for AJAX loaded modal window.
+// Focuses on first input textbox after it loads the window.
 $(document).ready(function () {
-    $('form').on('change', '.choice-load-embeded-form', function () {
-        var form        = $(this.form);
-        var select      = $(this);
-        var selectId    = $(this).attr('id');
-        var pattern     = select.data('url-pattern');
-        var targetValue = select.data('target-value');
-
-        $.post(pattern, form.serialize(), function (html) {
-            for (var i = 0; i < 10; i++) {
-                var regexp = new RegExp("_" + i + "_", 'g');
-                html = html.replace(regexp, '_' + (100 + i) + '_');
-                var regexp = new RegExp("\\[" + i + "\\]", 'g');
-                html = html.replace(regexp, '[' + (100 + i) + ']');
-            }
-
-            $('.padd', form).html(html);
-        });
-    })
-});
-
-$(document).ready(function () {
-    // Support for AJAX loaded modal window.
-    // Focuses on first input textbox after it loads the window.
     $('[data-toggle="modal"]').click(function (e) {
         e.preventDefault();
         var url = $(this).attr('href');
@@ -173,26 +110,7 @@ $(document).ready(function () {
 
 });
 
-$(document).ready(function() {
-    $("input[id$='treeview']").each(function() {
-        var base  = $(this);
-        var table = $('<table id="treeview"></table>');
-        var form  = base.closest('form');
-
-        base.after(table);
-        table.tree({
-            dragAndDrop: true,
-            autoOpen   : 0,
-            data       : JSON.parse(base.val())
-        });
-
-        form.on('submit', function () {
-            var data = table.tree('toJson');
-            base.val(data);
-        });
-    });
-});
-
+/* Portfolio */
 $(function() {
     $('.field-media').each(function() {
         $.bigfoot.portfolio(this);
@@ -201,12 +119,13 @@ $(function() {
     initSelects();
 })
 
+/* Translatable fields */
 $(function() {
-    var $translatedFields = $('.translatable-fields');
-    if ($translatedFields.length) {
-        setupTranslatableFields($translatedFields);
+    var $translatableFields = $('.translatable-fields');
+    if ($translatableFields.length) {
+        setupTranslatableFields($translatableFields);
 
-        $translatedFields.parent().parent().prepend(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));
+        $('#locales-container').html(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));
 
         var $localeTab = $('.locale-tabs');
         $localeTab.on('click', 'a', function(event) {
@@ -214,8 +133,8 @@ $(function() {
 
             if (!$(this).hasClass('active')) {
                 var newLocale = $(this).data('locale');
-                $('input[data-locale="'+newLocale+'"], textarea[data-locale="'+newLocale+'"]').show();
-                $('input[data-locale="'+currentLocale+'"], textarea[data-locale="'+currentLocale+'"]').hide();
+                $('input[data-locale="'+newLocale+'"], textarea[data-locale="'+newLocale+'"]').closest('div.input-group').show();
+                $('input[data-locale="'+currentLocale+'"], textarea[data-locale="'+currentLocale+'"]').closest('div.input-group').hide();
 
                 $('a', $localeTab).removeClass('active');
                 $(this).addClass('active');
@@ -227,16 +146,17 @@ $(function() {
     }
 })
 
+/* Functions */
 function strpos (haystack, needle, offset) {
     var i = (haystack + '').indexOf(needle, (offset || 0));
 
     return i === -1 ? false : i;
 }
 
-function setupTranslatableFields($translatedFields) {
-    $translatedFields.hide();
+function setupTranslatableFields($translatableFields) {
+    $translatableFields.hide();
     // Getting all translated fields to set their parent's data attributes (default locale fields aren't initialized by the translationsubscriber)
-    $('input[type="text"], textarea', $translatedFields).each(function() {
+    $('input[type="text"], textarea', $translatableFields).each(function() {
         var elementId = $(this).attr('id')
         var parentElementId = elementId.substr(0, elementId.lastIndexOf('-')).replace('_translation', '');
 
@@ -246,15 +166,24 @@ function setupTranslatableFields($translatedFields) {
             .data('locale', currentLocale)
             .attr('data-locale', currentLocale);
 
-        $(this).appendTo($parentElement.parent()).hide();
+        $(this).appendTo($parentElement.parent());
+    });
+
+    var $wrapper = $('<div class="input-group"></div>');
+    var $toWrap = $('input[data-locale], textarea[data-locale]');
+    $toWrap.wrap($wrapper);
+    $toWrap.each(function() {
+        $(this).after($('<span class="input-group-addon"><img src="/bundles/bigfootcore/img/flags/'+$(this).data('locale')+'.gif" /></span>'));
+        if ($(this).data('locale') != currentLocale) {
+            $(this).closest('div.input-group').hide();
+        }
     });
 }
 
 function sortCollection() {
-
-    if ($('input.sortable-field').length > 0) {
-
-        $('input.sortable-field').closest('div.portlet').parent('div').parent('div').each(function() {
+    var $sortableFields = $('input.sortable-field');
+    if ($sortableFields.length > 0) {
+        $sortableFields.closest('div.portlet').parent('div').parent('div').each(function() {
             $(this).sortable({
                 update: function () {
                     var inputs = $('input.sortable-field');
@@ -266,9 +195,48 @@ function sortCollection() {
             });
         });
 
-        $('input.sortable-field').each(function() {
+        $sortableFields.each(function() {
             $(this).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" );
         });
     }
+}
 
+function setupCollectionItem() {
+    $(".portlet:not(.ui-widget)").addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+        .find(".portlet-header")
+        .addClass("ui-widget-header ui-corner-all")
+        .prepend("<span class='ui-icon ui-icon-plusthick toggle-portlet'></span>");
+}
+
+function addCollectionItemEvent() {
+    $('a.addCollectionItem').on('click', function (event) {
+        event.preventDefault();
+        addCollectionItem($(this).data('collection-id'));
+    });
+}
+
+function deleteCollectionItemEvent() {
+    $('a.deleteCollectionItem').on('click', function (event) {
+        event.preventDefault();
+        $(this).parent('div').parent('div').remove();
+    });
+}
+
+function addCollectionItem(id) {
+
+    var collectionHolder = $(id);
+
+    var prototype = collectionHolder.attr('data-prototype');
+    form = prototype.replace(/__name__/g, collectionHolder.children().length);
+
+    collectionHolder.append(form);
+
+    deleteCollectionItemEvent();
+
+    $(id).find('a.addCollectionItem').on('click', function (event) {
+        event.preventDefault();
+        addCollectionItem($(this).data('collection-id'));
+    });
+
+    setupSortable();
 }

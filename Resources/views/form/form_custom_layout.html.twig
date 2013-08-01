@@ -1,5 +1,19 @@
 {% use 'form_div_layout.html.twig' %}
 
+{% block form_widget_simple %}
+    {% set widgetClass = 'form-control ' %}
+    {% if attr.class is defined %}
+        {% set widgetClass = widgetClass ~ attr.class %}
+    {% endif %}
+    {% set attr = (attr | merge({class: widgetClass})) %}
+    {{ parent() }}
+{% endblock %}
+
+{% block textarea_widget %}
+    {% set attr = attr | merge({class: 'form-control'}) %}
+    {{ parent() }}
+{% endblock %}
+
 {% block bigfoot_media_widget %}
     {% spaceless %}
         <div class="field-media">
@@ -31,3 +45,14 @@
     </div>
 {% endblock %}
 
+{% block form_row %}
+    {% spaceless %}
+        <div class="form-group">
+            {% if not form.vars.compound %}
+            {{ form_label(form) }}
+            {% endif %}
+            {{ form_errors(form) }}
+            {{ form_widget(form) }}
+        </div>
+    {% endspaceless %}
+{% endblock form_row %}
