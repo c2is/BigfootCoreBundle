@@ -11,9 +11,10 @@ class HeaderSection extends AbstractSection
 
     protected function setDefaultParameters()
     {
+        $themeValues = $this->container->getParameter('bigfoot.theme.values');
         $this->parameters = array(
-            'title'    => $this->container->getParameter('bigfoot.theme.values')['title'],
-            'subtitle' => $this->container->getParameter('bigfoot.theme.values')['subtitle'],
+            'title'    => $themeValues['title'],
+            'subtitle' => $themeValues['subtitle'],
         );
     }
 }
