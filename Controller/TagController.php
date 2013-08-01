@@ -33,7 +33,8 @@ class TagController extends Controller
 
         $entities = $em->getRepository('BigfootCoreBundle:Tag')->findAll();
 
-        $this->container->get('bigfoot.theme')['page_content']['globalActions']->addItem(new Item('crud_add', 'Add a tag', 'admin_tag_new'));
+        $theme = $this->container->get('bigfoot.theme');
+        $theme['page_content']['globalActions']->addItem(new Item('crud_add', 'Add a tag', 'admin_tag_new'));
 
         return array(
             'entities' => $entities,
