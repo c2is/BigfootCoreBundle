@@ -19,8 +19,9 @@ class Theme implements ArrayAccess
 
     public function __construct(Container $container, Section\ToolbarSection $toolbar, Section\HeaderSection $header, Section\SidebarSection $sidebar, Section\PageHeaderSection $pageHeader, Section\PageContentSection $pageContent, Section\FooterSection $footer)
     {
-        $header->setParameter('title', $container->getParameter('bigfoot.theme.values')['title']);
-        $header->setParameter('subtitle', $container->getParameter('bigfoot.theme.values')['subtitle']);
+        $themeValues = $container->getParameter('bigfoot.theme.values');
+        $header->setParameter('title', $themeValues['title']);
+        $header->setParameter('subtitle', $themeValues['subtitle']);
 
         $sections = array();
         $sections[] = $toolbar;
