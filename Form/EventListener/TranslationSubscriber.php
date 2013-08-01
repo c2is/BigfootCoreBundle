@@ -51,7 +51,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
         try{
             $form = $event->getForm();
             $parentForm = $form->getParent();
-            $parentData = $this->getParentData($parentForm);
+            $parentData = $parentForm->getData();
 
             // First, we get the entity class
             $entityClass = get_class($parentData);
@@ -168,7 +168,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
 
                 $params = array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale));
-                $parentData = $this->getParentData($parentForm);
+                $parentData = $parentForm->getData();
 
                 if ($parentData->getId() and $this->currentLocale != $this->defaultLocale) {
                     $parentData->setTranslatableLocale($this->defaultLocale);
@@ -207,16 +207,5 @@ class TranslationSubscriber implements EventSubscriberInterface {
             }
         }
         return $translatableFields;
-    }
-
-    private function getParentData($parentForm)
-    {
-        $parentData = $parentForm->getData();
-        if(null === $parentData) {
-            $dataClass = $parentForm->getConfig()->getOption('data_class');
-            $parentData = new $dataClass();
-        }
-
-        return $parentData;
     }
 }

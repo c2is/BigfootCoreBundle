@@ -112,6 +112,8 @@ function addCollectionItem(id) {
         event.preventDefault();
         addCollectionItem($(this).data('collection-id'));
     });
+
+    setupTranslatableFields($('.translatable-fields'))
 }
 
 $(document).ready(function () {
@@ -185,20 +187,7 @@ $(function() {
 $(function() {
     var $translatedFields = $('.translatable-fields');
     if ($translatedFields.length) {
-        $translatedFields.hide();
-        // Getting all translated fields to set their parent's data attributes (default locale fields aren't initialized by the translationsubscriber)
-        $('input[type="text"], textarea', $translatedFields).each(function() {
-            var elementId = $(this).attr('id')
-            var parentElementId = elementId.substr(0, elementId.lastIndexOf('-')).replace('_translation', '');
-
-            var $parentElement = $('#'+parentElementId);
-
-            $parentElement
-                .data('locale', currentLocale)
-                .attr('data-locale', currentLocale);
-
-            $(this).appendTo($parentElement.parent()).hide();
-        });
+        setupTranslatableFields($translatedFields);
 
         $translatedFields.parent().parent().prepend(Twig.render(localeTabs, {locales: locales, currentLocale: currentLocale, basePath: basePath}));
 
@@ -225,6 +214,23 @@ function strpos (haystack, needle, offset) {
     var i = (haystack + '').indexOf(needle, (offset || 0));
 
     return i === -1 ? false : i;
+}
+
+function setupTranslatableFields($translatedFields) {
+    $translatedFields.hide();
+    // Getting all translated fields to set their parent's data attributes (default locale fields aren't initialized by the translationsubscriber)
+    $('input[type="text"], textarea', $translatedFields).each(function() {
+        var elementId = $(this).attr('id')
+        var parentElementId = elementId.substr(0, elementId.lastIndexOf('-')).replace('_translation', '');
+
+        var $parentElement = $('#'+parentElementId);
+
+        $parentElement
+            .data('locale', currentLocale)
+            .attr('data-locale', currentLocale);
+
+        $(this).appendTo($parentElement.parent()).hide();
+    });
 }
 
 function sortCollection() {
