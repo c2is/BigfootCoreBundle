@@ -79,8 +79,12 @@ $(document).ready(function () {
 
 /* Form collections */
 $(document).ready(function () {
-    deleteCollectionItemEvent();
     setupSortableCollectionItem();
+
+    $('body').on('click', 'a.deleteCollectionItem', function (event) {
+        event.preventDefault();
+        $(this).closest('.form-group').remove();
+    });
 });
 
 // Support for AJAX loaded modal window.
@@ -224,13 +228,6 @@ function setupSortableCollectionItem() {
     }
 }
 
-function deleteCollectionItemEvent() {
-    $('a.deleteCollectionItem').on('click', function (event) {
-        event.preventDefault();
-        $(this).parent('div').parent('div').remove();
-    });
-}
-
 function addCollectionItem(id) {
     var collectionHolder = $(id);
 
@@ -242,8 +239,6 @@ function addCollectionItem(id) {
     $form.find('div.accordion-body').addClass('in');
 
     collectionHolder.append($form);
-
-    deleteCollectionItemEvent();
 
     setupSortableCollectionItem();
 }
