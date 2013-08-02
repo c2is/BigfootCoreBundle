@@ -29,19 +29,28 @@
 {% endblock %}
 
 {% block collection_widget %}
+    <label>{{ label }}</label>
     {{ parent() }}
     {% if prototype is defined %}
-        <a href="#" class="addCollectionItem btn" data-collection-id="#{{ id }}">{{ 'Add' | trans }}</a>
+        <a href="#" class="addCollectionItem btn btn-link" data-collection-id="#{{ id }}">{{ 'Add' | trans }}</a>
     {% endif %}
 {% endblock %}
 
 {% block bigfoot_collection_item_widget %}
-    <div class="portlet">
-        <div class="portlet-header">
-            {{ value.__toString() | default('new item') | trans }}
-            <a href="#_" class="deleteCollectionItem">{{ 'Delete' | trans }}</a>
+    <div class="accordion sortable-collection-item">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <span class="accordion-toggle" data-toggle="collapse" data-target="#accordion-{{ id }}">
+                    {{ value.__toString() | default('new item') | trans }}
+                    <a href="#_" class="deleteCollectionItem btn btn-link pull-right">{{ 'Delete' | trans }}</a>
+                </span>
+            </div>
+            <div id="accordion-{{ id }}" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    {{ block('form_widget') }}
+                </div>
+            </div>
         </div>
-        <div class="portlet-content">{{ block('form_widget') }}</div>
     </div>
 {% endblock %}
 
