@@ -9,14 +9,16 @@
         </div>
 
         <div class="widget-content">
-            <div class="padd">
-                {{ form_widget(form) }}
+            <div class="padd row">
+                <div class="form-container col-lg-5">
+                    {{ form_widget(form) }}
+                </div>
             </div>
         </div>
 
         <div class="widget-foot">
-            <button class="btn" type="submit">{{ action_name | trans }}</button>
-            {% if cancel_route is defined %}<a href="{{ path(cancel_route) }}" class="btn">{{ 'Cancel' | trans }}</a>{% endif %}
+            <button class="btn btn-primary" type="submit">{{ action_name | trans }}</button>
+            {% if cancel_route is defined %}<a href="{{ path(cancel_route) }}" class="btn btn-link">{{ 'Cancel' | trans }}</a>{% endif %}
             <div class="clearfix"></div>
         </div>
     </div>
