@@ -10,7 +10,11 @@
 {% endblock %}
 
 {% block textarea_widget %}
-    {% set attr = attr | merge({class: 'form-control'}) %}
+    {% set widgetClass = 'form-control ' %}
+    {% if attr.class is defined %}
+        {% set widgetClass = widgetClass ~ attr.class %}
+    {% endif %}
+    {% set attr = (attr | merge({class: widgetClass})) %}
     {{ parent() }}
 {% endblock %}
 
