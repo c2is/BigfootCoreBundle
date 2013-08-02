@@ -13,11 +13,7 @@
     "require": {
         "php":                              ">=5.3.3",
         "symfony/framework-bundle":         ">=2.3"
-    },
-    "require-dev": {
-        "atoum/atoum":                      "dev-master",
-        "atoum/atoum-bundle":               "dev-master"
-    },
+    }
     "autoload": {
         "psr-0": { "Bigfoot\\Bundle\\CoreBundle": "" }
     },
