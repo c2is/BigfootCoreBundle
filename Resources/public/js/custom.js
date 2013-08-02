@@ -233,7 +233,7 @@ function addCollectionItem(id) {
 
     var prototype = collectionHolder.attr('data-prototype');
     var collectionId = collectionHolder.attr('id')+'_';
-    var reg = new RegExp(collectionId+'__name__', 'g');console.log(reg);
+    var reg = new RegExp(collectionId+'__name__', 'g');
     var form = prototype.replace(reg, collectionId+collectionHolder.children().length);
     var $form = $(form);
     $form.find('div.accordion-body').addClass('in');
