@@ -36,7 +36,7 @@
     <label>{{ label }}</label>
     {{ parent() }}
     {% if prototype is defined %}
-        <a href="#" class="addCollectionItem btn btn-link" data-collection-id="#{{ id }}">{{ 'Add' | trans }}</a>
+        <a href="#" class="addCollectionItem btn btn-link" data-collection-id="#{{ id }}" data-prototype-name="{{ prototype_name | default('__name__') }}">{{ 'Add' | trans }}</a>
     {% endif %}
 {% endblock %}
 

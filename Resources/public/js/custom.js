@@ -146,7 +146,7 @@ $(function() {
 $(function() {
     $('body').on('click', 'a.addCollectionItem', function (event) {
         event.preventDefault();
-        addCollectionItem($(this).data('collection-id'));
+        addCollectionItem($(this).data('collection-id'), $(this).data('prototype-name'));
     });
 });
 
@@ -216,6 +216,7 @@ function setupSortableCollectionItem() {
         $sortableFields.closest('div.sortable-collection-item').parent().each(function() {
             $(this).sortable({
                 connectWith: '.'+$(this).attr('class'),
+                handle: '.accordion-heading',
                 update: function () {
                     var inputs = $('input.sortable-field');
                     var nbElems = inputs.length;
@@ -228,17 +229,30 @@ function setupSortableCollectionItem() {
     }
 }
 
-function addCollectionItem(id) {
+function addCollectionItem(id, name) {
     var collectionHolder = $(id);
+    var prototypeName = '__name__';
+
+    if (name != undefined) {
+        prototypeName = name;
+    }
 
     var prototype = collectionHolder.attr('data-prototype');
-    var collectionId = collectionHolder.attr('id')+'_';
-    var reg = new RegExp(collectionId+'__name__', 'g');
-    var form = prototype.replace(reg, collectionId+collectionHolder.children().length);
+    var reg = new RegExp(prototypeName, 'g');
+    var form = prototype.replace(reg, collectionHolder.children().length);
     var $form = $(form);
     $form.find('div.accordion-body').addClass('in');
 
     collectionHolder.append($form);
 
     setupSortableCollectionItem();
+
+    if (CKEDITOR != undefined) {
+        var $textAreas = $form.find('textarea.ckeditor');
+        if ($textAreas.length) {
+            $textAreas.each(function() {
+                CKEDITOR.replace($(this).attr('id'));
+            });
+        }
+    }
 }
