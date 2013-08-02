@@ -211,6 +211,7 @@ function setupSortableCollectionItem() {
     if ($sortableFields.length > 0) {
         $sortableFields.closest('div.sortable-collection-item').parent().each(function() {
             $(this).sortable({
+                connectWith: '.'+$(this).attr('class'),
                 update: function () {
                     var inputs = $('input.sortable-field');
                     var nbElems = inputs.length;
@@ -234,7 +235,9 @@ function addCollectionItem(id) {
     var collectionHolder = $(id);
 
     var prototype = collectionHolder.attr('data-prototype');
-    var form = prototype.replace(/__name__/g, collectionHolder.children().length);
+    var collectionId = collectionHolder.attr('id')+'_';
+    var reg = new RegExp(collectionId+'__name__', 'g');console.log(reg);
+    var form = prototype.replace(reg, collectionId+collectionHolder.children().length);
     var $form = $(form);
     $form.find('div.accordion-body').addClass('in');
 
