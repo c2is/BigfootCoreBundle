@@ -113,11 +113,6 @@ button{
     font-size: 11px;
 }
 
-
-a.btn{
-    font-size: 11px !important;
-}
-
 .progress{
     height: 12px;
     border-radius: 6px;
@@ -763,6 +758,10 @@ header .header-data .hdata em{
     padding-left: 50px;
 }
 
+.sidebar #nav span.glyphicon {
+    margin-right: 5px;
+}
+
 /* Main */
 
 .mainbar{
@@ -867,6 +866,8 @@ header .header-data .hdata em{
     margin-top: 10px;
     margin-bottom: 20px;
     background: #fafafa url('../../public/img/cream.png') repeat;
+    width: 90%;
+    margin: 0 auto;
 }
 
 .widget p{
@@ -1683,13 +1684,11 @@ footer .copy{
     line-height: 43px
 }
 
-.portlet { margin: 0 1em 1em 0; }
-.portlet-header { margin: 0.3em; padding-bottom: 4px; padding-left: 0.2em; }
-.portlet-header .ui-icon { float: right; }
-.portlet-content { padding: 0.4em; }
 .ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; }
 .ui-sortable-placeholder * { visibility: hidden; }
-.deleteCollectionItem { float: right; margin-right: 25px; margin-top: 2px; }
+.deleteCollectionItem {
+    margin-top: -6px;
+}
 
 #locales-container {
     float: right;
@@ -1712,4 +1711,18 @@ footer .copy{
     background: linear-gradient(to bottom, #ffffff 0%,#f1f1f1 38%,#e1e1e1 100%,#f6f6f6 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f6f6f6',GradientType=0 );
     border: 1px solid lightgray;
+}
+
+.form-container {
+    display: inline-block;
+}
+
+.select2-container {
+    width: 100%;
+    height: 38px;
+    padding: 8px 12px;
+}
+
+.ui-widget-content a.btn-primary {
+    color: white;
 }

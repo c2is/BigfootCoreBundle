@@ -79,16 +79,8 @@ $(document).ready(function () {
 
 /* Form collections */
 $(document).ready(function () {
-    addCollectionItemEvent();
     deleteCollectionItemEvent();
-    sortCollection();
-
-    setupCollectionItem();
-    $('body').on('click', '.portlet-header > span.toggle-portlet', function() {
-        $(this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
-        $(this).closest(".portlet").find(".portlet-content").toggle();
-    });
-    $(".portlet-content").toggle();
+    setupSortableCollectionItem();
 });
 
 // Support for AJAX loaded modal window.
@@ -144,7 +136,41 @@ $(function() {
             return false;
         });
     }
-})
+});
+
+/* Sortable */
+$(function() {
+    $('body').on('click', 'a.addCollectionItem', function (event) {
+        event.preventDefault();
+        addCollectionItem($(this).data('collection-id'));
+    });
+});
+
+/* Tags fields */
+window.tags = [];
+function initSelects() {
+    $("select").width($("select").width()).select2();
+
+    var tags = window.tags;
+
+    if (tags.length == 0) {
+        $.ajax({
+            url: tagsPath,
+            async: false,
+            success: function(json) {
+                tags = window.tags = $.parseJSON(json);
+            }
+        });
+    }
+
+    var arrayTags = new Array();
+    if (tags != undefined && $.isArray(tags) && tags.length > 0) {
+        arrayTags = tags;
+    }
+    var $tagsSelect = $('input.bigfoot_tags_field');
+    $tagsSelect.width('100%').select2({tags: arrayTags});
+    $('.select2-container').width('100%');
+}
 
 /* Functions */
 function strpos (haystack, needle, offset) {
@@ -180,10 +206,10 @@ function setupTranslatableFields($translatableFields) {
     });
 }
 
-function sortCollection() {
+function setupSortableCollectionItem() {
     var $sortableFields = $('input.sortable-field');
     if ($sortableFields.length > 0) {
-        $sortableFields.closest('div.portlet').parent('div').parent('div').each(function() {
+        $sortableFields.closest('div.sortable-collection-item').parent().each(function() {
             $(this).sortable({
                 update: function () {
                     var inputs = $('input.sortable-field');
@@ -194,25 +220,7 @@ function sortCollection() {
                 }
             });
         });
-
-        $sortableFields.each(function() {
-            $(this).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" );
-        });
     }
-}
-
-function setupCollectionItem() {
-    $(".portlet:not(.ui-widget)").addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
-        .find(".portlet-header")
-        .addClass("ui-widget-header ui-corner-all")
-        .prepend("<span class='ui-icon ui-icon-plusthick toggle-portlet'></span>");
-}
-
-function addCollectionItemEvent() {
-    $('a.addCollectionItem').on('click', function (event) {
-        event.preventDefault();
-        addCollectionItem($(this).data('collection-id'));
-    });
 }
 
 function deleteCollectionItemEvent() {
@@ -223,20 +231,16 @@ function deleteCollectionItemEvent() {
 }
 
 function addCollectionItem(id) {
-
     var collectionHolder = $(id);
 
     var prototype = collectionHolder.attr('data-prototype');
-    form = prototype.replace(/__name__/g, collectionHolder.children().length);
+    var form = prototype.replace(/__name__/g, collectionHolder.children().length);
+    var $form = $(form);
+    $form.find('div.accordion-body').addClass('in');
 
-    collectionHolder.append(form);
+    collectionHolder.append($form);
 
     deleteCollectionItemEvent();
 
-    $(id).find('a.addCollectionItem').on('click', function (event) {
-        event.preventDefault();
-        addCollectionItem($(this).data('collection-id'));
-    });
-
-    setupSortable();
+    setupSortableCollectionItem();
 }
