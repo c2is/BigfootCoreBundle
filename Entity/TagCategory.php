@@ -46,7 +46,6 @@ class TagCategory
         return $this->name;
     }
 
-
     /**
      * Get id
      *

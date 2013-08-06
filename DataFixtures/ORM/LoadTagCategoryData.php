@@ -6,6 +6,10 @@ use Bigfoot\Bundle\CoreBundle\Entity\TagCategory;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
+/**
+ * Class LoadTagCategoryData
+ * @package Bigfoot\Bundle\CoreBundle\DataFixtures\ORM
+ */
 class LoadTagCategoryData implements FixtureInterface
 {
     /**
@@ -24,6 +28,9 @@ class LoadTagCategoryData implements FixtureInterface
         $manager->flush();
     }
 
+    /**
+     * @return int
+     */
     public function getOrder()
     {
         return 50;

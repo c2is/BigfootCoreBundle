@@ -2,20 +2,26 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Theme\Section;
 
-use Bigfoot\Bundle\CoreBundle\Event\MenuEvent;
-
+/**
+ * Class SidebarSection
+ * @package Bigfoot\Bundle\CoreBundle\Theme\Section
+ */
 class SidebarSection extends AbstractSection
 {
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'sidebar';
     }
 
+    /**
+     * @return mixed|void
+     */
     protected function setDefaultParameters()
     {
         $menu = $this->container->get('bigfoot.menu_factory')->getMenu('sidebar_menu');
-        $menuEvent = new MenuEvent($menu);
-        $this->container->get('event_dispatcher')->dispatch('bigfoot.menu.generate', $menuEvent);
 
         $this->parameters = array(
             'menu'  => $menu,

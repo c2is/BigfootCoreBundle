@@ -9,6 +9,12 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\Form\DataTransformerInterface;
 
+/**
+ * Transforms an ArrayCollection of Tag entities into a string of tag names separated with a comma.
+ *
+ * Class TagsToStringTransformer
+ * @package Bigfoot\Bundle\CoreBundle\Form\DataTransformer
+ */
 class TagsToStringTransformer implements DataTransformerInterface
 {
     /**
@@ -21,11 +27,18 @@ class TagsToStringTransformer implements DataTransformerInterface
      */
     private $entityManager;
 
+    /**
+     * @param EntityManager $entityManager
+     */
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @param mixed $tags
+     * @return mixed|string
+     */
     public function transform($tags)
     {
         if (null === $tags or !$tags instanceof PersistentCollection) {
@@ -40,6 +53,10 @@ class TagsToStringTransformer implements DataTransformerInterface
         return implode(self::SEPARATOR, $arrayTags);
     }
 
+    /**
+     * @param mixed $string
+     * @return ArrayCollection|mixed
+     */
     public function reverseTransform($string)
     {
         $arrayTags = explode(self::SEPARATOR, $string);
@@ -63,6 +80,11 @@ class TagsToStringTransformer implements DataTransformerInterface
         return $tags;
     }
 
+    /**
+     * Returns the category of tags with slug default if it exists, instantiates one if it doesn't.
+     *
+     * @return TagCategory
+     */
     private function getDefaultCategory()
     {
         $em = $this->entityManager;

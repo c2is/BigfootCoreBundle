@@ -27,6 +27,9 @@ class BigfootCoreExtension extends Extension implements PrependExtensionInterfac
         $loader->load('services.yml');
     }
 
+    /**
+     * @param ContainerBuilder $container
+     */
     public function prepend(ContainerBuilder $container)
     {
         $container->prependExtensionConfig('assetic', array('bundles' => array('BigfootCoreBundle')));

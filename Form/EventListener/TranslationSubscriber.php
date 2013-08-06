@@ -24,6 +24,15 @@ class TranslationSubscriber implements EventSubscriberInterface {
     protected $currentLocale;
     protected $defaultLocale;
 
+    /**
+     * Constructor.
+     *
+     * @param $localeList
+     * @param RegistryInterface $doctrineService
+     * @param Reader $annotationReader
+     * @param $currentLocale
+     * @param $defaultLocale
+     */
     public function __construct($localeList, RegistryInterface $doctrineService, Reader $annotationReader, $currentLocale, $defaultLocale)
     {
         $this->localeList = $localeList;
@@ -33,6 +42,9 @@ class TranslationSubscriber implements EventSubscriberInterface {
         $this->defaultLocale = $defaultLocale;
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         // Tells the dispatcher that you want to listen on the form.pre_set_data
@@ -152,6 +164,11 @@ class TranslationSubscriber implements EventSubscriberInterface {
         }
     }
 
+    /**
+     * @param $translatableFields
+     * @param $parentForm
+     * @param $form
+     */
     private function addTranslationlessFields($translatableFields, $parentForm, $form)
     {
         foreach ($this->localeList as $locale) {
@@ -161,6 +178,12 @@ class TranslationSubscriber implements EventSubscriberInterface {
         }
     }
 
+    /**
+     * @param $translatableFields
+     * @param $parentForm
+     * @param $form
+     * @param $locale
+     */
     private function addTranslationlessFieldsForLocale($translatableFields, $parentForm, $form, $locale)
     {
         foreach ($translatableFields as $field => $type) {

@@ -16,15 +16,30 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  */
 class TranslatedEntityType extends AbstractType
 {
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
     protected $container;
+
+    /**
+     * @var
+     */
     protected $localeList;
 
+    /**
+     * @param ContainerInterface $container
+     * @param $localeList
+     */
     public function __construct(ContainerInterface $container, $localeList)
     {
         $this->container = $container;
         $this->localeList = $localeList;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('translatedEntity', 'hidden' );
@@ -32,6 +47,9 @@ class TranslatedEntityType extends AbstractType
         $builder->addEventSubscriber(new TranslationSubscriber($this->localeList, $this->container->get('doctrine'), $this->container->get('annotation_reader'), $this->container->get('request')->getLocale(), $this->container->getParameter('locale')));
     }
 
+    /**
+     * @param OptionsResolverInterface $resolver
+     */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
@@ -44,11 +62,18 @@ class TranslatedEntityType extends AbstractType
         ));
     }
 
+    /**
+     * @param array $options
+     * @return array
+     */
     public function getDefaultOptions(array $options = array())
     {
         return $options;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'translatable_entity';

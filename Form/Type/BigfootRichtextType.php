@@ -8,8 +8,17 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
+/**
+ * Extends the TextareaType and adds the ckeditor class attribute.
+ *
+ * Class BigfootRichtextType
+ * @package Bigfoot\Bundle\CoreBundle\Form\Type
+ */
 class BigfootRichtextType extends AbstractType
 {
+    /**
+     * @param OptionsResolverInterface $resolver
+     */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
@@ -19,6 +28,9 @@ class BigfootRichtextType extends AbstractType
         ));
     }
 
+    /**
+     * @return null|string|\Symfony\Component\Form\FormTypeInterface
+     */
     public function getParent()
     {
         return 'textarea';

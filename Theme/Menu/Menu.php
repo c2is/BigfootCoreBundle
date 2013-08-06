@@ -2,6 +2,8 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Theme\Menu;
 
+use Symfony\Component\DependencyInjection\Container;
+
 /**
  * Represents a group of links to be used to display navigation elements in the BackOffice.
  */
@@ -17,14 +19,18 @@ class Menu
      */
     protected $items = array();
 
+    /**
+     * @var \Symfony\Component\DependencyInjection\Container
+     */
     protected $container;
 
     /**
      * Constructor.
      *
-     * @param $name Name of the menu.
+     * @param Container $container
+     * @param string $name Name of the menu.
      */
-    public function __construct($container, $name)
+    public function __construct(Container $container, $name)
     {
         $this->container    = $container;
         $this->name         = $name;
@@ -48,6 +54,11 @@ class Menu
         $this->items[$item->getName()] = $item;
     }
 
+    /**
+     * @param $name
+     * @param Item $child
+     * @return $this
+     */
     public function addOnItem($name, Item $child)
     {
         $item = $this->getItem($name);
@@ -62,6 +73,10 @@ class Menu
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return mixed Item|null
+     */
     public function getItem($name)
     {
         return array_key_exists($name, $this->items) ? $this->items[$name] : null;
