@@ -66,6 +66,10 @@
                 <source>Submit</source>
                 <target>Valider</target>
             </trans-unit>
+            <trans-unit id="17">
+                <source>Add an item</source>
+                <target>Ajouter un objet</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

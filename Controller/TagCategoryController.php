@@ -36,6 +36,11 @@ class TagCategoryController extends CrudController
         return array('id' => 'ID', 'name' => 'Name');
     }
 
+    protected function getEntityLabelPlural()
+    {
+        return 'Categories';
+    }
+
     /**
      * Lists all TagCategory entities.
      *

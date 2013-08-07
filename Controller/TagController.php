@@ -36,6 +36,12 @@ class TagController extends CrudController
     {
         return array('id' => 'ID', 'name' => 'Name');
     }
+
+    protected function getEntityLabelPlural()
+    {
+        return 'Tags';
+    }
+
     /**
      * Lists all Tag entities.
      *
