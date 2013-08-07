@@ -52,7 +52,6 @@ class {{ entity_class }}Controller extends CrudController
     {
         return array('id' => 'ID');
     }
-
     {%- if 'index' in actions %}
         {%- include 'crud/actions/index.php.twig' %}
     {%- endif %}

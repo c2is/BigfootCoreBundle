@@ -39,6 +39,11 @@ class TagCategory
     private $slug;
 
     /**
+     * @Gedmo\Locale
+     */
+    private $locale;
+
+    /**
      * @return string
      */
     public function __toString()
@@ -100,5 +105,13 @@ class TagCategory
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    /**
+     * @param $locale
+     */
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

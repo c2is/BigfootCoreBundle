@@ -23,6 +23,7 @@ class TagCategoryType extends AbstractType
             ->add('slug', 'text', array(
                 'required' => false,
             ))
+            ->add('translation', 'translatable_entity')
         ;
     }
 

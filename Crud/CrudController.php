@@ -92,6 +92,13 @@ abstract class CrudController extends Controller
         return sprintf('%ss', $this->getEntityLabel());
     }
 
+    protected function getFormType()
+    {
+        $formClass = $this->getEntityTypeClass();
+
+        return new $formClass();
+    }
+
     /**
      * @return string
      */
@@ -177,10 +184,9 @@ abstract class CrudController extends Controller
     protected function doCreate(Request $request)
     {
         $entityClass = $this->getEntityClass();
-        $formClass = $this->getEntityTypeClass();
 
         $entity = new $entityClass();
-        $form = $this->createForm(new $formClass(), $entity);
+        $form = $this->createForm($this->getFormType(), $entity);
 
         $form->submit($request);
 
@@ -218,10 +224,9 @@ abstract class CrudController extends Controller
     protected function doNew()
     {
         $entityClass = $this->getEntityClass();
-        $formClass = $this->getEntityTypeClass();
 
         $entity = new $entityClass();
-        $form   = $this->createForm(new $formClass(), $entity);
+        $form   = $this->createForm($this->getFormType(), $entity);
 
         return array(
             'entity'        => $entity,
@@ -241,8 +246,6 @@ abstract class CrudController extends Controller
      */
     protected function doEdit($id)
     {
-        $formClass = $this->getEntityTypeClass();
-
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository($this->getEntity())->find($id);
@@ -251,7 +254,7 @@ abstract class CrudController extends Controller
             throw $this->createNotFoundException(sprintf('Unable to find %s entity.', $this->getEntity()));
         }
 
-        $editForm = $this->createForm(new $formClass(), $entity);
+        $editForm = $this->createForm($this->getFormType(), $entity);
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
@@ -280,8 +283,6 @@ abstract class CrudController extends Controller
      */
     protected function doUpdate(Request $request, $id)
     {
-        $formClass = $this->getEntityTypeClass();
-
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository($this->getEntity())->find($id);
@@ -291,7 +292,7 @@ abstract class CrudController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createForm(new $formClass(), $entity);
+        $editForm = $this->createForm($this->getFormType(), $entity);
         $editForm->submit($request);
 
         if ($editForm->isValid()) {

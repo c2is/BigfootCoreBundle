@@ -25,6 +25,7 @@ class TagType extends AbstractType
                 'required' => false,
             ))
             ->add('category')
+            ->add('translation', 'translatable_entity')
         ;
     }
 

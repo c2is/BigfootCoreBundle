@@ -41,6 +41,7 @@ class Tag
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
@@ -52,6 +53,11 @@ class Tag
      * @ORM\Column(length=255, unique=true)
      */
     private $slug;
+
+    /**
+     * @Gedmo\Locale
+     */
+    private $locale;
 
     /**
      * @return string
@@ -161,5 +167,13 @@ class Tag
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    /**
+     * @param $locale
+     */
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

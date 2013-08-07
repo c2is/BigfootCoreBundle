@@ -152,9 +152,11 @@ $(function() {
 
 /* Delete form */
 $(function() {
-    $('body').on('click', 'a#edit-form-delete-action', function (event) {
-        event.preventDefault();
-        $('form#delete-form').submit();
+    $('a#edit-form-delete-action').confirmModal({
+        callback: function() {
+            console.log('ALLEZ');
+            $('form#delete-form').submit();
+        }
     });
 });
 
