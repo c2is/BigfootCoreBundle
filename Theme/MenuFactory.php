@@ -22,7 +22,7 @@ class MenuFactory
     /**
      * @param Container $container
      */
-    public function _construct(Container $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }
@@ -37,7 +37,7 @@ class MenuFactory
      */
     public function getMenu($name)
     {
-        $menu = new Menu($this->container, $name);
+        $menu = new Menu($name);
 
         $menuEvent = new MenuEvent($menu);
         $this->container->get('event_dispatcher')->dispatch('bigfoot.menu.generate', $menuEvent);

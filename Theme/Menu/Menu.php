@@ -20,19 +20,13 @@ class Menu
     protected $items = array();
 
     /**
-     * @var \Symfony\Component\DependencyInjection\Container
-     */
-    protected $container;
-
-    /**
      * Constructor.
      *
      * @param Container $container
      * @param string $name Name of the menu.
      */
-    public function __construct(Container $container, $name)
+    public function __construct($name)
     {
-        $this->container    = $container;
         $this->name         = $name;
     }
 
