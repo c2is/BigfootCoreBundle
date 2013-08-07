@@ -2,10 +2,9 @@
 
 {% block body %}
     {% include 'BigfootCoreBundle:crud:form.html.twig' with {
-    'action_route': path('admin_tag_category_create'),
+    'action_route': path(create_route),
     'action_name': 'Create',
-    'form_title': 'Category creation',
-    'cancel_route': 'admin_tag_category'
+    'form_title': entity_label~' creation',
+    'cancel_route': index_route
     } %}
 {% endblock %}
-

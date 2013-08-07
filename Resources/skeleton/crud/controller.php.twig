@@ -1,0 +1,74 @@
+<?php
+
+namespace {{ namespace }}\Controller{{ entity_namespace ? '\\' ~ entity_namespace : '' }};
+
+{% block use_statements %}
+{% if 'new' in actions or 'edit' in actions or 'delete' in actions %}
+use Symfony\Component\HttpFoundation\Request;
+{%- endif %}
+
+use Bigfoot\Bundle\CoreBundle\Crud\CrudController;
+{% if 'annotation' == format -%}
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+{%- endif %}
+
+{% endblock use_statements %}
+
+/**
+{% block phpdoc_class_header %}
+ * {{ entity }} controller.
+{% endblock phpdoc_class_header %}
+ *
+{% block phpdoc_class_annotations %}
+{% if 'annotation' == format %}
+ * @Route("/{{ route_prefix }}")
+{% endif %}
+{% endblock phpdoc_class_annotations %}
+ */
+{% block class_definition %}
+class {{ entity_class }}Controller extends CrudController
+{% endblock class_definition %}
+{
+{% block class_body %}
+    /**
+     * @return string
+     */
+    protected function getName()
+    {
+        return '{{ route_name_prefix }}';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEntity()
+    {
+        return '{{ bundle }}:{{ entity }}';
+    }
+
+    protected function getFields()
+    {
+        return array('id' => 'ID');
+    }
+
+    {%- if 'index' in actions %}
+        {%- include 'crud/actions/index.php.twig' %}
+    {%- endif %}
+
+    {%- if 'new' in actions %}
+        {%- include 'crud/actions/create.php.twig' %}
+        {%- include 'crud/actions/new.php.twig' %}
+    {%- endif %}
+
+    {%- if 'edit' in actions %}
+        {%- include 'crud/actions/edit.php.twig' %}
+        {%- include 'crud/actions/update.php.twig' %}
+    {%- endif %}
+
+    {%- if 'delete' in actions %}
+        {%- include 'crud/actions/delete.php.twig' %}
+    {%- endif %}
+{% endblock class_body %}
+}

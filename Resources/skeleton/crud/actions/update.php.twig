@@ -1,0 +1,29 @@
+
+    /**
+{% block phpdoc_method_header %}
+     * Edits an existing {{ entity }} entity.
+{% endblock phpdoc_method_header %}
+     *
+{% block phpdoc_method_annotations %}
+    {% if 'annotation' == format %}
+ * @Route("/{id}", name="{{ route_name_prefix }}_update")
+     * @Method("PUT")
+     * @Template("BigfootCoreBundle:crud:edit.html.twig")
+    {% endif %}
+{% endblock phpdoc_method_annotations %}
+ */
+{% block method_definition %}
+    public function updateAction(Request $request, $id)
+{% endblock method_definition %}
+    {
+{% block method_body %}
+{% endblock method_body %}
+
+{% block method_return %}
+    {% if 'annotation' == format %}
+    return $this->doUpdate($request, $id);
+    {% else %}
+    return $this->render('BigfootCoreBundle:crud:edit.html.twig', $this->doUpdate($request, $id));
+    {% endif %}
+{% endblock method_return %}
+}

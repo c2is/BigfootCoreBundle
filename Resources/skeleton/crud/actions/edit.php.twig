@@ -1,0 +1,29 @@
+
+    /**
+{% block phpdoc_method_header %}
+     * Displays a form to edit an existing {{ entity }} entity.
+{% endblock phpdoc_method_header %}
+     *
+{% block phpdoc_method_annotations %}
+    {% if 'annotation' == format %}
+ * @Route("/{id}/edit", name="{{ route_name_prefix }}_edit")
+     * @Method("GET")
+     * @Template("BigfootCoreBundle:crud:edit.html.twig")
+    {% endif %}
+{% endblock phpdoc_method_annotations %}
+ */
+{% block method_definition %}
+    public function editAction($id)
+{% endblock method_definition %}
+    {
+{% block method_body %}
+{% endblock method_body %}
+
+{% block method_return %}
+    {% if 'annotation' == format %}
+    return $this->doEdit($id);
+    {% else %}
+    return $this->render('BigfootCoreBundle:crud:edit.html.twig', $this->doEdit($id));
+    {% endif %}
+{% endblock method_return %}
+}

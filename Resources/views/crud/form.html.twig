@@ -18,8 +18,17 @@
 
         <div class="widget-foot">
             <button class="btn btn-primary" type="submit">{{ action_name | trans }}</button>
-            {% if cancel_route is defined %}<a href="{{ path(cancel_route) }}" class="btn btn-link">{{ 'Cancel' | trans }}</a>{% endif %}
+            {% if cancel_route is defined %}
+            <a href="{{ path(cancel_route) }}" class="btn btn-link">{{ 'Cancel' | trans }}</a>
+            {% endif %}
+            {% if delete_form is defined %}
+            <a href="#" id="edit-form-delete-action" class="btn btn-link">{{ "Delete" | trans }}</a>
+            {% endif %}
             <div class="clearfix"></div>
         </div>
     </div>
+</form>
+<form action="{{ delete_action }}" method="post" id="delete-form">
+    <input type="hidden" name="_method" value="DELETE" />
+    {{ form_widget(delete_form) }}
 </form>

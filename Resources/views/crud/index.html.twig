@@ -2,8 +2,8 @@
 
 {% block body %}
     {% include 'BigfootCoreBundle:crud:list.html.twig' with {
-    'action_edit': 'admin_tag_category_edit',
-    'list_title': 'Categories',
-    'fieldsList': {id: 'ID', name: 'Name'}
+    'action_edit':  edit_route,
+    'list_title':   entity_label_plural,
+    'fieldsList':   fields
     } %}
 {% endblock %}

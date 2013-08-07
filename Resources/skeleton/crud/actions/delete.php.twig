@@ -1,0 +1,23 @@
+    /**
+{% block phpdoc_method_header %}
+     * Deletes a {{ entity }} entity.
+{% endblock phpdoc_method_header %}
+     *
+{% block phpdoc_method_annotations %}
+    {% if 'annotation' == format %}
+ * @Route("/{id}", name="{{ route_name_prefix }}_delete")
+     * @Method("DELETE")
+    {% endif %}
+{% endblock phpdoc_method_annotations %}
+ */
+{% block method_definition %}
+    public function deleteAction(Request $request, $id)
+{% endblock method_definition %}
+    {
+{% block method_body %}
+{% endblock method_body %}
+
+{% block method_return %}
+    return $this->doDelete($request, $id);
+{% endblock method_return %}
+}

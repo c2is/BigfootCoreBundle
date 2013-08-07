@@ -150,6 +150,14 @@ $(function() {
     });
 });
 
+/* Delete form */
+$(function() {
+    $('body').on('click', 'a#edit-form-delete-action', function (event) {
+        event.preventDefault();
+        $('form#delete-form').submit();
+    });
+});
+
 /* Tags fields */
 window.tags = [];
 function initSelects() {

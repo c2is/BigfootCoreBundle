@@ -2,10 +2,10 @@
 
 {% block body %}
     {% include 'BigfootCoreBundle:crud:form.html.twig' with {
-    'action_route': path('admin_tag_category_update', { 'id': entity.id }),
+    'action_route': path(update_route, { 'id': entity.id }),
     'action_name': 'Edit',
-    'form_title': 'Category edit',
-    'cancel_route': 'admin_tag_category',
+    'form_title': entity_label~' edit',
+    'cancel_route': index_route,
     'form': edit_form,
     'method': 'PUT'
     } %}
