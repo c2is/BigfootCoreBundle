@@ -19,6 +19,12 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
         tags:
             - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate }
+    # Core controller listener ; used to set page title, breadcrumbs..
+    kernel.listener.bigfoot_controller_listener:
+        class: Bigfoot\Bundle\CoreBundle\Listener\ControllerListener
+        arguments: [@bigfoot.theme]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     # Services dedicated to the BackOffice theme
     bigfoot.theme:
         class:        "%theme.class%"

@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Crud;
 
+use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Theme\Menu\Item;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * This helper only works for CRUDing entities situated in the Entity directory for which a Type class exists in the Form directory and is named after the entity's name suffixed with Type (eg: for the entity Bigfoot/Bundle/CoreBundle/Entity/Tag and form type Bigfoot/Bundle/CoreBundle/Form/TagType)
  */
-abstract class CrudController extends Controller
+abstract class CrudController extends Controller implements AdminControllerInterface
 {
     /**
      * @var string The bundle name, calculated from getEntity().
@@ -34,6 +35,22 @@ abstract class CrudController extends Controller
      * @var string The entity name, calculated from getEntity().
      */
     private $entityName;
+
+    /**
+     * @return string Route to be used as the homepage for this controller
+     */
+    public function getControllerIndex()
+    {
+        return $this->getName();
+    }
+
+    /**
+     * @return string Title to be used in the BackOffice for routes implemented by this controller
+     */
+    public function getControllerTitle()
+    {
+        return sprintf('%s admin', $this->getEntityLabelPlural());
+    }
 
     /**
      * Used to generate route names.
