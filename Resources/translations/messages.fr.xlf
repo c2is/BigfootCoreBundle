@@ -94,6 +94,30 @@
                 <source>Category</source>
                 <target>Catégorie</target>
             </trans-unit>
+            <trans-unit id="24">
+                <source>Tags categories admin</source>
+                <target>Administration des catégories de tag</target>
+            </trans-unit>
+            <trans-unit id="25">
+                <source>Tags admin</source>
+                <target>Administration des tags</target>
+            </trans-unit>
+            <trans-unit id="26">
+                <source>Delete</source>
+                <target>Supprimer</target>
+            </trans-unit>
+            <trans-unit id="27">
+                <source>Please confirm</source>
+                <target>Veuillez confirmer</target>
+            </trans-unit>
+            <trans-unit id="28">
+                <source>Are you sure you want to perform this action ? The object will be permanently lost.</source>
+                <target>Etes-vous sûr de vouloir effectuer cette action ? L'objet sera supprimé de manière permanente</target>
+            </trans-unit>
+            <trans-unit id="29">
+                <source>Confirm</source>
+                <target>Confirmer</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
