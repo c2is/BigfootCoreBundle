@@ -20,6 +20,11 @@ class MenuFactory
     protected $container;
 
     /**
+     * @var array $menus
+     */
+    protected $menus = array();
+
+    /**
      * @param Container $container
      */
     public function __construct(Container $container)
@@ -39,9 +44,21 @@ class MenuFactory
     {
         $menu = new Menu($name);
 
+        $menu->setContainer($this->container);
+
+        $this->menus[] = $menu;
+
         $menuEvent = new MenuEvent($menu);
         $this->container->get('event_dispatcher')->dispatch('bigfoot.menu.generate', $menuEvent);
 
         return $menu;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMenus()
+    {
+        return $this->menus;
     }
 }

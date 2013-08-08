@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Theme\Menu;
 
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 /**
  * Represents a group of links to be used to display navigation elements in the BackOffice.
@@ -18,6 +19,11 @@ class Menu
      * @var array An array of \Bigfoot\Core\Theme\Menu\Item objects. The menu's links.
      */
     protected $items = array();
+
+    /**
+     * @var Container $container
+     */
+    protected $container;
 
     /**
      * Constructor.
@@ -81,6 +87,38 @@ class Menu
      */
     public function getItems()
     {
-        return $this->items;
+        try {
+            $userConfig = $this->container->getParameter('bigfoot_user');
+
+            $securityContext = $this->container->get('security.context');
+            $items = array();
+
+            // check for edit access for every item
+            foreach($this->items as $item) {
+
+                $roleForItem = array('ROLE_ADMIN');
+
+                if(isset($userConfig['menu_security'][$item->getName()]))
+                {
+                    $roleForItem = array_merge(array('ROLE_ADMIN'), $userConfig['menu_security'][$item->getName()]);
+                }
+
+                if ($securityContext->isGranted($roleForItem)) {
+                    $items[] = $item;
+                }
+            }
+
+            return $items;
+        }
+        catch (InvalidArgumentException $e) {
+            return $this->items;
+        }
+    }
+
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 }

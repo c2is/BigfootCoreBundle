@@ -66,6 +66,14 @@ class Item
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->label;
+    }
+
+    /**
      * @return string Name of the item. Used as a key in associative arrays.
      */
     public function getName()
