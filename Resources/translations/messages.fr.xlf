@@ -51,16 +51,16 @@
                 <target>Ajouter une catégorie</target>
             </trans-unit>
             <trans-unit id="13">
-                <source>Category creation</source>
-                <target>Création une catégorie</target>
+                <source>Tags category creation</source>
+                <target>Création d'une catégorie de tags</target>
             </trans-unit>
             <trans-unit id="14">
-                <source>Category edit</source>
-                <target>Edition une catégorie</target>
+                <source>Tags category edit</source>
+                <target>Edition d'une catégorie de tags</target>
             </trans-unit>
             <trans-unit id="15">
-                <source>Category edition</source>
-                <target>Edition une catégorie</target>
+                <source>Tags category edition</source>
+                <target>Edition d'une catégorie de tags</target>
             </trans-unit>
             <trans-unit id="16">
                 <source>Submit</source>
@@ -69,6 +69,30 @@
             <trans-unit id="17">
                 <source>Add an item</source>
                 <target>Ajouter un objet</target>
+            </trans-unit>
+            <trans-unit id="18">
+                <source>Tags category</source>
+                <target>Catégorie de tags</target>
+            </trans-unit>
+            <trans-unit id="19">
+                <source>Tags categories</source>
+                <target>Catégories de tags</target>
+            </trans-unit>
+            <trans-unit id="20">
+                <source>Tag edit</source>
+                <target>Edition d'un tag</target>
+            </trans-unit>
+            <trans-unit id="21">
+                <source>Tag %name% edit</source>
+                <target>Edition du tag %name%</target>
+            </trans-unit>
+            <trans-unit id="22">
+                <source>Tags category %name% edit</source>
+                <target>Edition de la catégorie de tags %name%</target>
+            </trans-unit>
+            <trans-unit id="23">
+                <source>Category</source>
+                <target>Catégorie</target>
             </trans-unit>
         </body>
     </file>

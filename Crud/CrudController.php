@@ -233,7 +233,7 @@ abstract class CrudController extends Controller
             'form'          => $form->createView(),
             'create_route'  => $this->getRouteNameForAction('create'),
             'index_route'   => $this->getRouteNameForAction('index'),
-            'entity_label'  => $this->getEntityName(),
+            'entity_label'  => $this->getEntityLabel(),
         );
     }
 

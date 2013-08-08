@@ -36,9 +36,14 @@ class TagCategoryController extends CrudController
         return array('id' => 'ID', 'name' => 'Name');
     }
 
+    protected function getEntityLabel()
+    {
+        return 'Tags category';
+    }
+
     protected function getEntityLabelPlural()
     {
-        return 'Categories';
+        return 'Tags categories';
     }
 
     /**
