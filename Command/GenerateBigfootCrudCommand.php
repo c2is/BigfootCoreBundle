@@ -5,6 +5,7 @@ namespace Bigfoot\Bundle\CoreBundle\Command;
 use Bigfoot\Bundle\CoreBundle\Generator\BigfootCrudGenerator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
  * Heavily based on \Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand.
@@ -59,7 +60,7 @@ EOT
         ;
     }
 
-    protected function getSkeletonDirs($bundle = null)
+    protected function getSkeletonDirs(BundleInterface $bundle = null)
     {
         $skeletonDirs = array();
 
