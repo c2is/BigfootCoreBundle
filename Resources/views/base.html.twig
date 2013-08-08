@@ -16,12 +16,17 @@
     </script>
 
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/jquery-ui.css') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/jqtree.css') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/css/screen.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/vendor/select2/select2.css') }}" />
+        {% stylesheets
+            'bundles/bigfootcore/css/jquery-ui.css'
+            'bundles/bigfootcore/css/bootstrap.min.css'
+            'bundles/bigfootcore/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css'
+            'bundles/bigfootcore/css/jqtree.css'
+            'bundles/bigfootcore/css/screen.css'
+            'assets/vendor/select2/select2.css'
+            output='css/styles.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
     {% endblock %}
 </head>
 
@@ -148,13 +153,15 @@
         'bundles/bigfootcore/js/jquery.portfolio.js'
         'bundles/bigfootcore/js/custom.js'
         'bundles/bigfootcore/js/bootstrap.confirm.js'
-        '%kernel.root_dir%/../vendor/jms/twig-js/twig.js' %}
+        '%kernel.root_dir%/../vendor/jms/twig-js/twig.js'
+        output='js/scripts.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% javascripts
         "@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig"
         "@BigfootCoreBundle/Resources/views/modal/confirm.html.twig"
-        filter="twig_js" %}
+        filter="twig_js"
+        output='js/twigs.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     <script language="javascript" src="{{ asset('assets/vendor/ckeditor/ckeditor.js') }}"></script>
