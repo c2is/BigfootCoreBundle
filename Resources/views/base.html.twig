@@ -23,7 +23,7 @@
             'bundles/bigfootcore/css/bootstrap.min.css'
             'bundles/bigfootcore/css/jqtree.css'
             'bundles/bigfootcore/css/screen.css'
-            output='css/styles.css'
+            output='bigfoot/css/styles.css'
         %}
         <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
@@ -154,14 +154,14 @@
         'bundles/bigfootcore/js/custom.js'
         'bundles/bigfootcore/js/bootstrap.confirm.js'
         '%kernel.root_dir%/../vendor/jms/twig-js/twig.js'
-        output='js/scripts.js' %}
+        output='bigfoot/js/scripts.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% javascripts
         "@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig"
         "@BigfootCoreBundle/Resources/views/modal/confirm.html.twig"
         filter="twig_js"
-        output='js/twigs.js' %}
+        output='bigfoot/js/twigs.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     <script language="javascript" src="{{ asset('assets/vendor/ckeditor/ckeditor.js') }}"></script>
