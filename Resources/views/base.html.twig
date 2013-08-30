@@ -16,14 +16,15 @@
     </script>
 
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('bundles/bigfootcore/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/vendor/select2/select2.css') }}" />
         {% stylesheets
             'bundles/bigfootcore/css/jquery-ui.css'
             'bundles/bigfootcore/css/bootstrap.min.css'
             'bundles/bigfootcore/css/jqtree.css'
             'bundles/bigfootcore/css/screen.css'
-            output='bigfoot/css/styles.css'
+            'bundles/bigfootcore/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css'
+            'assets/vendor/select2/select2.css'
+            filter='cssrewrite'
+            output='admin/css/styles.css'
         %}
         <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
@@ -154,14 +155,14 @@
         'bundles/bigfootcore/js/custom.js'
         'bundles/bigfootcore/js/bootstrap.confirm.js'
         '%kernel.root_dir%/../vendor/jms/twig-js/twig.js'
-        output='bigfoot/js/scripts.js' %}
+        output='admin/js/scripts.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% javascripts
         "@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig"
         "@BigfootCoreBundle/Resources/views/modal/confirm.html.twig"
         filter="twig_js"
-        output='bigfoot/js/twigs.js' %}
+        output='admin/js/twigs.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     <script language="javascript" src="{{ asset('assets/vendor/ckeditor/ckeditor.js') }}"></script>

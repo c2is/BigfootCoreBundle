@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class BigfootCoreExtension extends Extension implements PrependExtensionInterface
+class BigfootCoreExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -25,14 +25,5 @@ class BigfootCoreExtension extends Extension implements PrependExtensionInterfac
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     */
-    public function prepend(ContainerBuilder $container)
-    {
-        $container->prependExtensionConfig('assetic', array('bundles' => array('BigfootCoreBundle')));
-        $container->prependExtensionConfig('twig', array('globals' => array('theme' => '@bigfoot.theme')));
     }
 }
