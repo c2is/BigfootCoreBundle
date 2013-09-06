@@ -4,10 +4,12 @@ namespace Bigfoot\Bundle\CoreBundle\Crud;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Theme\Menu\Item;
-use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
  * Crud controller.
@@ -208,6 +210,10 @@ abstract class CrudController extends Controller implements AdminControllerInter
         $form->submit($request);
 
         if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($entity);
+            $em->flush();
+
             if ($this->has('security.acl.provider')) {
                 $aclProvider = $this->get('security.acl.provider');
                 $objectIdentity = ObjectIdentity::fromDomainObject($entity);
@@ -219,10 +225,6 @@ abstract class CrudController extends Controller implements AdminControllerInter
 
                 $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
             }
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
 
             return $this->redirect($this->generateUrl($this->getName()));
         }
