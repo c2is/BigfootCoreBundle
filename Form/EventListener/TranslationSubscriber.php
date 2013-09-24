@@ -188,9 +188,11 @@ class TranslationSubscriber implements EventSubscriberInterface {
     {
         foreach ($translatableFields as $field => $type) {
             if ($parentForm->has($field)) {
-                $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
+                $fieldConfig = $parentForm->get($field)->getConfig();
+                $fieldType = $fieldConfig->getType()->getInnerType();
+                $fieldAttr = $fieldConfig->getOption('attr');
 
-                $params = array('required' => false, 'attr' => array('data-field-name' => $field, 'data-locale' => $locale));
+                $params = array('required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale)));
                 $parentData = $parentForm->getData();
 
                 if ($parentData->getId() and $this->currentLocale != $this->defaultLocale) {
