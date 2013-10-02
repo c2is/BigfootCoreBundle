@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="{% block htmlClass %}{% endblock %}">
 <head>
     <meta charset="utf-8">
     <title>{{ bigfoot_theme_values.title | trans }}</title>
@@ -17,21 +17,17 @@
 
     {% block stylesheets %}
         {% stylesheets
-            'bundles/bigfootcore/css/jquery-ui.css'
-            'bundles/bigfootcore/css/bootstrap.min.css'
-            'bundles/bigfootcore/css/jqtree.css'
-            'bundles/bigfootcore/css/screen.css'
-            'bundles/bigfootcore/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css'
-            'assets/vendor/select2/select2.css'
+            'admin/css/*.css'
             filter='cssrewrite'
-            output='admin/css/styles.css'
+            output='compiled/admin/css/admin.css'
         %}
         <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
     {% endblock %}
 </head>
 
-<body>
+<body class="{% block bodyClass %}{% endblock %}">
+{% block body %}
 <div class="navbar navbar-fixed-top">
     {% block toolbar %}
         <div class="navbar-inner">
@@ -58,7 +54,7 @@
                 </div>
 
         </div>
-    {% endblock %}
+    {% endblock toolbar %}
 </div>
 
 <header>
@@ -71,7 +67,7 @@
                         <p class="meta">{{ theme.header.subtitle | trans }}</p>
                     </div>
                 </div>
-            {% endblock %}
+            {% endblock header %}
         </div>
     </div>
 </header>
@@ -111,21 +107,21 @@
             </ul>
         </div>
         <!-- Sidebar ends -->
-    {% endblock %}
+    {% endblock sidebar %}
 
     <!-- Main bar -->
     <div class="mainbar">
         <div class="page-head">
             {% block page_header %}
                 <h2 class="pull-left">{{ theme.page_header.title | default( bigfoot_theme_values.title ) | trans }}</h2>
-            {% endblock %}
+            {% endblock page_header %}
             <div class="clearfix"></div>
         </div>
         <div class="matter">
             <div class="container-fluid">
                 <div class="row-fluid">
-                    {% block body %}
-                    {% endblock %}
+                    {% block content %}
+                    {% endblock content %}
                 </div>
             </div>
         </div>
@@ -139,35 +135,35 @@
                     <div class="span12">
                         <p class="copy">{{ bigfoot_theme_values.copyright | trans }} | <a href="#">{{ theme.footer.title | default(bigfoot_theme_values.title) | trans }}</a></p>
                     </div>
-                {% endblock %}
+                {% endblock footer %}
             </div>
         </div>
     </footer>
 
 </div>
+{% endblock body %}
 {% block javascripts %}
     {% javascripts
-        'bundles/bigfootcore/js/jquery-1.10.0.js'
-        'bundles/bigfootcore/js/bootstrap.min.js'
-        'bundles/bigfootcore/js/jquery-ui-1.10.1.custom.min.js'
-        'assets/vendor/select2/select2.min.js'
-        'bundles/bigfootcore/js/jquery.portfolio.js'
-        'bundles/bigfootcore/js/custom.js'
-        'bundles/bigfootcore/js/bootstrap.confirm.js'
-        'bundles/bigfootcore/js/tree.jquery.js'
-        'bundles/bigfootnavigation/js/navigation.js'
+        'admin/js/jquery-1.10.0.js'
+        'admin/js/bootstrap.min.js'
+        'admin/js/jquery-ui-1.10.1.custom.min.js'
+        'admin/vendor/select2/select2.min.js'
+        'admin/js/jquery.portfolio.js'
+        'admin/js/custom.js'
+        'admin/js/bootstrap.confirm.js'
+        'admin/js/tree.jquery.js'
         '%kernel.root_dir%/../vendor/jms/twig-js/twig.js'
-        output='admin/js/scripts.js' %}
+        output='compiled/admin/js/scripts.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% javascripts
         "@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig"
         "@BigfootCoreBundle/Resources/views/modal/confirm.html.twig"
         filter="twig_js"
-        output='admin/js/twigs.js' %}
+        output='compiled/admin/js/twigs.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     <script language="javascript" src="{{ asset('assets/vendor/ckeditor/ckeditor.js') }}"></script>
-{% endblock %}
+{% endblock javascripts %}
 </body>
 </html>

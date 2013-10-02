@@ -25,13 +25,13 @@ class MenuListener
             if ($settings = $menu->getItem('sidebar_settings')) {
                 $settings->setLabel('Settings');
             } else {
-                $settings = new Item('sidebar_settings', 'Settings');
+                $settings = new Item('sidebar_settings', 'Settings', null, array(), array(), 'wrench');
                 $menu->addItem($settings);
             }
 
-            $tagsMenu = new Item('sidebar_tags', 'Tags');
-            $tagsMenu->addChild(new Item('sidebar_settings_tags_category', 'Categories', 'admin_tag_category'));
-            $tagsMenu->addChild(new Item('sidebar_settings_tags_tag', 'Tags', 'admin_tag'));
+            $tagsMenu = new Item('sidebar_tags', 'Tags', null, array(), array(), 'tags');
+            $tagsMenu->addChild(new Item('sidebar_settings_tags_category', 'Categories', 'admin_tag_category', array(), array(), 'sitemap'));
+            $tagsMenu->addChild(new Item('sidebar_settings_tags_tag', 'Tags', 'admin_tag', array(), array(), 'tag'));
             $menu->addItem($tagsMenu);
         }
     }

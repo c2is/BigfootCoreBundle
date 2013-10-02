@@ -19,7 +19,6 @@ class CoreController extends ContainerAware
      */
     function homeAction()
     {
-        $themeValues = $this->container->getParameter('bigfoot.theme.values');
-        return new Response($this->container->get('twig')->render(sprintf('%s::base.html.twig', $themeValues['bundle']), array()), 200);
+        return new Response($this->container->get('twig')->render(sprintf('%s::base.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array()), 200);
     }
 }

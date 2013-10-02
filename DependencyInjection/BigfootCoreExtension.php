@@ -23,6 +23,15 @@ class BigfootCoreExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        if ($themeBundle = $config['theme']) {
+            $bundles = $container->getParameter('kernel.bundles');
+            if (isset($bundles[$themeBundle])) {
+                $container->setParameter('bigfoot.theme.bundle', $themeBundle);
+            } else {
+                throw new \InvalidArgumentException(sprintf('The configured theme "%s" does not match any registered bundle. The bigfoot_core.theme value should be an enabled (bigfoot theme) bundle name. Please check the config value is correct and that the bundle is correctly enabled in your AppKernel class.', $themeBundle));
+            }
+        }
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

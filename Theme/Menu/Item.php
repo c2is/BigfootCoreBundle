@@ -269,4 +269,15 @@ class Item
     {
         return $this->attributes;
     }
+
+    public function hasChildWithRoute($route = null)
+    {
+        foreach ($this->childs as $child) {
+            if ($child->getRoute() == $route or $child->hasChildWithRoute($route)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

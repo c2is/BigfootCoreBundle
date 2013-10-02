@@ -1,7 +1,7 @@
-{% extends bigfoot_theme_values.bundle~'::base.html.twig' %}
+{% extends bigfoot_theme_bundle~'::base.html.twig' %}
 
-{% block body %}
-    {% include 'BigfootCoreBundle:crud:list.html.twig' with {
+{% block content %}
+    {% include [bigfoot_theme_bundle~':crud:list.html.twig', 'BigfootCoreBundle:crud:list.html.twig'] with {
     'action_edit':  edit_route,
     'list_title':   entity_label_plural,
     'fieldsList':   fields

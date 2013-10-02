@@ -1,6 +1,6 @@
 parameters:
+    bigfoot.theme.bundle:         "BigfootCoreBundle"
     theme.class:                  "Bigfoot\\Bundle\\CoreBundle\\Theme\\Theme"
-    theme.twig_namespace:         "BigfootCoreBundle"
     theme.section.toolbar:        "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\ToolbarSection"
     theme.section.header:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\HeaderSection"
     theme.section.sidebar:        "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\SidebarSection"
@@ -30,7 +30,7 @@ services:
         class:        "%theme.class%"
         arguments:    [@service_container, @bigfoot.section_toolbar, @bigfoot.section_header, @bigfoot.section_sidebar, @bigfoot.section_page_header, @bigfoot.section_page_content, @bigfoot.section_footer]
         calls:
-            - [ setTwigNamespace, [ %theme.twig_namespace% ] ]
+            - [ setTwigNamespace, [ %bigfoot.theme.bundle% ] ]
     bigfoot.section_toolbar:
         class:        "%theme.section.toolbar%"
         arguments:    [@service_container]
