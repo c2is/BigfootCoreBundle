@@ -17,7 +17,12 @@
 
     {% block stylesheets %}
         {% stylesheets
-            'admin/css/*.css'
+            'admin/css/jquery-ui.css'
+            'admin/css/bootstrap.min.css'
+            'admin/css/jqtree.css'
+            'admin/css/screen.css'
+            'admin/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css'
+            'admin/vendor/select2/select2.css'
             filter='cssrewrite'
             output='compiled/admin/css/admin.css'
         %}
