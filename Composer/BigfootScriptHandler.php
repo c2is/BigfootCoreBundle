@@ -27,4 +27,26 @@ class BigfootScriptHandler extends ScriptHandler
 
         static::executeCommand($event, $appDir, $cmd, $options['process-timeout']);
     }
+
+    public static function installAssets(CommandEvent $event)
+    {
+        $options = self::getOptions($event);
+        $appDir = $options['symfony-app-dir'];
+        $webDir = $options['symfony-web-dir'];
+
+        $symlink = '';
+        if ($options['symfony-assets-install'] == 'symlink') {
+            $symlink = '--symlink ';
+        } elseif ($options['symfony-assets-install'] == 'relative') {
+            $symlink = '--symlink --relative ';
+        }
+
+        if (!is_dir($webDir)) {
+            echo 'The symfony-web-dir ('.$webDir.') specified in composer.json was not found in '.getcwd().', can not install assets.'.PHP_EOL;
+
+            return;
+        }
+
+        static::executeCommand($event, $appDir, 'bigfoot:assets:install '.$symlink.escapeshellarg($webDir));
+    }
 }
