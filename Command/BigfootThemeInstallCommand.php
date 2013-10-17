@@ -69,13 +69,9 @@ EOT
 
         $filesystem = $this->getContainer()->get('filesystem');
 
-        // Create the bundles directory otherwise symlink will fail.
-        $bundlesDir = $targetArg.'/admin/';
-        $filesystem->mkdir($bundlesDir, 0777);
-
         $bundle = $this->getContainer()->get('kernel')->getBundle($this->getContainer()->getParameter('bigfoot.theme.bundle'));
         if (is_dir($originDir = $bundle->getPath().'/Resources/assets')) {
-            $targetDir = $bundlesDir;
+            $targetDir = $targetArg.'/admin';
 
             $output->writeln(sprintf('Installing bigfoot theme assets from <comment>%s</comment> into <comment>%s</comment>', $bundle->getNamespace(), $targetDir));
 
@@ -83,7 +79,7 @@ EOT
 
             if ($input->getOption('symlink')) {
                 if ($input->getOption('relative')) {
-                    $relativeOriginDir = $filesystem->makePathRelative($originDir, realpath($bundlesDir));
+                    $relativeOriginDir = $filesystem->makePathRelative($originDir, realpath($targetArg));
                 } else {
                     $relativeOriginDir = $originDir;
                 }
