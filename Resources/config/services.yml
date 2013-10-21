@@ -86,6 +86,12 @@ services:
             - { name: form.type, alias: bigfoot_richtext }
     # Collection item type - to set as parent for entity types used in collections
     bigfoot.form.type.collection_item:
-            class: Bigfoot\Bundle\CoreBundle\Form\Type\CollectionItemType
-            tags:
-                - { name: form.type, alias: bigfoot_collection_item }
+        class: Bigfoot\Bundle\CoreBundle\Form\Type\CollectionItemType
+        tags:
+            - { name: form.type, alias: bigfoot_collection_item }
+    # Allows translations to be stored in database
+    bigfoot.translation.database_loader:
+        class: Bigfoot\Bundle\CoreBundle\Translation\DatabaseLoader
+        arguments: [ @doctrine.orm.entity_manager ]
+        tags:
+            - { name: translation.loader, alias: db }
