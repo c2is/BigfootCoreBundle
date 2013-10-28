@@ -1,9 +1,1 @@
-{% extends bigfoot_theme_bundle~'::base.html.twig' %}
-
-{% block content %}
-    {% include [bigfoot_theme_bundle~':crud:list.html.twig', 'BigfootCoreBundle:crud:list.html.twig'] with {
-    'action_edit':  edit_route,
-    'list_title':   entity_label_plural,
-    'fieldsList':   fields
-    } %}
-{% endblock %}
+{% extends bigfoot_theme_bundle~'::base.list.html.twig' %}

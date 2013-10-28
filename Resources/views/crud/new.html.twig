@@ -1,10 +1,1 @@
-{% extends bigfoot_theme_bundle~'::base.html.twig' %}
-
-{% block content %}
-    {% include [ bigfoot_theme_bundle~':crud:form.html.twig', 'BigfootCoreBundle:crud:form.html.twig' ] with {
-    'action_route': path(create_route),
-    'action_name': 'Create',
-    'form_title': entity_label~' creation',
-    'cancel_route': index_route
-    } %}
-{% endblock %}
+{% extends bigfoot_theme_bundle~'::base.form.html.twig' %}

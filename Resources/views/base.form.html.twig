@@ -1,0 +1,49 @@
+{% extends 'BigfootCoreBundle::base.html.twig' %}
+
+{% block content %}
+    <form action="{{ form_action }}" method="{{ form_method | default('POST') }}" {{ form_enctype(form) }}>
+        {% if form_method is defined %}
+            <input type="hidden" name="_method" value="{{ form_method }}" />
+        {% endif %}
+        <div class="widget">
+            <div class="widget-head">
+                <div class="pull-left">{{ form_title | trans }}</div>
+                <div id="locales-container">
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="widget-content">
+                <div class="padd row">
+                    <div class="form-container col-lg-5">
+                        {%- block form %}
+                        {{ form_widget(form) }}
+                        {%- endblock form %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget-foot">
+                <button class="btn btn-primary" type="submit">{{ form_submit | trans }}</button>
+                {% if delete_form is defined and delete_action is defined %}
+                    <a href="#" id="edit-form-delete-action" class="btn btn-danger"
+                       data-confirm-title="{{ 'Please confirm' | trans }}"
+                       data-confirm-message="{{ 'Are you sure you want to perform this action ? The object will be permanently lost.' | trans }}"
+                       data-confirm-button-cancel="{{ "Cancel" | trans }}"
+                       data-confirm-button-ok="{{ "Confirm" | trans }}">{{ "Delete" | trans }}</a>
+                {% endif %}
+                {% if form_cancel_route is defined %}
+                    <a href="{{ path(form_cancel_route) }}" class="btn btn-link">{{ 'Cancel' | trans }}</a>
+                {% endif %}
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </form>
+    {% if delete_form is defined and delete_form_action is defined %}
+        <form action="{{ delete_form_action }}" method="POST" id="delete-form">
+            <input type="hidden" name="_method" value="DELETE" />
+            {{ form_widget(delete_form) }}
+        </form>
+    {% endif %}
+{% endblock content %}

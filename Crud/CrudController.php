@@ -177,14 +177,14 @@ abstract class CrudController extends Controller implements AdminControllerInter
 
         if (method_exists($this, 'newAction')) {
             $theme = $this->container->get('bigfoot.theme');
-            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), sprintf('%s_new', $this->getName())));
+            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), $this->getRouteNameForAction('new')));
         }
 
         return array(
-            'entities'              => $entities,
-            'edit_route'            => $this->getRouteNameForAction('edit'),
-            'entity_label_plural'   => $this->getEntityLabelPlural(),
-            'fields'                => $this->getFields(),
+            'list_items'        => $entities,
+            'list_edit_route'   => $this->getRouteNameForAction('edit'),
+            'list_title'        => $this->getEntityLabelPlural(),
+            'list_fields'       => $this->getFields(),
         );
     }
 
@@ -248,11 +248,11 @@ abstract class CrudController extends Controller implements AdminControllerInter
         $form   = $this->createForm($this->getFormType(), $entity);
 
         return array(
-            'entity'        => $entity,
             'form'          => $form->createView(),
-            'create_route'  => $this->getRouteNameForAction('create'),
-            'index_route'   => $this->getRouteNameForAction('index'),
-            'entity_label'  => $this->getEntityLabel(),
+            'form_title'    => sprintf('%s creation', $this->getEntityLabel()),
+            'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
+            'form_submit'   => 'Create',
+            'cancel_route'  => $this->getRouteNameForAction('index'),
         );
     }
 
@@ -277,13 +277,13 @@ abstract class CrudController extends Controller implements AdminControllerInter
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity'        => $entity,
-            'edit_form'     => $editForm->createView(),
-            'delete_form'   => $deleteForm->createView(),
-            'update_route'  => $this->getRouteNameForAction('update'),
-            'index_route'   => $this->getRouteNameForAction('index'),
-            'delete_action' => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
-            'entity_label'  => $this->getEntityLabel(),
+            'form'                  => $editForm->createView(),
+            'form_method'           => 'PUT',
+            'form_action'           => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+            'form_cancel_route'     => $this->getRouteNameForAction('index'),
+            'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
+            'delete_form'           => $deleteForm->createView(),
+            'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
         );
     }
 
@@ -318,14 +318,13 @@ abstract class CrudController extends Controller implements AdminControllerInter
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl(sprintf('%s_edit', $this->getName()), array('id' => $id)));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
         return array(
-            'entity'        => $entity,
-            'edit_form'     => $editForm->createView(),
-            'delete_form'   => $deleteForm->createView(),
-            'delete_action' => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'edit_form'             => $editForm->createView(),
+            'delete_form'           => $deleteForm->createView(),
+            'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
         );
     }
 
