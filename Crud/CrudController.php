@@ -177,7 +177,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
 
         if (method_exists($this, 'newAction')) {
             $theme = $this->container->get('bigfoot.theme');
-            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), $this->getRouteNameForAction('new')));
+            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), $this->getRouteNameForAction('new'), array(), array(), 'file'));
         }
 
         return array(
@@ -214,6 +214,22 @@ abstract class CrudController extends Controller implements AdminControllerInter
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                    'icon' => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been created.', $this->getEntityName()),
+                    'actions' => array(
+                        array(
+                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'label' => 'Back to the listing',
+                            'type'  => 'success',
+                        ),
+                    )
+                ))
+            );
+
             if ($this->has('security.acl.provider')) {
                 $aclProvider = $this->get('security.acl.provider');
                 $objectIdentity = ObjectIdentity::fromDomainObject($entity);
@@ -226,7 +242,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
                 $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
             }
 
-            return $this->redirect($this->generateUrl($this->getName()));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
         return array(
@@ -318,6 +334,22 @@ abstract class CrudController extends Controller implements AdminControllerInter
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                    'icon' => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been updated.', $this->getEntityName()),
+                    'actions' => array(
+                        array(
+                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'label' => 'Back to the listing',
+                            'type'  => 'success',
+                        ),
+                    )
+                ))
+            );
+
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
@@ -353,9 +385,18 @@ abstract class CrudController extends Controller implements AdminControllerInter
 
             $em->remove($entity);
             $em->flush();
+
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                    'icon' => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been deleted.', $this->getEntityName()),
+                ))
+            );
         }
 
-        return $this->redirect($this->generateUrl($this->getName()));
+        return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
     }
 
     /**
