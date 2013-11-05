@@ -246,8 +246,12 @@ abstract class CrudController extends Controller implements AdminControllerInter
         }
 
         return array(
-            'entity' => $entity,
             'form'   => $form->createView(),
+            'form_title'    => sprintf('%s creation', $this->getEntityLabel()),
+            'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
+            'form_submit'   => 'Create',
+            'cancel_route'  => $this->getRouteNameForAction('index'),
+            'isAjax'        => $this->get('request')->isXmlHttpRequest(),
         );
     }
 
