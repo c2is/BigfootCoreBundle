@@ -269,6 +269,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
             'form_submit'   => 'Create',
             'cancel_route'  => $this->getRouteNameForAction('index'),
+            'isAjax'        => $this->get('request')->isXmlHttpRequest(),
         );
     }
 
@@ -300,6 +301,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
             'delete_form'           => $deleteForm->createView(),
             'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'isAjax'                => $this->get('request')->isXmlHttpRequest(),
         );
     }
 
