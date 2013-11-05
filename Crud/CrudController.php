@@ -160,7 +160,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function getAddLabel()
     {
-        return 'Add an item';
+        return sprintf('Add a %s', $this->getEntityName());
     }
 
     /**
