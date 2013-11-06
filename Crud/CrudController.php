@@ -187,7 +187,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'list_fields'       => $this->getFields(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->getRouteNameForAction('index'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
             ),
@@ -260,11 +260,11 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'isAjax'        => $this->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->getRouteNameForAction('index'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->getRouteNameForAction('new'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
                     'label' => sprintf('%s creation', $this->getEntityLabel())
                 ),
             ),
@@ -292,11 +292,11 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'isAjax'        => $this->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->getRouteNameForAction('index'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->getRouteNameForAction('new'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
                     'label' => sprintf('%s creation', $this->getEntityLabel())
                 ),
             ),
@@ -334,11 +334,11 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'isAjax'                => $this->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->getRouteNameForAction('index'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->getRouteNameForAction('edit', array('id' => $entity->getId())),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
                     'label' => sprintf('%s edit', $this->getEntityLabel())
                 ),
             ),
@@ -406,11 +406,11 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'isAjax'                => $this->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->getRouteNameForAction('index'),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->getRouteNameForAction('edit', array('id' => $entity->getId())),
+                    'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
                     'label' => sprintf('%s edit', $this->getEntityLabel())
                 ),
             ),
