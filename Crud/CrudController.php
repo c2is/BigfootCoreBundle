@@ -185,6 +185,12 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'list_edit_route'   => $this->getRouteNameForAction('edit'),
             'list_title'        => $this->getEntityLabelPlural(),
             'list_fields'       => $this->getFields(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+            ),
         );
     }
 
@@ -252,6 +258,16 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'form_submit'   => 'Create',
             'cancel_route'  => $this->getRouteNameForAction('index'),
             'isAjax'        => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('new'),
+                    'label' => sprintf('%s creation', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -274,6 +290,16 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'form_submit'   => 'Create',
             'cancel_route'  => $this->getRouteNameForAction('index'),
             'isAjax'        => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('new'),
+                    'label' => sprintf('%s creation', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -306,6 +332,16 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'delete_form'           => $deleteForm->createView(),
             'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
             'isAjax'                => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('edit', array('id' => $entity->getId())),
+                    'label' => sprintf('%s edit', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -360,9 +396,24 @@ abstract class CrudController extends Controller implements AdminControllerInter
         }
 
         return array(
-            'edit_form'             => $editForm->createView(),
+            'form'                  => $editForm->createView(),
+            'form_method'           => 'PUT',
+            'form_action'           => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+            'form_cancel_route'     => $this->getRouteNameForAction('index'),
+            'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
             'delete_form'           => $deleteForm->createView(),
             'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'isAjax'                => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('edit', array('id' => $entity->getId())),
+                    'label' => sprintf('%s edit', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
