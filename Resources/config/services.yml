@@ -18,7 +18,7 @@ services:
     kernel.listener.bigfoot_core_menu_listener:
         class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
         tags:
-            - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate }
+            - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate, priority : 500 }
     # Core controller listener ; used to set page title, breadcrumbs..
     kernel.listener.bigfoot_controller_listener:
         class: Bigfoot\Bundle\CoreBundle\Listener\ControllerListener
