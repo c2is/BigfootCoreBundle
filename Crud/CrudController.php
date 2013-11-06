@@ -160,7 +160,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function getAddLabel()
     {
-        return 'Add an item';
+        return sprintf('Add a %s', $this->getEntityName());
     }
 
     /**
@@ -177,7 +177,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
 
         if (method_exists($this, 'newAction')) {
             $theme = $this->container->get('bigfoot.theme');
-            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), $this->getRouteNameForAction('new')));
+            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), $this->getRouteNameForAction('new'), array(), array(), 'file'));
         }
 
         return array(
@@ -185,6 +185,12 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'list_edit_route'   => $this->getRouteNameForAction('edit'),
             'list_title'        => $this->getEntityLabelPlural(),
             'list_fields'       => $this->getFields(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+            ),
         );
     }
 
@@ -214,6 +220,22 @@ abstract class CrudController extends Controller implements AdminControllerInter
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                    'icon' => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been created.', $this->getEntityName()),
+                    'actions' => array(
+                        array(
+                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'label' => 'Back to the listing',
+                            'type'  => 'success',
+                        ),
+                    )
+                ))
+            );
+
             if ($this->has('security.acl.provider')) {
                 $aclProvider = $this->get('security.acl.provider');
                 $objectIdentity = ObjectIdentity::fromDomainObject($entity);
@@ -226,12 +248,26 @@ abstract class CrudController extends Controller implements AdminControllerInter
                 $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
             }
 
-            return $this->redirect($this->generateUrl($this->getName()));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
         return array(
-            'entity' => $entity,
             'form'   => $form->createView(),
+            'form_title'    => sprintf('%s creation', $this->getEntityLabel()),
+            'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
+            'form_submit'   => 'Create',
+            'cancel_route'  => $this->getRouteNameForAction('index'),
+            'isAjax'        => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('new'),
+                    'label' => sprintf('%s creation', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -253,6 +289,17 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
             'form_submit'   => 'Create',
             'cancel_route'  => $this->getRouteNameForAction('index'),
+            'isAjax'        => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('new'),
+                    'label' => sprintf('%s creation', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -284,6 +331,17 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
             'delete_form'           => $deleteForm->createView(),
             'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'isAjax'                => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('edit', array('id' => $entity->getId())),
+                    'label' => sprintf('%s edit', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -318,13 +376,44 @@ abstract class CrudController extends Controller implements AdminControllerInter
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                    'icon' => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been updated.', $this->getEntityName()),
+                    'actions' => array(
+                        array(
+                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'label' => 'Back to the listing',
+                            'type'  => 'success',
+                        ),
+                    )
+                ))
+            );
+
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
         return array(
-            'edit_form'             => $editForm->createView(),
+            'form'                  => $editForm->createView(),
+            'form_method'           => 'PUT',
+            'form_action'           => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+            'form_cancel_route'     => $this->getRouteNameForAction('index'),
+            'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
             'delete_form'           => $deleteForm->createView(),
             'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'isAjax'                => $this->get('request')->isXmlHttpRequest(),
+            'breadcrumbs'       => array(
+                array(
+                    'url'   => $this->getRouteNameForAction('index'),
+                    'label' => $this->getEntityLabelPlural()
+                ),
+                array(
+                    'url'   => $this->getRouteNameForAction('edit', array('id' => $entity->getId())),
+                    'label' => sprintf('%s edit', $this->getEntityLabel())
+                ),
+            ),
         );
     }
 
@@ -353,9 +442,18 @@ abstract class CrudController extends Controller implements AdminControllerInter
 
             $em->remove($entity);
             $em->flush();
+
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                    'icon' => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been deleted.', $this->getEntityName()),
+                ))
+            );
         }
 
-        return $this->redirect($this->generateUrl($this->getName()));
+        return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
     }
 
     /**

@@ -72,7 +72,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
             $translatableFields = $this->getTranslatableFields($entityClass);
 
             //Case where there is data (edit);
-            if ($parentData && $parentData->getId()) {
+            if ($parentData && method_exists($parentData, 'getId') && $parentData->getId()) {
 
                 // We get the entity manager and its translations
                 $em = $this->doctrineService->getManagerForClass($entityClass);
