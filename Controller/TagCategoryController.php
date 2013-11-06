@@ -7,10 +7,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 /**
  * TagCategory controller.
  *
+ * @Cache(maxage="0", smaxage="0", public="false")
  * @Route("/admin/tag/category")
  */
 class TagCategoryController extends CrudController

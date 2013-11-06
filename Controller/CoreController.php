@@ -8,9 +8,12 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 /**
  * Implements the main actions for the BackOffice.
+ *
+ * @Cache(maxage="0", smaxage="0", public="false")
  */
 class CoreController extends ContainerAware
 {

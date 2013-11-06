@@ -7,11 +7,13 @@ use Bigfoot\Bundle\CoreBundle\Crud\CrudController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tag controller.
  *
+ * @Cache(maxage="0", smaxage="0", public="false")
  * @Route("/admin/tag")
  */
 class TagController extends CrudController
