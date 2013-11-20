@@ -23,7 +23,7 @@
     {% if 'annotation' == format %}
     return $this->doUpdate($request, $id);
     {% else %}
-    return $this->render('BigfootCoreBundle:crud:edit.html.twig', $this->doUpdate($request, $id));
+    return $this->container->get('templating')->renderResponse('BigfootCoreBundle:crud:edit.html.twig', $this->doUpdate($request, $id));
     {% endif %}
 {% endblock method_return %}
 }

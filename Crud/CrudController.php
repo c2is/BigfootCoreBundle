@@ -4,10 +4,14 @@ namespace Bigfoot\Bundle\CoreBundle\Crud;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Theme\Menu\Item;
+use Doctrine\ORM\Query;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
@@ -26,7 +30,7 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
  *
  * This helper only works for CRUDing entities situated in the Entity directory for which a Type class exists in the Form directory and is named after the entity's name suffixed with Type (eg: for the entity Bigfoot/Bundle/CoreBundle/Entity/Tag and form type Bigfoot/Bundle/CoreBundle/Form/TagType)
  */
-abstract class CrudController extends Controller implements AdminControllerInterface
+abstract class CrudController implements AdminControllerInterface, ContainerAwareInterface
 {
     /**
      * @var string The bundle name, calculated from getEntity().
@@ -37,6 +41,17 @@ abstract class CrudController extends Controller implements AdminControllerInter
      * @var string The entity name, calculated from getEntity().
      */
     private $entityName;
+
+    /**
+     * @var Container
+     */
+    protected $container;
+
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
 
     /**
      * @return string Route to be used as the homepage for this controller
@@ -123,7 +138,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function getEntityClass()
     {
-        $namespace = $this->get('kernel')->getBundle($this->getBundleName())->getNamespace();
+        $namespace = $this->container->get('kernel')->getBundle($this->getBundleName())->getNamespace();
         return sprintf('\\%s\\Entity\\%s', $namespace, $this->getEntityName());
     }
 
@@ -132,7 +147,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function getEntityTypeClass()
     {
-        $namespace = $this->get('kernel')->getBundle($this->getBundleName())->getNamespace();
+        $namespace = $this->container->get('kernel')->getBundle($this->getBundleName())->getNamespace();
         return sprintf('\\%s\\Form\\%sType', $namespace, $this->getEntityName());
     }
 
@@ -142,10 +157,9 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function getBundleAndEntityName()
     {
+
         try {
             list($bundleName, $entityName) = explode(':', $this->getEntity());
-        } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException(sprintf('Bundle \'%s\' was not found. Make sure your getEntity() method returns the correct value (BundleName:EntityName) and your bundle is correctly registered in your AppKernel.', $bundleName));
         } catch (\Exception $e) {
             throw new \InvalidArgumentException(sprintf('Return format of method getEntity() is invalid. Expected a string of format BundleName:EntityName, got %s', $this->getEntity()));
         }
@@ -171,9 +185,17 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function doIndex()
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->container->get('doctrine')->getManager();
 
-        $entities = $em->getRepository($this->getEntity())->findAll();
+        $queryBuilder = $em->getRepository($this->getEntity())
+            ->createQueryBuilder('e');
+        $query = $queryBuilder->getQuery();
+        $query->setHint(
+            Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
+
+        $entities = $query->getResult();
 
         if (method_exists($this, 'newAction')) {
             $theme = $this->container->get('bigfoot.theme');
@@ -187,7 +209,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
             'list_fields'       => $this->getFields(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
             ),
@@ -211,60 +233,65 @@ abstract class CrudController extends Controller implements AdminControllerInter
         $entityClass = $this->getEntityClass();
 
         $entity = new $entityClass();
-        $form = $this->createForm($this->getFormType(), $entity);
+        $form = $this->container->get('form.factory')->create($this->getFormType(), $entity);
 
         $form->submit($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->container->get('doctrine')->getManager();
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add(
+            $this->container->get('session')->getFlashBag()->add(
                 'success',
-                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                $this->container->get('templating')->render('BigfootCoreBundle:includes:flash.html.twig', array(
                     'icon' => 'ok',
                     'heading' => 'Success!',
                     'message' => sprintf('The %s has been created.', $this->getEntityName()),
                     'actions' => array(
                         array(
-                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'route' => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                             'label' => 'Back to the listing',
+                            'type'  => 'success',
+                        ),
+                        array(
+                            'route' => $this->container->get('router')->generate($this->getRouteNameForAction('new')),
+                            'label' => sprintf('Add a new %s', $this->getEntityName()),
                             'type'  => 'success',
                         ),
                     )
                 ))
             );
 
-            if ($this->has('security.acl.provider')) {
-                $aclProvider = $this->get('security.acl.provider');
+            if ($this->container->has('security.acl.provider')) {
+                $aclProvider = $this->container->get('security.acl.provider');
                 $objectIdentity = ObjectIdentity::fromDomainObject($entity);
                 $acl = $aclProvider->createAcl($objectIdentity);
 
-                $securityContext = $this->get('security.context');
+                $securityContext = $this->container->get('security.context');
                 $user = $securityContext->getToken()->getUser();
                 $securityIdentity = UserSecurityIdentity::fromAccount($user);
 
                 $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
             }
 
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+            return new RedirectResponse($this->container->get('router')->generate($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
         return array(
             'form'   => $form->createView(),
             'form_title'    => sprintf('%s creation', $this->getEntityLabel()),
-            'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
+            'form_action'   => $this->container->get('router')->generate($this->getRouteNameForAction('create')),
             'form_submit'   => 'Create',
             'cancel_route'  => $this->getRouteNameForAction('index'),
-            'isAjax'        => $this->get('request')->isXmlHttpRequest(),
+            'isAjax'        => $this->container->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('new')),
                     'label' => sprintf('%s creation', $this->getEntityLabel())
                 ),
             ),
@@ -281,22 +308,22 @@ abstract class CrudController extends Controller implements AdminControllerInter
         $entityClass = $this->getEntityClass();
 
         $entity = new $entityClass();
-        $form   = $this->createForm($this->getFormType(), $entity);
+        $form   = $this->container->get('form.factory')->create($this->getFormType(), $entity);
 
         return array(
             'form'          => $form->createView(),
             'form_title'    => sprintf('%s creation', $this->getEntityLabel()),
-            'form_action'   => $this->generateUrl($this->getRouteNameForAction('create')),
+            'form_action'   => $this->container->get('router')->generate($this->getRouteNameForAction('create')),
             'form_submit'   => 'Create',
             'cancel_route'  => $this->getRouteNameForAction('index'),
-            'isAjax'        => $this->get('request')->isXmlHttpRequest(),
+            'isAjax'        => $this->container->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('new')),
                     'label' => sprintf('%s creation', $this->getEntityLabel())
                 ),
             ),
@@ -312,33 +339,33 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function doEdit($id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->container->get('doctrine')->getManager();
 
         $entity = $em->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Unable to find %s entity.', $this->getEntity()));
+            throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
         }
 
-        $editForm = $this->createForm($this->getFormType(), $entity);
+        $editForm = $this->container->get('form.factory')->create($this->getFormType(), $entity);
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
             'form'                  => $editForm->createView(),
             'form_method'           => 'PUT',
-            'form_action'           => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+            'form_action'           => $this->container->get('router')->generate($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
             'form_cancel_route'     => $this->getRouteNameForAction('index'),
             'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
             'delete_form'           => $deleteForm->createView(),
-            'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
-            'isAjax'                => $this->get('request')->isXmlHttpRequest(),
+            'delete_form_action'    => $this->container->get('router')->generate($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'isAjax'                => $this->container->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
                     'label' => sprintf('%s edit', $this->getEntityLabel())
                 ),
             ),
@@ -360,31 +387,31 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function doUpdate(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->container->get('doctrine')->getManager();
 
         $entity = $em->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Unable to find %s entity.', $this->getEntity()));
+            throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createForm($this->getFormType(), $entity);
+        $editForm = $this->container->get('form.factory')->create($this->getFormType(), $entity);
         $editForm->submit($request);
 
         if ($editForm->isValid()) {
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add(
+            $this->container->get('session')->getFlashBag()->add(
                 'success',
-                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                $this->container->get('templating')->render('BigfootCoreBundle:includes:flash.html.twig', array(
                     'icon' => 'ok',
                     'heading' => 'Success!',
                     'message' => sprintf('The %s has been updated.', $this->getEntityName()),
                     'actions' => array(
                         array(
-                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'route' => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                             'label' => 'Back to the listing',
                             'type'  => 'success',
                         ),
@@ -392,25 +419,25 @@ abstract class CrudController extends Controller implements AdminControllerInter
                 ))
             );
 
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
+            return new RedirectResponse($this->container->get('router')->generate($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
         return array(
             'form'                  => $editForm->createView(),
             'form_method'           => 'PUT',
-            'form_action'           => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+            'form_action'           => $this->container->get('router')->generate($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
             'form_cancel_route'     => $this->getRouteNameForAction('index'),
             'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
             'delete_form'           => $deleteForm->createView(),
-            'delete_form_action'    => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
-            'isAjax'                => $this->get('request')->isXmlHttpRequest(),
+            'delete_form_action'    => $this->container->get('router')->generate($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+            'isAjax'                => $this->container->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('index')),
                     'label' => $this->getEntityLabelPlural()
                 ),
                 array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
+                    'url'   => $this->container->get('router')->generate($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
                     'label' => sprintf('%s edit', $this->getEntityLabel())
                 ),
             ),
@@ -433,19 +460,19 @@ abstract class CrudController extends Controller implements AdminControllerInter
         $form->submit($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->container->get('doctrine')->getManager();
             $entity = $em->getRepository($this->getEntity())->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException(sprintf('Unable to find %s entity.', $this->getEntity()));
+                throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
             }
 
             $em->remove($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add(
+            $this->container->get('session')->getFlashBag()->add(
                 'success',
-                $this->renderView('BigfootCoreBundle:includes:flash.html.twig', array(
+                $this->container->get('templating')->render('BigfootCoreBundle:includes:flash.html.twig', array(
                     'icon' => 'ok',
                     'heading' => 'Success!',
                     'message' => sprintf('The %s has been deleted.', $this->getEntityName()),
@@ -453,7 +480,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
             );
         }
 
-        return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
+        return new RedirectResponse($this->container->get('router')->generate($this->getRouteNameForAction('index')));
     }
 
     /**
@@ -464,7 +491,7 @@ abstract class CrudController extends Controller implements AdminControllerInter
      */
     protected function createDeleteForm($id)
     {
-        return $this->createFormBuilder(array('id' => $id))
+        return $this->container->get('form.factory')->createBuilder('form', array('id' => $id))
             ->add('id', 'hidden')
             ->getForm()
         ;

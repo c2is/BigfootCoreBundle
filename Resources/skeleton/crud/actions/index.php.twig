@@ -22,7 +22,7 @@
 {% if 'annotation' == format %}
         return $this->doIndex();
 {% else %}
-        return $this->render('BigfootCoreBundle:crud:index.html.twig', $this->doIndex());
+        return $this->container->get('templating')->renderResponse('BigfootCoreBundle:crud:index.html.twig', $this->doIndex());
 {% endif %}
 {% endblock method_return %}
     }
