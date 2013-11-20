@@ -25,7 +25,7 @@
             </div>
 
             <div class="widget-foot">
-                <button class="btn btn-primary" type="submit">{{ form_submit | trans }}</button>
+                <button class="btn btn-primary" type="submit">{{ form_submit | default('Submit') | trans }}</button>
                 {% if delete_form is defined and delete_action is defined %}
                     <a href="#" id="edit-form-delete-action" class="btn btn-danger"
                        data-confirm-title="{{ 'Please confirm' | trans }}"
