@@ -30,11 +30,13 @@
                         {% for attr, field in list_fields %}
                             <td>{{ attribute(item, attr) }}</td>
                         {% endfor %}
+                        {% block action_buttons %}
                         <td>
                             <div class="btn-group">
                                 <a class="btn btn-link" href="{{ path(list_edit_route, { 'id': item.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
                             </div>
                         </td>
+                        {% endblock %}
                     </tr>
                 {% endfor %}
                 </tbody>
