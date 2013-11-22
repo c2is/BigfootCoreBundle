@@ -28,7 +28,7 @@
                 {% for item in list_items %}
                     <tr>
                         {% for attr, field in list_fields %}
-                            <td>{{ attribute(item, attr) }}</td>
+                            <td>{{ attribute(item, attr)|nl2br }}</td>
                         {% endfor %}
                         {% block action_buttons %}
                         <td>
