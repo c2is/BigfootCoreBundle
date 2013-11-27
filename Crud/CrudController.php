@@ -348,7 +348,13 @@ abstract class CrudController implements AdminControllerInterface, ContainerAwar
         }
 
         $editForm = $this->container->get('form.factory')->create($this->getFormType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
+
+        $deleteTwigVariables = array();
+        if (method_exists($this, 'deleteAction')) {
+            $deleteForm = $this->createDeleteForm($id);
+            $deleteTwigVariables['delete_form'] = $deleteForm->createView();
+            $deleteTwigVariables['delete_form_action'] = $this->container->get('router')->generate($this->getRouteNameForAction('delete'), array('id' => $entity->getId()));
+        }
 
         return array(
             'form'                  => $editForm->createView(),
@@ -369,7 +375,7 @@ abstract class CrudController implements AdminControllerInterface, ContainerAwar
                     'label' => sprintf('%s edit', $this->getEntityLabel())
                 ),
             ),
-        );
+        ) + $deleteTwigVariables;
     }
 
     /**
