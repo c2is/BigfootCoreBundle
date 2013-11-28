@@ -348,16 +348,13 @@ abstract class CrudController implements AdminControllerInterface, ContainerAwar
         }
 
         $editForm = $this->container->get('form.factory')->create($this->getFormType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
 
-        return array(
+        $parameters = array(
             'form'                  => $editForm->createView(),
             'form_method'           => 'PUT',
             'form_action'           => $this->container->get('router')->generate($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
             'form_cancel_route'     => $this->getRouteNameForAction('index'),
             'form_title'            => sprintf('%s edit', $this->getEntityLabel()),
-            'delete_form'           => $deleteForm->createView(),
-            'delete_form_action'    => $this->container->get('router')->generate($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
             'isAjax'                => $this->container->get('request')->isXmlHttpRequest(),
             'breadcrumbs'       => array(
                 array(
@@ -370,6 +367,14 @@ abstract class CrudController implements AdminControllerInterface, ContainerAwar
                 ),
             ),
         );
+
+        if (method_exists($this, 'deleteAction')) {
+            $deleteForm = $this->createDeleteForm($id);
+            $parameters['delete_form'] = $deleteForm->createView();
+            $parameters['delete_form_action'] = $this->container->get('router')->generate($this->getRouteNameForAction('delete'), array('id' => $entity->getId()));
+        }
+
+        return $parameters;
     }
 
     /**
