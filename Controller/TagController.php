@@ -124,7 +124,7 @@ class TagController extends CrudController
      */
     function getAction()
     {
-        $em = $this->get('doctrine')->getManager();
+        $em = $this->container->get('doctrine')->getManager();
 
         $tagRepository = $em->getRepository('BigfootCoreBundle:Tag');
         $tagsToJson = array();
