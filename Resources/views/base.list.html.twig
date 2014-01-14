@@ -37,7 +37,7 @@
                         <td>
                             <div class="btn-group">
                                 {% for action in actions %}
-                                <a class="btn btn-link" href="{{ action.href }}"><span class="glyphicon glyphicon-{{ action.icon }}"></span></a>
+                                <a class="btn btn-link" href="{{ action.href|replace({'__ID__': item.id}) }}"><span class="glyphicon glyphicon-{{ action.icon }}"></span></a>
                                 {% endfor %}
                             </div>
                         </td>
