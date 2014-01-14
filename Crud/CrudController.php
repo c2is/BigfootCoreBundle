@@ -214,7 +214,7 @@ abstract class CrudController implements AdminControllerInterface, ContainerAwar
                 ),
             ),
             'actions'           => array(
-                array(
+                'edit' => array(
                     'href'  => $this->container->get('router')->generate($this->getRouteNameForAction('edit'), array('id' => '__ID__')),
                     'icon'  => 'pencil',
                 )
