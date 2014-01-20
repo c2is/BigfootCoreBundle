@@ -20,6 +20,30 @@ class BaseController extends Controller
     }
 
     /**
+     * Persist and flush
+     *
+     * @param Object $entity
+     */
+    protected function persistAndFlush($entity)
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($entity);
+        $entityManager->flush();
+    }
+
+    /**
+     * Remove and flush
+     *
+     * @param Object $entity
+     */
+    protected function removeAndFlush($entity)
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($entity);
+        $entityManager->flush();
+    }
+
+    /**
      * Is Granted
      *
      * @param string $state state of the user
@@ -52,5 +76,63 @@ class BaseController extends Controller
     protected function addFlash($type, $text)
     {
         $this->get('session')->getFlashBag()->add($type, $text);
+    }
+
+    /**
+     * Get Security Context
+     *
+     * @return Symfony\Component\Security\Core\SecurityContext
+     */
+    protected function getSecurity()
+    {
+        return $this->get('security.context');
+    }
+
+    /**
+     * Get Session
+     *
+     * @return Symfony\Component\Security\Core\SecurityContext
+     */
+    protected function getSession()
+    {
+        return $this->get('session');
+    }
+
+    /**
+     * Get Templating
+     *
+     * @return Symfony\Component\Security\Core\SecurityContext
+     */
+    protected function getTemplating()
+    {
+        return $this->get('templating');
+    }
+
+    /**
+     * Get Translator
+     *
+     * @return Doctrine\ORM\EntityManager
+     */
+    protected function getTranslator()
+    {
+        return $this->get('translator');
+    }
+
+    /**
+     * Get the event dispatcher
+     *
+     * @return Symfony\Component\EventDispatcher\EventDispatcher
+     */
+    protected function getEventDispatcher()
+    {
+        return $this->get('event_dispatcher');
+    }
+
+    /**
+     * Get the user manager
+     */
+    protected function getUserManager()
+    {
+        return $this->get('bigfoot_user.manager.user');
     }
 }

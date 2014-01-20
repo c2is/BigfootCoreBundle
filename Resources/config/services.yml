@@ -95,3 +95,17 @@ services:
         arguments: [ @doctrine.orm.entity_manager ]
         tags:
             - { name: translation.loader, alias: db }
+
+    # Token generator
+    bigfoot_core.generator.token_generator:
+        class: Bigfoot\Bundle\CoreBundle\Generator\TokenGenerator
+    # Abstract mailer
+    bigfoot_core.mailer.abstract:
+        class: Bigfoot\Bundle\UserBundle\Mailer\AbstractMailer
+        abstract:  true
+        calls:
+            - [setManager, ["@doctrine.orm.entity_manager"]]
+            - [setMailer, ["@mailer"]]
+            - [setTemplating, ["@templating"]]
+            - [setTranslator, ["@translator"]]
+            - [setMailFrom, [ "%bigfoot_core.mailer.from%" ]]
