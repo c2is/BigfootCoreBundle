@@ -49,9 +49,9 @@ class RouteManager
     public function __construct(Container $container)
     {
         $this->container = $container;
-        $this->bundles = array();
-        $this->routes = array();
-        $this->loaded = array();
+        $this->bundles   = array();
+        $this->routes    = array();
+        $this->loaded    = array();
     }
 
     /**
@@ -60,7 +60,8 @@ class RouteManager
     protected function loadRoutes()
     {
         $routeLoader = $this->container->get('routing.loader');
-        $routes = $this->routes;
+        $routes      = $this->routes;
+
         foreach ($this->bundles as $bundle) {
             if (!$this->loaded[$bundle]) {
                 $resource = $this->container->get('kernel')->locateResource(sprintf('@%s/Controller/', $bundle));
@@ -96,8 +97,8 @@ class RouteManager
     {
         $tabRoutes = array();
 
-        foreach ($this->getRoutes() as $key => $route){
-            if ($label = $route->getOption('label')){
+        foreach ($this->getRoutes() as $key => $route) {
+            if ($label = $route->getOption('label')) {
                 $tabRoutes[$key] = $label;
             }
         }
@@ -114,7 +115,7 @@ class RouteManager
      */
     public function addBundle($bundleName)
     {
-        $this->bundles[] = $bundleName;
+        $this->bundles[]           = $bundleName;
         $this->loaded[$bundleName] = false;
 
         return $this;

@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Tag
  *
- * @ORM\Table()
+ * @ORM\Table(name="bigfoot_tag")
  * @ORM\Entity(repositoryClass="Bigfoot\Bundle\CoreBundle\Entity\TagRepository")
  */
 class Tag
@@ -70,7 +70,7 @@ class Tag
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -86,7 +86,7 @@ class Tag
     public function setCategory(TagCategory $category)
     {
         $this->category = $category;
-    
+
         return $this;
     }
 
@@ -109,14 +109,14 @@ class Tag
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -132,14 +132,14 @@ class Tag
     public function setDescription($description)
     {
         $this->description = $description;
-    
+
         return $this;
     }
 
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
