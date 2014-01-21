@@ -21,7 +21,9 @@
                     {% for attr, field in list_fields %}
                         <th>{{ field | trans }}</th>
                     {% endfor %}
+                    {% if actions|length > 0 %}
                     <th>Actions</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -31,11 +33,15 @@
                             <td>{{ attribute(item, attr)|nl2br }}</td>
                         {% endfor %}
                         {% block action_buttons %}
+                        {% if actions|length > 0 %}
                         <td>
                             <div class="btn-group">
-                                <a class="btn btn-link" href="{{ path(list_edit_route, { 'id': item.id }) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                {% for action in actions %}
+                                <a class="btn btn-link" href="{{ action.href|replace({'__ID__': item.id}) }}"><span class="glyphicon glyphicon-{{ action.icon }}"></span></a>
+                                {% endfor %}
                             </div>
                         </td>
+                        {% endif %}
                         {% endblock %}
                     </tr>
                 {% endfor %}
