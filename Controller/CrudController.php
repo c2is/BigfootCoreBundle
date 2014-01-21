@@ -395,6 +395,10 @@ abstract class CrudController extends BaseController
         $editForm->submit($request);
 
         if ($editForm->isValid()) {
+            if ($entity instanceof BigfootUser) {
+                $this->getUserManager()->updatePassword($entity);
+            }
+
             $this->persistAndFlush($entity);
 
             $this->addFlash(
