@@ -150,7 +150,9 @@ class TranslationSubscriber implements EventSubscriberInterface {
                         // Here type is useless, just used for getting the field
                         foreach ($translatableFields as $field => $type) {
                             // Here just translate the data
-                            $repository->translate($parentData, $field, $locale,$data[$field."-".$locale] );
+                            if (isset($data[$field."-".$locale])) {
+                                $repository->translate($parentData, $field, $locale, $data[$field."-".$locale]);
+                            }
                         }
                     }
                 }
