@@ -2,12 +2,13 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
-use Bigfoot\Bundle\CoreBundle\Crud\CrudController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+
+use Bigfoot\Bundle\CoreBundle\Controller\CrudController;
 
 /**
  * TagCategory controller.

@@ -23,8 +23,12 @@ class BigfootCoreExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yml');
+
         if ($themeBundle = $config['theme']) {
             $bundles = $container->getParameter('kernel.bundles');
+
             if (isset($bundles[$themeBundle])) {
                 $container->setParameter('bigfoot.theme.bundle', $themeBundle);
             } else {
@@ -32,7 +36,6 @@ class BigfootCoreExtension extends Extension
             }
         }
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $container->setParameter('bigfoot_core.mailer.from', $config['mailer']['from']);
     }
 }

@@ -20,10 +20,11 @@ class LoadTagCategoryData implements FixtureInterface
     public function load(ObjectManager $manager)
     {
         $defaultCategory = new TagCategory();
-        $defaultCategory->setName('Default category');
-        $defaultCategory->setSlug('default');
+        $defaultCategory
+            ->setName('Default category')
+            ->setSlug('default');
 
-        $repository = $manager->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+        $repository = $manager->getRepository('Gedmo\Translatable\Entity\Translation');
         $repository->translate($defaultCategory, 'name', 'fr', 'Catégorie par défaut');
 
         $manager->persist($defaultCategory);

@@ -23,7 +23,11 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('theme')->defaultNull()->end()
-            ->end();
+                ->arrayNode('mailer')
+                    ->children()
+                        ->scalarNode('from')->end()
+                    ->end()
+                ->end();
 
         return $treeBuilder;
     }
