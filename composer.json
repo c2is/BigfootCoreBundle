@@ -18,5 +18,10 @@
         "psr-0": { "Bigfoot\\Bundle\\CoreBundle": "" }
     },
     "target-dir": "Bigfoot/Bundle/CoreBundle",
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    }
 }

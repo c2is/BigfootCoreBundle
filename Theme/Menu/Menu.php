@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Theme\Menu;
 
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Bigfoot\Bundle\UserBundle\Entity\BigfootRoleMenu;
 
 /**
  * Represents a group of links to be used to display navigation elements in the BackOffice.
@@ -33,7 +34,7 @@ class Menu
      */
     public function __construct($name)
     {
-        $this->name         = $name;
+        $this->name = $name;
     }
 
     /**
@@ -88,21 +89,22 @@ class Menu
     public function getItems()
     {
         try {
-            $userConfig = $this->container->getParameter('bigfoot_user');
-
-            $securityContext = $this->container->get('security.context');
             $items = array();
 
-            // check for edit access for every item
-            foreach($this->items as $item) {
+            $securityContext = $this->container->get('security.context');
+            $em = $this->container->get('doctrine')->getManager();
 
+            $entities = $em->getRepository('BigfootUserBundle:BigfootRoleMenu')->findAll();
+
+            // check access for every item
+            foreach ($this->items as $item) {
                 $roleForItem = array('ROLE_ADMIN');
 
-                if(isset($userConfig['menu_security'][$item->getName()]))
-                {
-                    $roleForItem = array_merge(array('ROLE_ADMIN'), $userConfig['menu_security'][$item->getName()]);
+                foreach ($entities as $entity) {
+                    if (in_array($item->getName(),$entity->getSlugs())) {
+                        $roleForItem = array_merge(array('ROLE_ADMIN'), array($entity->getRole()));
+                    }
                 }
-
                 if ($securityContext->isGranted($roleForItem)) {
                     $items[] = $item;
                 }

@@ -57,12 +57,12 @@ class Item
      */
     public function __construct($name, $label = null, $route = null, $parameters = array(), $attributes = array(), $icon = 'list-alt')
     {
-        $this->name         = $name;
-        $this->label        = $label ?: $name;
-        $this->route        = $route;
-        $this->parameters   = $parameters;
-        $this->attributes   = $attributes;
-        $this->icon         = $icon;
+        $this->name       = $name;
+        $this->label      = $label ?: $name;
+        $this->route      = $route;
+        $this->parameters = $parameters;
+        $this->attributes = $attributes;
+        $this->icon       = $icon;
     }
 
     /**
