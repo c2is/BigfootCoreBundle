@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
@@ -234,6 +235,41 @@ abstract class CrudController extends BaseController
 
             $this->persistAndFlush($entity);
 
+            $tabPreview            = $this->container->getParameter('preview');
+            $renderPreview         = array();
+            $itemToMenu            = array();
+
+            foreach ($tabPreview as $preview) {
+                if (isset($preview[$this->getEntity()]) && isset($preview[$this->getEntity()]['route'])) {
+                    $previewParameters = $preview[$this->getEntity()];
+                    $tabParameters     = array();
+                    $tabMenuParameters = array();
+
+                    if (isset($previewParameters['parameters']) && sizeof($previewParameters['parameters']) > 0) {
+                        foreach ($previewParameters['parameters'] as $parameter) {
+                            $accessor = PropertyAccess::createPropertyAccessor();
+                            $tabParameters[key($parameter)] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                            $tabMenuParameters[] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                        }
+                    }
+
+                    $renderPreview = array(
+                        'route' => $this->container->get('router')->generate($previewParameters['route'], $tabParameters, true),
+                        'label' => 'Preview',
+                        'type'  => 'success'
+                    );
+                    break;
+                }
+            }
+
+            if (isset($previewParameters['route']) && isset($tabMenuParameters)) {
+                $itemToMenu = array(
+                    'route' => $this->container->get('router')->generate('admin_menu_item_new', array('preview' => true, 'route' => $previewParameters['route'], 'value' => serialize($tabMenuParameters)), true),
+                    'label' => 'Add this page to menu',
+                    'type'  => 'success'
+                );
+            }
+
             $this->addFlash(
                 'success',
                 $this->render(
@@ -253,6 +289,8 @@ abstract class CrudController extends BaseController
                                 'label' => sprintf('Add a new %s', $this->getEntityName()),
                                 'type'  => 'success',
                             ),
+                            $renderPreview,
+                            $itemToMenu
                         )
                     )
                 )
@@ -401,6 +439,41 @@ abstract class CrudController extends BaseController
 
             $this->persistAndFlush($entity);
 
+            $tabPreview            = $this->container->getParameter('preview');
+            $renderPreview         = array();
+            $itemToMenu            = array();
+
+            foreach ($tabPreview as $preview) {
+                if (isset($preview[$this->getEntity()]) && isset($preview[$this->getEntity()]['route'])) {
+                    $previewParameters = $preview[$this->getEntity()];
+                    $tabParameters     = array();
+                    $tabMenuParameters = array();
+
+                    if (isset($previewParameters['parameters']) && sizeof($previewParameters['parameters']) > 0) {
+                        foreach ($previewParameters['parameters'] as $parameter) {
+                            $accessor = PropertyAccess::createPropertyAccessor();
+                            $tabParameters[key($parameter)] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                            $tabMenuParameters[] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                        }
+                    }
+
+                    $renderPreview = array(
+                        'route' => $this->container->get('router')->generate($previewParameters['route'], $tabParameters, true),
+                        'label' => 'Preview',
+                        'type'  => 'success'
+                    );
+                    break;
+                }
+            }
+
+            if (isset($previewParameters['route']) && isset($tabMenuParameters)) {
+                $itemToMenu = array(
+                    'route' => $this->container->get('router')->generate('admin_menu_item_new', array('preview' => true, 'route' => $previewParameters['route'], 'value' => serialize($tabMenuParameters)), true),
+                    'label' => 'Add this page to menu',
+                    'type'  => 'success'
+                );
+            }
+
             $this->addFlash(
                 'success',
                 $this->render(
@@ -415,6 +488,8 @@ abstract class CrudController extends BaseController
                                 'label' => 'Back to the listing',
                                 'type'  => 'success',
                             ),
+                            $renderPreview,
+                            $itemToMenu
                         )
                     )
                 )
