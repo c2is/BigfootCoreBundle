@@ -68,6 +68,23 @@ class BaseController extends Controller
     }
 
     /**
+     * Get Pagination
+     *
+     * @param arrayCollection $query           elements to paginate
+     * @param integer         $elementsPerPage elements per page
+     *
+     * @return arrayCollection
+     */
+    protected function getPagination($query, $elementsPerPage)
+    {
+        return $this->get('knp_paginator')->paginate(
+            $query,
+            $this->getRequest()->query->get('page', 1),
+            $elementsPerPage
+        );
+    }
+
+    /**
      * Add Flash
      *
      * @param string $type type
