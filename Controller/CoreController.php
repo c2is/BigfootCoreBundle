@@ -22,6 +22,8 @@ class CoreController extends ContainerAware
      */
     function homeAction()
     {
-        return new Response($this->container->get('twig')->render(sprintf('%s::base.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array()), 200);
+        $board = $this->container->get('bigfoot.dashboard')->getBoard();
+
+        return new Response($this->container->get('twig')->render(sprintf('%s::base.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array('dashboard' => $board)), 200);
     }
 }

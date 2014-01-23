@@ -95,3 +95,10 @@ services:
         arguments: [ @doctrine.orm.entity_manager ]
         tags:
             - { name: translation.loader, alias: db }
+
+    # DoshBoardController
+    bigfoot.dashboard:
+        class: Bigfoot\Bundle\CoreBundle\Controller\DashboardController
+        arguments: [ @service_container ]
+        tags:
+            - { name: bigfoot.dashboard, alias: dashboard }
