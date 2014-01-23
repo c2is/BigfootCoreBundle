@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
@@ -164,46 +165,93 @@ abstract class CrudController extends BaseController
         return sprintf('Add %s', $this->getEntityName());
     }
 
+    protected function getRouteNameForAction($action)
+    {
+        if (!$action or $action == 'index') {
+            return $this->getName();
+        }
+
+        return sprintf('%s_%s', $this->getName(), $action);
+    }
+
     /**
-     * Helper adding an "add new" menu item into the global actions menu and returning all the entities.
+     * Return array of allowed actions
+     *
+     * @return array
+     */
+    protected function getActions()
+    {
+        $actions = array();
+
+        if (method_exists($this, 'editAction')) {
+            $actions['edit'] = array(
+                'label' => 'Edit',
+                'route' => $this->getRouteNameForAction('edit'),
+                'icon'  => 'edit',
+                'color' => 'green',
+            );
+        }
+
+        if (method_exists($this, 'deleteAction')) {
+            $actions['delete'] = array(
+                'label' => 'Delete',
+                'route' => $this->getRouteNameForAction('delete'),
+                'icon'  => 'trash',
+                'color' => 'red',
+            );
+        }
+
+        return $actions;
+    }
+
+    /**
+     * Return array of allowed global actions
+     *
+     * @return array
+     */
+    protected function getGlobalActions()
+    {
+        $globalActions = array();
+
+        if (method_exists($this, 'newAction')) {
+            $globalActions['new'] = array(
+                'label' => 'Add',
+                'route' => $this->getRouteNameForAction('new'),
+                'icon'  => 'pencil',
+            );
+        }
+
+        return $globalActions;
+    }
+
+    /**
      * Meant to be used in a basic index action.
      *
      * @return array An array containing the entities.
      */
     protected function doIndex()
     {
-        $entities = $this
+        $query = $this
             ->getRepository($this->getEntity())
             ->createQueryBuilder('e')
             ->getQuery()
             ->setHint(
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
                 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
-            )
-            ->getResult();
-
-        if (method_exists($this, 'newAction')) {
-            $theme = $this->get('bigfoot.theme');
-            $theme['page_content']['globalActions']->addItem(new Item('crud_add', $this->getAddLabel(), $this->getRouteNameForAction('new'), array(), array(), 'file'));
-        }
+            );
 
         return array(
-            'list_items'      => $entities,
-            'list_edit_route' => $this->getRouteNameForAction('edit'),
-            'list_title'      => $this->getEntityLabelPlural(),
-            'list_fields'     => $this->getFields(),
-            'breadcrumbs'     => array(
+            'list_items'    => $this->getPagination($query, 10),
+            'list_title'    => $this->getEntityLabelPlural(),
+            'list_fields'   => $this->getFields(),
+            'actions'       => $this->getActions(),
+            'globalActions' => $this->getGlobalActions(),
+            'breadcrumbs'   => array(
                 array(
+                    'label' => $this->getEntityLabelPlural(),
                     'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                    'label' => $this->getEntityLabelPlural()
-                ),
-            ),
-            'actions'         => array(
-                array(
-                    'href'  => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => '__ID__')),
-                    'icon'  => 'pencil',
                 )
-            )
+            ),
         );
     }
 
@@ -234,6 +282,41 @@ abstract class CrudController extends BaseController
 
             $this->persistAndFlush($entity);
 
+            $tabPreview            = $this->container->getParameter('preview');
+            $renderPreview         = array();
+            $itemToMenu            = array();
+
+            foreach ($tabPreview as $preview) {
+                if (isset($preview[$this->getEntity()]) && isset($preview[$this->getEntity()]['route'])) {
+                    $previewParameters = $preview[$this->getEntity()];
+                    $tabParameters     = array();
+                    $tabMenuParameters = array();
+
+                    if (isset($previewParameters['parameters']) && sizeof($previewParameters['parameters']) > 0) {
+                        foreach ($previewParameters['parameters'] as $parameter) {
+                            $accessor = PropertyAccess::createPropertyAccessor();
+                            $tabParameters[key($parameter)] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                            $tabMenuParameters[] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                        }
+                    }
+
+                    $renderPreview = array(
+                        'route' => $this->container->get('router')->generate($previewParameters['route'], $tabParameters, true),
+                        'label' => 'Preview',
+                        'type'  => 'success'
+                    );
+                    break;
+                }
+            }
+
+            if (isset($previewParameters['route']) && isset($tabMenuParameters)) {
+                $itemToMenu = array(
+                    'route' => $this->container->get('router')->generate('admin_menu_item_new', array('preview' => true, 'route' => $previewParameters['route'], 'value' => serialize($tabMenuParameters)), true),
+                    'label' => 'Add this page to menu',
+                    'type'  => 'success'
+                );
+            }
+
             $this->addFlash(
                 'success',
                 $this->render(
@@ -253,6 +336,8 @@ abstract class CrudController extends BaseController
                                 'label' => sprintf('Add a new %s', $this->getEntityName()),
                                 'type'  => 'success',
                             ),
+                            $renderPreview,
+                            $itemToMenu
                         )
                     )
                 )
@@ -269,7 +354,7 @@ abstract class CrudController extends BaseController
                 $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
             }
 
-            return new RedirectResponse($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
         return array(
@@ -360,12 +445,6 @@ abstract class CrudController extends BaseController
             ),
         );
 
-        if (method_exists($this, 'deleteAction')) {
-            $deleteForm                       = $this->createDeleteForm($id);
-            $parameters['delete_form']        = $deleteForm->createView();
-            $parameters['delete_form_action'] = $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId()));
-        }
-
         return $parameters;
     }
 
@@ -401,6 +480,41 @@ abstract class CrudController extends BaseController
 
             $this->persistAndFlush($entity);
 
+            $tabPreview            = $this->container->getParameter('preview');
+            $renderPreview         = array();
+            $itemToMenu            = array();
+
+            foreach ($tabPreview as $preview) {
+                if (isset($preview[$this->getEntity()]) && isset($preview[$this->getEntity()]['route'])) {
+                    $previewParameters = $preview[$this->getEntity()];
+                    $tabParameters     = array();
+                    $tabMenuParameters = array();
+
+                    if (isset($previewParameters['parameters']) && sizeof($previewParameters['parameters']) > 0) {
+                        foreach ($previewParameters['parameters'] as $parameter) {
+                            $accessor = PropertyAccess::createPropertyAccessor();
+                            $tabParameters[key($parameter)] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                            $tabMenuParameters[] = $accessor->getValue($entity, $parameter[key($parameter)]);
+                        }
+                    }
+
+                    $renderPreview = array(
+                        'route' => $this->container->get('router')->generate($previewParameters['route'], $tabParameters, true),
+                        'label' => 'Preview',
+                        'type'  => 'success'
+                    );
+                    break;
+                }
+            }
+
+            if (isset($previewParameters['route']) && isset($tabMenuParameters)) {
+                $itemToMenu = array(
+                    'route' => $this->container->get('router')->generate('admin_menu_item_new', array('preview' => true, 'route' => $previewParameters['route'], 'value' => serialize($tabMenuParameters)), true),
+                    'label' => 'Add this page to menu',
+                    'type'  => 'success'
+                );
+            }
+
             $this->addFlash(
                 'success',
                 $this->render(
@@ -415,12 +529,14 @@ abstract class CrudController extends BaseController
                                 'label' => 'Back to the listing',
                                 'type'  => 'success',
                             ),
+                            $renderPreview,
+                            $itemToMenu
                         )
                     )
                 )
             );
 
-            return new RedirectResponse($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
         return array(
@@ -457,56 +573,26 @@ abstract class CrudController extends BaseController
      */
     protected function doDelete(Request $request, $id)
     {
-        $form = $this->createDeleteForm($id);
-        $form->submit($request);
+        $entity = $this->getRepository($this->getEntity())->find($id);
 
-        if ($form->isValid()) {
-            $entity = $this->getRepository($this->getEntity())->find($id);
+        if (!$entity) {
+            throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
+        }
 
-            if (!$entity) {
-                throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
-            }
+        $this->removeAndFlush($entity);
 
-            $this->removeAndFlush($entity);
-
-            $this->addFlash(
-                'success',
-                $this->render(
-                    'BigfootCoreBundle:includes:flash.html.twig',
-                    array(
-                        'icon'    => 'ok',
-                        'heading' => 'Success!',
-                        'message' => sprintf('The %s has been deleted.', $this->getEntityName()),
-                    )
+        $this->addFlash(
+            'success',
+            $this->render(
+                'BigfootCoreBundle:includes:flash.html.twig',
+                array(
+                    'icon'    => 'ok',
+                    'heading' => 'Success!',
+                    'message' => sprintf('The %s has been deleted.', $this->getEntityName()),
                 )
-            );
-        }
+            )
+        );
 
-        return new RedirectResponse($this->generateUrl($this->getRouteNameForAction('index')));
-    }
-
-    /**
-     * Creates a delete form.
-     *
-     * @param $id
-     * @return \Symfony\Component\Form\Form
-     */
-    protected function createDeleteForm($id)
-    {
-        return $this
-            ->get('form.factory')
-            ->createBuilder('form', array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm()
-        ;
-    }
-
-    protected function getRouteNameForAction($action)
-    {
-        if (!$action or $action == 'index') {
-            return $this->getName();
-        }
-
-        return sprintf('%s_%s', $this->getName(), $action);
+        return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
     }
 }
