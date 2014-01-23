@@ -469,7 +469,6 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
         }
 
-        $deleteForm = $this->createDeleteForm($id);
         $editForm   = $this->createForm($this->getFormType(), $entity);
         $editForm->submit($request);
 
@@ -545,7 +544,6 @@ abstract class CrudController extends BaseController
             'form_action'        => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
             'form_cancel_route'  => $this->getRouteNameForAction('index'),
             'form_title'         => sprintf('%s edit', $this->getEntityLabel()),
-            'delete_form'        => $deleteForm->createView(),
             'delete_form_action' => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
             'isAjax'             => $request->isXmlHttpRequest(),
             'breadcrumbs'        => array(
