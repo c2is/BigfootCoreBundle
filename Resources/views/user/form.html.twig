@@ -1,0 +1,21 @@
+{% extends bigfoot_theme_bundle~'::base.html.twig' %}
+
+{% block bodyClass %}login-layout{% endblock bodyClass %}
+
+{% block body %}
+    <div class="login-form">
+        {% block form %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        function show_box(id) {
+            jQuery('.widget-box.visible').removeClass('visible');
+            jQuery('#'+id).addClass('visible');
+        }
+    </script>
+{% endblock javascripts %}
