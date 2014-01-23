@@ -20,6 +20,8 @@ class CoreController extends BaseController
      */
     function homeAction()
     {
-        return $this->render(sprintf('%s::base.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array());
+        $board = $this->container->get('bigfoot.dashboard')->getBoard();
+
+        return $this->render(sprintf('%s::base.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array('dashboard' => $board));
     }
 }

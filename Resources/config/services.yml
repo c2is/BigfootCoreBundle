@@ -96,6 +96,12 @@ services:
         tags:
             - { name: translation.loader, alias: db }
 
+    # DoshBoardController
+    bigfoot.dashboard:
+        class: Bigfoot\Bundle\CoreBundle\Controller\DashboardController
+        arguments: [ @service_container ]
+        tags:
+            - { name: bigfoot.dashboard, alias: dashboard }
     # Token generator
     bigfoot_core.generator.token_generator:
         class: Bigfoot\Bundle\CoreBundle\Generator\TokenGenerator
