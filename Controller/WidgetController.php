@@ -9,7 +9,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 
-use Bigfoot\Bundle\CoreBundle\Crud\CrudController;
+use Bigfoot\Bundle\CoreBundle\Controller\CrudController;
 
 class WidgetController extends CrudController
 {

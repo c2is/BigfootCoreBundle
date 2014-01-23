@@ -48,13 +48,32 @@ class DashboardController extends ContainerAware
             $widget = new $widgetClass($this->container);
             $widget->setTitle($tmpWidget->getTitle());
 
-            $params = $tmpWidget->getParameters();
+            $queryBuilder = $em->getRepository('BigfootCoreBundle:Widget\Parameter')
+                ->createQueryBuilder('p');
+            $queryBuilder
+                ->Where('p.user = '.$user->getId().' OR '.$queryBuilder->expr()->isNull('p.user'))
+                ->andWhere("p.widget = " . $tmpWidget->getId())
+                ->orderBy('p.user', 'DESC');
+            $query = $queryBuilder->getQuery();
+
+            $params = $query->getResult();
             foreach ($params as $param) {
-                $widget->setParam($param->getName(), $param->getValue());
+                if (!$widget->hasParam($param->getName())) {
+                    $widget->setParam($param->getName(), $param->getValue());
+                }
             }
             $widgets[] = $widget;
         }
+        usort($widgets, array(__CLASS__, 'sortWidgets'));
 
         return $widgets;
+    }
+
+    static function sortWidgets($w1, $w2)
+    {
+        if ($w1->getParam('order') == $w2->getParam('order')) {
+            return 0;
+        }
+        return ($w1->getParam('order') < $w2->getParam('order')) ? -1 : 1;
     }
 }

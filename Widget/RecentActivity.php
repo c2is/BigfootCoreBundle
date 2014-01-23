@@ -15,6 +15,7 @@ class RecentActivity extends AbstractWidget
 {
     public function renderContent()
     {
-        return "YAYA";
+        // TODO : return all backoffice activity
+        return "";
     }
 }
