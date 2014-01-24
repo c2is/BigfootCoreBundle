@@ -95,6 +95,15 @@ services:
         arguments: [ @doctrine.orm.entity_manager ]
         tags:
             - { name: translation.loader, alias: db }
+    # QuickLink type
+    bigfoot.form.type.quicklink:
+        class: Bigfoot\Bundle\CoreBundle\Form\QuickLinkType
+        arguments: [ @request ]
+        calls:
+            - [setSecurityContext, ["@security.context"]]
+        scope: request
+        tags:
+            - { name: form.type, alias: bigfoot_bundle_corebundle_quicklinktype }
 
     # DoshBoardController
     bigfoot.dashboard:
