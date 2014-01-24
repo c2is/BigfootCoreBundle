@@ -21,11 +21,11 @@ class ToolbarSection extends AbstractSection
      */
     protected function setDefaultParameters()
     {
-        $menu = $this->container->get('bigfoot.menu_factory')->getMenu('toolbar_menu');
+        // $menu = $this->container->get('bigfoot.menu_factory')->getMenu('toolbar_menu');
 
         $this->parameters = array(
             'title' => '',
-            'menu'    => $menu,
+            // 'menu'    => $menu,
         );
     }
 }

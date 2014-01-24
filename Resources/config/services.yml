@@ -7,18 +7,12 @@ parameters:
     theme.section.page_header:    "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageHeaderSection"
     theme.section.page_content:   "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageContentSection"
     theme.section.footer:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\FooterSection"
-    menu.class:                   "Bigfoot\\Bundle\\CoreBundle\\Theme\\MenuFactory"
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
     route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
     translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
     sortable_type.class:          "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
     available_languages:          [ 'fr', 'en' ]
 services:
-    # Core menu listener ; adds or renames the Sidebar > Settings menu
-    kernel.listener.bigfoot_core_menu_listener:
-        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
-        tags:
-            - { name: kernel.event_listener, event: bigfoot.menu.generate, method: onMenuGenerate, priority : 500 }
     # Core controller listener ; used to set page title, breadcrumbs..
     kernel.listener.bigfoot_controller_listener:
         class: Bigfoot\Bundle\CoreBundle\Listener\ControllerListener
@@ -55,9 +49,6 @@ services:
         class:        "%theme.section.footer%"
         arguments:    [@service_container]
         public: false
-    bigfoot.menu_factory:
-        class:        "%menu.class%"
-        arguments:    [@service_container]
     # Route management
     bigfoot.route_manager:
         class:        "%route_manager.class%"
@@ -96,12 +87,12 @@ services:
         tags:
             - { name: translation.loader, alias: db }
 
-    # Token generator
+    # Token Generator
     bigfoot_core.generator.token_generator:
         class: Bigfoot\Bundle\CoreBundle\Generator\TokenGenerator
-    # Abstract mailer
+    # Abstract Mailer
     bigfoot_core.mailer.abstract:
-        class: Bigfoot\Bundle\UserBundle\Mailer\AbstractMailer
+        class: Bigfoot\Bundle\CoreBundle\Mailer\AbstractMailer
         abstract:  true
         calls:
             - [setManager, ["@doctrine.orm.entity_manager"]]
@@ -109,3 +100,26 @@ services:
             - [setTemplating, ["@templating"]]
             - [setTranslator, ["@translator"]]
             - [setMailFrom, [ "%bigfoot_core.mailer.from%" ]]
+    # Menu Builder
+    bigfoot_core.menu_builder:
+        class: Bigfoot\Bundle\CoreBundle\Menu\Builder
+        arguments:
+            - @knp_menu.factory
+            - @doctrine.orm.entity_manager
+            - @security.context
+            - @event_dispatcher
+    # Menu Factory
+    bigfoot_core.menu.main:
+        class: Knp\Menu\MenuItem
+        factory_service: bigfoot_core.menu_builder
+        factory_method: createMainMenu
+        scope: request
+        arguments:
+            - @request
+        tags:
+            - { name: knp_menu.menu, alias: main }
+    # Menu Listener
+    bigfoot_core.listener.menu:
+        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
+        tags:
+            - { name: kernel.event_subscriber }
