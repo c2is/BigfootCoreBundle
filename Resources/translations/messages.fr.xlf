@@ -118,6 +118,22 @@
                 <source>Confirm</source>
                 <target>Confirmer</target>
             </trans-unit>
+            <trans-unit id="30">
+                <source>%username% created element %name%.</source>
+                <target>%username% a crée l'élément %name%.</target>
+            </trans-unit>
+            <trans-unit id="31">
+                <source>%username% updated element %name%.</source>
+                <target>%username% a mis à jour l'élément %name%.</target>
+            </trans-unit>
+            <trans-unit id="32">
+                <source>See element</source>
+                <target>Voir l'élément</target>
+            </trans-unit>
+            <trans-unit id="33">
+                <source>No history found</source>
+                <target>Pas d'historique trouvé</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

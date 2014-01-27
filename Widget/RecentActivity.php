@@ -49,14 +49,14 @@ class RecentActivity extends AbstractWidget
                         $timelineItem['edit_link'] = $this->container->get('router')->generate($objectController->getRouteNameForAction('edit'), array('id' => $entity->getId()));
                     }
                     if ($entity->getUpdated() == $entity->getCreated()) {
-                        $timelineItem['desc'] = $this->container->get('translator')->trans('recent_activity.create');
+                        $timelineItem['desc'] = $this->container->get('translator')->trans('%username% created element %name%.');
                         $tab['timeline'][$entity->getCreated()->format('Y-m-d')][] = $timelineItem;
                     } else {
                         $timelineItemUpdate = $timelineItem;
-                        $timelineItemUpdate['desc'] = $this->container->get('translator')->trans('recent_activity.update');
+                        $timelineItemUpdate['desc'] = $this->container->get('translator')->trans('%username% updated element %name%.');
                         $tab['timeline'][$entity->getUpdated()->format('Y-m-d')][] = $timelineItemUpdate;
 
-                        $timelineItem['desc'] = $this->container->get('translator')->trans('recent_activity.create');
+                        $timelineItem['desc'] = $this->container->get('translator')->trans('%username% created element %name%.');
                         $tab['timeline'][$entity->getCreated()->format('Y-m-d')][] = $timelineItem;
                     }
 
