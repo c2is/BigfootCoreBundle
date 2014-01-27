@@ -100,7 +100,7 @@ services:
     bigfoot.dashboard:
         class: Bigfoot\Bundle\CoreBundle\Controller\DashboardController
         calls:
-            setContainer: [ @service_container ]
+            - [setContainer, ["@service_container"]]
         tags:
             - { name: bigfoot.dashboard, alias: dashboard }
     # Token generator
