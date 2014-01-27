@@ -41,11 +41,31 @@ class LoadWidgetBackofficeData implements FixtureInterface
         $widgetParam1 = new WidgetBackoffice\Parameter();
         $widgetParam1->setName('tabs');
         $widgetParam1->setValue(serialize(array(
-            array('name' => 'page', 'title' => 'Pages', 'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\Page', 'controller' => 'Bigfoot\Bundle\ContentBundle\Controller\PageController'),
-            array('name' => 'widget', 'title' =>'Widgets', 'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\Widget'),
-            array('name' => 'staticContent', 'title' =>'Static Content', 'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\StaticContent'),
-            array('name' => 'user', 'title' =>'Users', 'entity' => 'Bigfoot\Bundle\UserBundle\Entity\BigfootUser'),
-            array('name' => 'menuItem', 'title' =>'Menu Item', 'entity' => 'Bigfoot\Bundle\NavigationBundle\Entity\Item')
+            array(
+                'name' => 'page',
+                'title' => 'Pages',
+                'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\Page',
+                'controller' => 'Bigfoot\Bundle\ContentBundle\Controller\PageController'),
+            array(
+                'name' => 'widget',
+                'title' =>'Widgets',
+                'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\Widget',
+                'controller' => 'Bigfoot\Bundle\ContentBundle\Controller\WidgetController'),
+            array(
+                'name' => 'staticContent',
+                'title' =>'Static Content',
+                'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\StaticContent',
+                'controller' => 'Bigfoot\Bundle\ContentBundle\Controller\StaticContentController'),
+            array(
+                'name' => 'user',
+                'title' =>'Users',
+                'entity' => 'Bigfoot\Bundle\UserBundle\Entity\BigfootUser',
+                'controller' => 'Bigfoot\Bundle\UserBundle\Controller\BigfootUserController'),
+            array(
+                'name' => 'menuItem',
+                'title' =>'Menu Item',
+                'entity' => 'Bigfoot\Bundle\NavigationBundle\Entity\Item',
+                'controller' => 'Bigfoot\Bundle\NavigationBundle\Controller\ItemController'),
         )));
         $widgetParam1->setWidget($widgetRecentActivity);
         $manager->persist($widgetParam1);
