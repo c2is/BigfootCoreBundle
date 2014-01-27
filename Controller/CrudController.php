@@ -105,7 +105,7 @@ abstract class CrudController extends BaseController
         return $this->entityName;
     }
 
-    protected function getEntityLabel()
+    public function getEntityLabel()
     {
         return $this->getEntityName();
     }
@@ -165,7 +165,7 @@ abstract class CrudController extends BaseController
         return sprintf('Add %s', $this->getEntityName());
     }
 
-    protected function getRouteNameForAction($action)
+    public function getRouteNameForAction($action)
     {
         if (!$action or $action == 'index') {
             return $this->getName();

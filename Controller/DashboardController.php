@@ -40,6 +40,7 @@ class DashboardController extends ContainerAware
             $widgetClass = $tmpWidget->getName();
             $widget = new $widgetClass($this->container);
             $widget->setTitle($tmpWidget->getTitle());
+            $widget->setId($tmpWidget->getId());
 
             $queryBuilder = $em->getRepository('BigfootCoreBundle:Widget\Parameter')
                 ->createQueryBuilder('p');

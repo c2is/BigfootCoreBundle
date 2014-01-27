@@ -31,9 +31,22 @@ class LoadWidgetBackofficeData implements FixtureInterface
         $widgetParam1->setValue(1);
         $widgetParam1->setWidget($widgetRecentActivity);
         $manager->persist($widgetParam1);
+
         $widgetParam1 = new WidgetBackoffice\Parameter();
         $widgetParam1->setName('width');
         $widgetParam1->setValue(6);
+        $widgetParam1->setWidget($widgetRecentActivity);
+        $manager->persist($widgetParam1);
+
+        $widgetParam1 = new WidgetBackoffice\Parameter();
+        $widgetParam1->setName('tabs');
+        $widgetParam1->setValue(serialize(array(
+            array('name' => 'page', 'title' => 'Pages', 'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\Page', 'controller' => 'Bigfoot\Bundle\ContentBundle\Controller\PageController'),
+            array('name' => 'widget', 'title' =>'Widgets', 'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\Widget'),
+            array('name' => 'staticContent', 'title' =>'Static Content', 'entity' => 'Bigfoot\Bundle\ContentBundle\Entity\StaticContent'),
+            array('name' => 'user', 'title' =>'Users', 'entity' => 'Bigfoot\Bundle\UserBundle\Entity\BigfootUser'),
+            array('name' => 'menuItem', 'title' =>'Menu Item', 'entity' => 'Bigfoot\Bundle\NavigationBundle\Entity\Item')
+        )));
         $widgetParam1->setWidget($widgetRecentActivity);
         $manager->persist($widgetParam1);
 

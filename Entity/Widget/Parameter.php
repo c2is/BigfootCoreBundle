@@ -31,7 +31,7 @@ class Parameter
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="string", length=255)
+     * @ORM\Column(name="value", type="text")
      */
     protected $value;
 
@@ -112,14 +112,14 @@ class Parameter
     public function setWidget(\Bigfoot\Bundle\CoreBundle\Entity\Widget $widget = null)
     {
         $this->widget = $widget;
-    
+
         return $this;
     }
 
     /**
      * Get widget
      *
-     * @return \Bigfoot\Bundle\CoreBundle\Entity\Widget 
+     * @return \Bigfoot\Bundle\CoreBundle\Entity\Widget
      */
     public function getWidget()
     {
@@ -135,14 +135,14 @@ class Parameter
     public function setUser(\Bigfoot\Bundle\UserBundle\Entity\BigfootUser $user = null)
     {
         $this->user = $user;
-    
+
         return $this;
     }
 
     /**
      * Get user
      *
-     * @return \Bigfoot\Bundle\UserBundle\Entity\BigfootUser 
+     * @return \Bigfoot\Bundle\UserBundle\Entity\BigfootUser
      */
     public function getUser()
     {
