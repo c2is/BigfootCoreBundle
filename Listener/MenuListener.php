@@ -2,37 +2,87 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Listener;
 
+use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Doctrine\ORM\EntityManager;
+
 use Bigfoot\Bundle\CoreBundle\Event\MenuEvent;
-use Bigfoot\Bundle\CoreBundle\Theme\Menu\Item;
 
 /**
- * Adds the settings menu and tags management submenu into the sidebar.
- *
- * Class MenuListener
- * @package Bigfoot\Bundle\CoreBundle\Listener
+ * Menu Listener
  */
-class MenuListener
+class MenuListener implements EventSubscriberInterface
 {
     /**
-     * @param MenuEvent $event
+     * Get subscribed events
+     *
+     * @return array
      */
-    public function onMenuGenerate(MenuEvent $event)
+    public static function getSubscribedEvents()
     {
-        $menu = $event->getMenu();
+        return array(
+            MenuEvent::GENERATE_MAIN => 'onGenerateMain',
+        );
+    }
 
-        if ($menu->getName() == 'sidebar_menu')
-        {
-            if ($settings = $menu->getItem('sidebar_settings')) {
-                $settings->setLabel('Settings');
-            } else {
-                $settings = new Item('sidebar_settings', 'Settings', null, array(), array(), 'wrench');
-                $menu->addItem($settings);
-            }
+    /**
+     * @param GenericEvent $event
+     */
+    public function onGenerateMain(GenericEvent $event)
+    {
+        $menu          = $event->getSubject();
+        $structureMenu = $menu->getChild('structure');
 
-            $tagsMenu = new Item('sidebar_tags', 'Tags', null, array(), array(), 'tags');
-            $tagsMenu->addChild(new Item('sidebar_settings_tags_category', 'Categories', 'admin_tag_category', array(), array(), 'sitemap'));
-            $tagsMenu->addChild(new Item('sidebar_settings_tags_tag', 'Tags', 'admin_tag', array(), array(), 'tag'));
-            $menu->addItem($tagsMenu);
-        }
+        $tagMenu = $structureMenu->addChild(
+            'tag_menu',
+            array(
+                'label'          => 'Tag',
+                'url'            => '#',
+                'linkAttributes' => array(
+                    'class' => 'dropdown-toggle',
+                    'icon'  => 'tag',
+                )
+            )
+        );
+
+        $tagMenu->setChildrenAttributes(
+            array(
+                'class' => 'submenu',
+            )
+        );
+
+        $tagMenu->addChild(
+            'category',
+            array(
+                'label'  => 'Category',
+                'route'  => 'admin_tag_category',
+                'extras' => array(
+                    'routes' => array(
+                        'admin_tag_category_new',
+                        'admin_tag_category_edit'
+                    )
+                ),
+                'linkAttributes' => array(
+                    'icon' => 'double-angle-right',
+                )
+            )
+        );
+
+        $tagMenu->addChild(
+            'tag',
+            array(
+                'label'  => 'Tag',
+                'route'  => 'admin_tag',
+                'extras' => array(
+                    'routes' => array(
+                        'admin_tag_new',
+                        'admin_tag_edit'
+                    )
+                ),
+                'linkAttributes' => array(
+                    'icon' => 'double-angle-right',
+                )
+            )
+        );
     }
 }

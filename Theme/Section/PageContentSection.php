@@ -21,11 +21,11 @@ class PageContentSection extends AbstractSection
      */
     protected function setDefaultParameters()
     {
-        $menu = $this->container->get('bigfoot.menu_factory')->getMenu('actions_menu');
+        // $menu = $this->container->get('bigfoot.menu_factory')->getMenu('actions_menu');
 
         $this->parameters = array(
             'title'         => '',
-            'globalActions' => $menu,
+            // 'globalActions' => $menu,
         );
     }
 }

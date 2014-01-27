@@ -2,45 +2,10 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Event;
 
-use Bigfoot\Bundle\CoreBundle\Theme\Menu\Menu;
-
-use Symfony\Component\EventDispatcher\Event;
-
 /**
- * Class MenuEvent
- * @package Bigfoot\Bundle\CoreBundle\Event
+ * Menu Event
  */
-class MenuEvent extends Event
+final class MenuEvent
 {
-    /**
-     * @var \Bigfoot\Bundle\CoreBundle\Theme\Menu\Menu
-     */
-    protected $menu;
-
-    /**
-     * @param Menu $menu
-     */
-    public function __construct(Menu $menu)
-    {
-        $this->menu = $menu;
-    }
-
-    /**
-     * @return Menu
-     */
-    public function getMenu()
-    {
-        return $this->menu;
-    }
-
-    /**
-     * @param $menu
-     * @return $this
-     */
-    public function setMenu($menu)
-    {
-        $this->menu = $menu;
-
-        return $this;
-    }
+    const GENERATE_MAIN = 'bigfoot_core.event.menu.generate_main';
 }
