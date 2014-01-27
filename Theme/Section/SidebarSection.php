@@ -21,10 +21,10 @@ class SidebarSection extends AbstractSection
      */
     protected function setDefaultParameters()
     {
-        $menu = $this->container->get('bigfoot.menu_factory')->getMenu('sidebar_menu');
+        // $menu = $this->container->get('bigfoot.menu_factory')->getMenu('sidebar_menu');
 
         $this->parameters = array(
-            'menu'  => $menu,
+            // 'menu'  => $menu,
         );
     }
 }

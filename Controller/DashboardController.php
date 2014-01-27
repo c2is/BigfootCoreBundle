@@ -14,13 +14,6 @@ use Doctrine\ORM\Query;
 
 class DashboardController extends ContainerAware
 {
-    protected  $container;
-
-    public function __construct($container)
-    {
-        $this->container = $container;
-    }
-
     public function getBoard()
     {
         $user = $this->container->get('security.context')->getToken()->getUser();
