@@ -20,6 +20,8 @@ abstract class AbstractWidget
      */
     protected $title;
 
+    protected $id;
+
     /**
      * @var array
      */
@@ -68,6 +70,22 @@ abstract class AbstractWidget
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+       return  $this->id;
+    }
+
+    /**
+     * @param $title
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     /**

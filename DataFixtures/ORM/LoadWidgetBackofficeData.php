@@ -31,9 +31,16 @@ class LoadWidgetBackofficeData implements FixtureInterface
         $widgetParam1->setValue(1);
         $widgetParam1->setWidget($widgetRecentActivity);
         $manager->persist($widgetParam1);
+
         $widgetParam1 = new WidgetBackoffice\Parameter();
         $widgetParam1->setName('width');
         $widgetParam1->setValue(6);
+        $widgetParam1->setWidget($widgetRecentActivity);
+        $manager->persist($widgetParam1);
+
+        $widgetParam1 = new WidgetBackoffice\Parameter();
+        $widgetParam1->setName('follow_entities');
+        $widgetParam1->setValue(serialize(array('Bigfoot\Bundle\ContentBundle\Entity\Page')));
         $widgetParam1->setWidget($widgetRecentActivity);
         $manager->persist($widgetParam1);
 
