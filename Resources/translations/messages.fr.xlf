@@ -134,6 +134,22 @@
                 <source>No history found</source>
                 <target>Pas d'historique trouvé</target>
             </trans-unit>
+            <trans-unit id="34">
+                <source>Show history from last</source>
+                <target>Voir l'historique pour les</target>
+            </trans-unit>
+            <trans-unit id="35">
+                <source>days</source>
+                <target>jours</target>
+            </trans-unit>
+            <trans-unit id="36">
+                <source>today</source>
+                <target>aujourd'hui</target>
+            </trans-unit>
+            <trans-unit id="37">
+                <source>yesterday</source>
+                <target>hier</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
