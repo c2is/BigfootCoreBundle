@@ -9,7 +9,6 @@
 {% endmacro %}
 
 {% block linkElement %}
-
     <a href="{{ item.uri }}">
         <i class="icon-{{ item.linkAttributes['icon']|default('list-alt') }}"></i>
         <span class="menu-text">{{ block('label') }}</span> {% if item.children %}<b class="arrow icon-angle-down"></b>{% endif %}
