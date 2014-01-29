@@ -17,6 +17,7 @@ class TranslatableLabelType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $valueType = ($options['data']->getIsMultilines()) ? 'textarea': 'text';
         $builder
             ->add('name', 'text', array(
                 'read_only' => true,
@@ -24,7 +25,7 @@ class TranslatableLabelType extends AbstractType
             ->add('description', 'text', array(
                 'read_only' => true,
             ))
-            ->add('value', 'text')
+            ->add('value', $valueType)
             ->add('translation', 'translatable_entity');
 
     }
