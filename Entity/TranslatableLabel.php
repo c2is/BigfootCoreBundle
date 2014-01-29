@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Class TranslatableLabel
  * @ORM\Entity
- * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_locale", columns={"name", "domain", "locale"})})
+ * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_domain", columns={"name", "domain"})})
  * @package Bigfoot\Bundle\CoreBundle\Entity
  */
 class TranslatableLabel
@@ -32,13 +32,6 @@ class TranslatableLabel
     /**
      * @var string
      *
-     * @ORM\Column(name="locale", type="string", length=5)
-     */
-    private $locale;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
@@ -46,6 +39,7 @@ class TranslatableLabel
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @ORM\Column(name="value", type="string", length=255)
      */
     private $value;
@@ -53,9 +47,29 @@ class TranslatableLabel
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
+
+    /**
+     *  var boolean
+     *
+     * @ORM\Column(name="is_pluralization", type="boolean")
+     */
+    private $isPluralization = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_multilines", type="boolean")
+     */
+    private $isMultilines = false;
+
+    /**
+     * @Gedmo\Locale
+     */
+    protected $locale;
 
     /**
      * @param int $id
@@ -91,24 +105,6 @@ class TranslatableLabel
     public function getDomain()
     {
         return $this->domain;
-    }
-
-    /**
-     * @param string $locale
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this->locale;
     }
 
     /**
@@ -163,5 +159,59 @@ class TranslatableLabel
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set isPluralization
+     *
+     * @param boolean $isPluralization
+     * @return TranslatableLabel
+     */
+    public function setIsPluralization($isPluralization)
+    {
+        $this->isPluralization = $isPluralization;
+
+        return $this;
+    }
+
+    /**
+     * Get isPluralization
+     *
+     * @return boolean
+     */
+    public function getIsPluralization()
+    {
+        return $this->isPluralization;
+    }
+
+    /**
+     * Set isMultilines
+     *
+     * @param boolean $isMultilines
+     * @return TranslatableLabel
+     */
+    public function setIsMultilines($isMultilines)
+    {
+        $this->isMultilines = $isMultilines;
+
+        return $this;
+    }
+
+    /**
+     * Get isMultilines
+     *
+     * @return boolean
+     */
+    public function getIsMultilines()
+    {
+        return $this->isMultilines;
+    }
+
+    /**
+     * @param $locale
+     */
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

@@ -97,7 +97,11 @@ class TranslationSubscriber implements EventSubscriberInterface {
                                     $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
                                     // and then set the form type and the data
                                     $fieldAttr = $parentForm->get($field)->getConfig()->getOption('attr');
-                                    $form->add(sprintf("%s-%s", $field, $locale), $fieldType, array('data' => $translation, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale))));
+                                    $fieldOptions = array('data' => $translation, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale)));
+                                    if ($parentForm->get($field)->getConfig()->getOption('read_only')) {
+                                        $fieldOptions['read_only'] = $parentForm->get($field)->getConfig()->getOption('read_only');
+                                    }
+                                    $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $fieldOptions);
                                 }
                             }
                         }
