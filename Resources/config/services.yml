@@ -10,6 +10,7 @@ parameters:
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
     route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
     translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
+    label_translatable_type.class: "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\LabelTranslatedEntityType"
     sortable_type.class:          "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
     available_languages:          [ 'fr', 'en' ]
 services:
@@ -65,6 +66,12 @@ services:
         arguments: [ @service_container, '%available_languages%' ]
         tags:
             - { name: form.type, alias: translatable_entity }
+    # Label translation in forms
+    form.type.label_translatable:
+        class: %label_translatable_type.class%
+        arguments: [ @service_container, '%available_languages%' ]
+        tags:
+            - { name: form.type, alias: label_translatable_entity }
     # Sortable form type
     form.type.sortable:
         class: %sortable_type.class%
