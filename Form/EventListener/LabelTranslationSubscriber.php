@@ -16,7 +16,7 @@ use Symfony\Component\Form\FormEvents;
  *
  * @package Acme\DemoBundle\Form\EventListener
  */
-class TranslationSubscriber implements EventSubscriberInterface {
+class LabelTranslationSubscriber implements EventSubscriberInterface {
 
     protected $localeList;
     protected $doctrineService;
@@ -49,7 +49,10 @@ class TranslationSubscriber implements EventSubscriberInterface {
     {
         // Tells the dispatcher that you want to listen on the form.pre_set_data
         // event and that the preSetData method should be called.
-        return array(FormEvents::PRE_SET_DATA => 'preSetData', FormEvents::POST_SUBMIT => array('submit', -500));
+        return array(
+            FormEvents::PRE_SET_DATA => 'preSetData',
+            FormEvents::PRE_SUBMIT => 'preSubmit',
+            FormEvents::POST_SUBMIT => array('submit', -500));
     }
 
     /**
@@ -97,11 +100,41 @@ class TranslationSubscriber implements EventSubscriberInterface {
                                     $fieldType = $parentForm->get($field)->getConfig()->getType()->getInnerType();
                                     // and then set the form type and the data
                                     $fieldAttr = $parentForm->get($field)->getConfig()->getOption('attr');
-                                    $fieldOptions = array('data' => $translation, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale)));
-                                    if ($parentForm->get($field)->getConfig()->getOption('read_only')) {
-                                        $fieldOptions['read_only'] = $parentForm->get($field)->getConfig()->getOption('read_only');
+
+                                    if ($parentData->getIsPluralization() && 'value' == $field) {
+                                        $pluralValues = explode('|', $translation);
+                                        $i = 0;
+                                        foreach($pluralValues as $pValue) {
+                                            preg_match('`([{[0-9]+}|\[[0-9]+,Inf\[) (.+)`', $pValue, $infos);
+                                            $form
+                                                ->add('value_'.$i.'_key-'.$locale, 'hidden', array(
+                                                    'mapped' => false,
+                                                    'data' => $infos[1],
+                                                    'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale))
+                                                ))
+                                                ->add('value_'.$i.'_value-'.$locale, 'text', array(
+                                                    'mapped' => false,
+                                                    'required' => false,
+                                                    'data' => $infos[2],
+                                                    'label' => 'Value for '.$infos[1],
+                                                    'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale))
+                                                ));
+                                            $i++;
+                                        }
+                                        $form
+                                            ->add(sprintf("%s-%s", $field, $locale), 'hidden')
+                                            ->add('nbPluralValues', 'hidden', array(
+                                                'mapped' => false,
+                                                'data' => count($pluralValues),
+                                            ))
+                                        ;
+                                    } else {
+                                        $fieldOptions = array('data' => $translation, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale)));
+                                        if ($parentForm->get($field)->getConfig()->getOption('read_only')) {
+                                            $fieldOptions['read_only'] = $parentForm->get($field)->getConfig()->getOption('read_only');
+                                        }
+                                        $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $fieldOptions);
                                     }
-                                    $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $fieldOptions);
                                 }
                             }
                         }
@@ -118,6 +151,32 @@ class TranslationSubscriber implements EventSubscriberInterface {
         } catch (\Exception $e) {
             // Case of a non entity object given to the parent form.
             // Unstranslatable case, throw exception
+            $secondException = new \Exception("The object that was given to the form you wanted to translate isn't an entity one. Untranslatable in this case.", $e->getCode(), $e);
+            throw $secondException;
+        }
+    }
+
+    public function preSubmit(FormEvent $event)
+    {
+        try{
+            $form = $event->getForm();
+            $data = $event->getData();
+
+            if (isset($data['nbPluralValues'])) {
+                foreach ($this->localeList as $locale) {
+                    if ($locale != $this->currentLocale) {
+                        $compiledArrayData = array();
+                        for ($i=0; $i < $data['nbPluralValues']; $i++) {
+                            $compiledArrayData[] = $data['value_'.$i.'_key-'.$locale].' '.$data['value_'.$i.'_value-'.$locale];
+                        }
+                        $data['value-'.$locale] = implode('|', $compiledArrayData);
+                        $event->setData($data);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Case of a non entity object given to the parent form.
+            // Unstranslatable case, throw exception.
             $secondException = new \Exception("The object that was given to the form you wanted to translate isn't an entity one. Untranslatable in this case.", $e->getCode(), $e);
             throw $secondException;
         }
@@ -147,7 +206,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 // Gets the translatable fields and their content
                 $translatableFields = $this->getTranslatableFields($entityClass);
                 $data = $event->getData();
-
                 foreach ($this->localeList as $locale) {
                     if ($locale != $this->currentLocale) {
                         // Here we extract the field values from the submitted data
@@ -160,7 +218,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
                         }
                     }
                 }
-
             }
         } catch (\Exception $e) {
             // Case of a non entity object given to the parent form.
@@ -200,7 +257,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
 
                 $params = array('required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale)));
                 $parentData = $parentForm->getData();
-
                 if ($parentData->getId() and $this->currentLocale != $this->defaultLocale) {
                     $parentData->setTranslatableLocale($this->defaultLocale);
                     $em = $this->doctrineService->getManagerForClass(get_class($parentData));
@@ -210,7 +266,36 @@ class TranslationSubscriber implements EventSubscriberInterface {
                     $parentData->setTranslatableLocale($this->currentLocale);
                 }
 
-                $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $params);
+                if ('value' == $field && $parentData->getIsPluralization()) {
+                    $pluralValues = explode('|', $parentData->getValue());
+                    $i = 0;
+                    foreach($pluralValues as $pValue) {
+                        preg_match('`([{[0-9]+}|\[[0-9]+,Inf\[) (.+)`', $pValue, $infos);
+                        $form
+                            ->add('value_'.$i.'_key-'.$locale, 'hidden', array(
+                                'mapped' => false,
+                                'data' => $infos[1],
+                                'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale))
+                            ))
+                            ->add('value_'.$i.'_value-'.$locale, 'text', array(
+                                'mapped' => false,
+                                'data' => "",
+                                'label' => 'Value for '.$infos[1],
+                                'attr' => array_merge($fieldAttr, array('data-field-name' => $field, 'data-locale' => $locale))
+                            ));
+                        $i++;
+                    }
+                    $form
+                        ->add(sprintf("%s-%s", $field, $locale), 'hidden')
+                        ->add('nbPluralValues', 'hidden', array(
+                            'mapped' => false,
+                            'data' => count($pluralValues),
+                        ))
+                    ;
+                } else {
+                    $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $params);
+                }
+
             }
         }
     }

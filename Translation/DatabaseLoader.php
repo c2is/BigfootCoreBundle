@@ -21,7 +21,6 @@ class DatabaseLoader implements LoaderInterface
 
         $repository = $this->entityManager->getRepository('BigfootCoreBundle:TranslatableLabel');
         $translatableLabels = $repository->findBy(array(
-            'locale' => $locale,
             'domain' => $domain,
         ));
 
