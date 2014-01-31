@@ -37,8 +37,6 @@ class Builder
     {
         $menu = $this->factory->createItem('main');
 
-        $menu->setCurrentUri($request->getRequestUri());
-
         $menu->setChildrenAttributes(
             array(
                 'class' => 'nav nav-list',
