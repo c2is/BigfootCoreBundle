@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
@@ -341,11 +342,57 @@ abstract class CrudController extends BaseController
                 )
             );
 
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse(
+                    array(
+                        'status'  => true,
+                        'message' => 'Successfully created!',
+                        'modal'   => 'add-item',
+                        'url'     => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
+                    )
+                );
+            } else {
+                return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+            }
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            $content = $this->renderView(
+                'BigfootNavigationBundle:Item:edit.html.twig',
+                array(
+                    'form'         => $form->createView(),
+                    'form_method'  => $request->getMethod(),
+                    'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
+                    'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
+                    'form_submit'  => 'Create',
+                    'cancel_route' => $this->getRouteNameForAction('index'),
+                    'isAjax'       => $request->isXmlHttpRequest(),
+                    'breadcrumbs'  => array(
+                        array(
+                            'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'label' => $this->getEntityLabelPlural()
+                        ),
+                        array(
+                            'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
+                            'label' => sprintf('%s creation', $this->getEntityLabel())
+                        ),
+                    ),
+                )
+            );
+
+            return new JsonResponse(
+                array(
+                    'status'  => false,
+                    'message' => 'Error during addition!',
+                    'modal'   => 'add-item',
+                    'content' => $content
+                )
+            );
         }
 
         return array(
             'form'         => $form->createView(),
+            'form_method'  => $request->getMethod(),
             'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
             'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
             'form_submit'  => 'Create',
@@ -378,6 +425,7 @@ abstract class CrudController extends BaseController
 
         return array(
             'form'         => $form->createView(),
+            'form_method'  => $this->getRequest()->getMethod(),
             'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
             'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
             'form_submit'  => 'Create',

@@ -1,1 +1,13 @@
-{% extends bigfoot_theme_bundle ~ '::base.list.html.twig' %}
+{% extends bigfoot_theme_bundle ~ '::layout.html.twig' %}
+
+{% block content %}
+    {% include bigfoot_theme_bundle ~ ':crud:index.html.twig'
+        with {
+            'list_title'   : list_title,
+            'list_fields'  : list_fields,
+            'list_items'   : list_items,
+            'globalActions': globalActions,
+            'actions'      : actions,
+        }
+    %}
+{% endblock %}

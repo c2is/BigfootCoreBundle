@@ -62,7 +62,7 @@ class TagController extends CrudController
      *
          * @Route("/", name="admin_tag_create")
      * @Method("POST")
-     * @Template("BigfootCoreBundle:crud:new.html.twig")
+     * @Template("BigfootCoreBundle:crud:form.html.twig")
          */
     public function createAction(Request $request)
     {
@@ -75,7 +75,7 @@ class TagController extends CrudController
      *
          * @Route("/new", name="admin_tag_new")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:new.html.twig")
+     * @Template("BigfootCoreBundle:crud:form.html.twig")
          */
     public function newAction()
     {
@@ -88,7 +88,7 @@ class TagController extends CrudController
      *
          * @Route("/{id}/edit", name="admin_tag_edit")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:edit.html.twig")
+     * @Template("BigfootCoreBundle:crud:form.html.twig")
          */
     public function editAction($id)
     {
@@ -101,7 +101,7 @@ class TagController extends CrudController
      *
          * @Route("/{id}", name="admin_tag_update")
      * @Method("PUT")
-     * @Template("BigfootCoreBundle:crud:edit.html.twig")
+     * @Template("BigfootCoreBundle:crud:form.html.twig")
          */
     public function updateAction(Request $request, $id)
     {
