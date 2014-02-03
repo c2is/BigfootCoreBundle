@@ -1,15 +1,5 @@
-{% extends bigfoot_theme_bundle ~ '::layout.html.twig' %}
+{% extends bigfoot_theme_bundle ~ ':Crud:form.html.twig' %}
 
-{% block content %}
-    {% include bigfoot_theme_bundle ~ ':crud:form.html.twig'
-        with {
-            'form'             : form,
-            'form_action'      : form_action,
-            'form_method'      : form_method,
-            'form_title'       : form_title|default('Edition')|trans,
-            'form_submit'      : form_submit|default('Submit')|trans,
-            'form_cancel'      : form_cancel|default('Cancel')|trans,
-            'form_cancel_route': form_cancel_route|default(''),
-        }
-    %}
+{% block form %}
+    {{ form_rest(form) }}
 {% endblock %}

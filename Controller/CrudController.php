@@ -11,7 +11,6 @@ use Doctrine\ORM\Query;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Controller\BaseController;
-use Bigfoot\Bundle\CoreBundle\Theme\Menu\Item;
 use Bigfoot\Bundle\UserBundle\Entity\BigfootUser;
 
 /**
@@ -154,6 +153,16 @@ abstract class CrudController extends BaseController
         return array('bundle' => $bundleName, 'entity' => $entityName);
     }
 
+    public function getIndexTemplate()
+    {
+        return $this->container->getParameter('bigfoot.theme.bundle').':Crud:index.html.twig';
+    }
+
+    public function getFormTemplate()
+    {
+        return $this->container->getParameter('bigfoot.theme.bundle').':Crud:form.html.twig';
+    }
+
     /**
      * Will be used as a label for the "add new" menu item.
      *
@@ -239,18 +248,21 @@ abstract class CrudController extends BaseController
                 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
             );
 
-        return array(
-            'list_items'    => $this->getPagination($query, 10),
-            'list_title'    => $this->getEntityLabelPlural(),
-            'list_fields'   => $this->getFields(),
-            'actions'       => $this->getActions(),
-            'globalActions' => $this->getGlobalActions(),
-            'breadcrumbs'   => array(
-                array(
-                    'label' => $this->getEntityLabelPlural(),
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                )
-            ),
+        return $this->render(
+            $this->getIndexTemplate(),
+            array(
+                'list_items'    => $this->getPagination($query, 10),
+                'list_title'    => $this->getEntityLabelPlural(),
+                'list_fields'   => $this->getFields(),
+                'actions'       => $this->getActions(),
+                'globalActions' => $this->getGlobalActions(),
+                'breadcrumbs'   => array(
+                    array(
+                        'label' => $this->getEntityLabelPlural(),
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                    )
+                ),
+            )
         );
     }
 
@@ -358,15 +370,16 @@ abstract class CrudController extends BaseController
 
         if ($request->isXmlHttpRequest()) {
             $content = $this->renderView(
-                'BigfootNavigationBundle:Item:edit.html.twig',
+                $this->getFormTemplate(),
                 array(
                     'form'         => $form->createView(),
-                    'form_method'  => $request->getMethod(),
+                    'form_method'  => 'POST',
                     'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
                     'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
                     'form_submit'  => 'Create',
                     'cancel_route' => $this->getRouteNameForAction('index'),
                     'isAjax'       => $request->isXmlHttpRequest(),
+                    'modal'        => true,
                     'breadcrumbs'  => array(
                         array(
                             'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
@@ -390,24 +403,27 @@ abstract class CrudController extends BaseController
             );
         }
 
-        return array(
-            'form'         => $form->createView(),
-            'form_method'  => $request->getMethod(),
-            'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
-            'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
-            'form_submit'  => 'Create',
-            'cancel_route' => $this->getRouteNameForAction('index'),
-            'isAjax'       => $request->isXmlHttpRequest(),
-            'breadcrumbs'  => array(
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                    'label' => $this->getEntityLabelPlural()
+        return $this->render(
+            $this->getFormTemplate(),
+            array(
+                'form'         => $form->createView(),
+                'form_method'  => 'POST',
+                'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
+                'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
+                'form_submit'  => 'Create',
+                'cancel_route' => $this->getRouteNameForAction('index'),
+                'isAjax'       => $request->isXmlHttpRequest(),
+                'breadcrumbs'  => array(
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                        'label' => $this->getEntityLabelPlural()
+                    ),
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
+                        'label' => sprintf('%s creation', $this->getEntityLabel())
+                    ),
                 ),
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
-                    'label' => sprintf('%s creation', $this->getEntityLabel())
-                ),
-            ),
+            )
         );
     }
 
@@ -423,24 +439,27 @@ abstract class CrudController extends BaseController
         $entity = new $entityClass();
         $form   = $this->createForm($this->getFormType(), $entity);
 
-        return array(
-            'form'         => $form->createView(),
-            'form_method'  => $this->getRequest()->getMethod(),
-            'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
-            'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
-            'form_submit'  => 'Create',
-            'cancel_route' => $this->getRouteNameForAction('index'),
-            'isAjax'       => $this->getRequest()->isXmlHttpRequest(),
-            'breadcrumbs'  => array(
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                    'label' => $this->getEntityLabelPlural()
+        return $this->render(
+            $this->getFormTemplate(),
+            array(
+                'form'         => $form->createView(),
+                'form_method'  => 'POST',
+                'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
+                'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
+                'form_submit'  => 'Create',
+                'cancel_route' => $this->getRouteNameForAction('index'),
+                'isAjax'       => $this->getRequest()->isXmlHttpRequest(),
+                'breadcrumbs'  => array(
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                        'label' => $this->getEntityLabelPlural()
+                    ),
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
+                        'label' => sprintf('%s creation', $this->getEntityLabel())
+                    ),
                 ),
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
-                    'label' => sprintf('%s creation', $this->getEntityLabel())
-                ),
-            ),
+            )
         );
     }
 
@@ -461,26 +480,27 @@ abstract class CrudController extends BaseController
 
         $editForm = $this->createForm($this->getFormType(), $entity);
 
-        $parameters = array(
-            'form'              => $editForm->createView(),
-            'form_method'       => 'PUT',
-            'form_action'       => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
-            'form_cancel_route' => $this->getRouteNameForAction('index'),
-            'form_title'        => sprintf('%s edit', $this->getEntityLabel()),
-            'isAjax'            => $this->getRequest()->isXmlHttpRequest(),
-            'breadcrumbs'       => array(
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                    'label' => $this->getEntityLabelPlural()
+        return $this->render(
+            $this->getFormTemplate(),
+            array(
+                'form'              => $editForm->createView(),
+                'form_method'       => 'GET',
+                'form_action'       => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+                'form_cancel_route' => $this->getRouteNameForAction('index'),
+                'form_title'        => sprintf('%s edit', $this->getEntityLabel()),
+                'isAjax'            => $this->getRequest()->isXmlHttpRequest(),
+                'breadcrumbs'       => array(
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                        'label' => $this->getEntityLabelPlural()
+                    ),
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
+                        'label' => sprintf('%s edit', $this->getEntityLabel())
+                    ),
                 ),
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
-                    'label' => sprintf('%s edit', $this->getEntityLabel())
-                ),
-            ),
+            )
         );
-
-        return $parameters;
     }
 
     /**
@@ -504,7 +524,7 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
         }
 
-        $editForm   = $this->createForm($this->getFormType(), $entity);
+        $editForm = $this->createForm($this->getFormType(), $entity);
         $editForm->submit($request);
 
         if ($editForm->isValid()) {
@@ -573,24 +593,27 @@ abstract class CrudController extends BaseController
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
-        return array(
-            'form'               => $editForm->createView(),
-            'form_method'        => 'PUT',
-            'form_action'        => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
-            'form_cancel_route'  => $this->getRouteNameForAction('index'),
-            'form_title'         => sprintf('%s edit', $this->getEntityLabel()),
-            'delete_form_action' => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
-            'isAjax'             => $request->isXmlHttpRequest(),
-            'breadcrumbs'        => array(
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                    'label' => $this->getEntityLabelPlural()
+        return $this->render(
+            $this->getFormTemplate(),
+            array(
+                'form'               => $editForm->createView(),
+                'form_method'        => 'POST',
+                'form_action'        => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
+                'form_cancel_route'  => $this->getRouteNameForAction('index'),
+                'form_title'         => sprintf('%s edit', $this->getEntityLabel()),
+                'delete_form_action' => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
+                'isAjax'             => $request->isXmlHttpRequest(),
+                'breadcrumbs'        => array(
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
+                        'label' => $this->getEntityLabelPlural()
+                    ),
+                    array(
+                        'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
+                        'label' => sprintf('%s edit', $this->getEntityLabel())
+                    ),
                 ),
-                array(
-                    'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
-                    'label' => sprintf('%s edit', $this->getEntityLabel())
-                ),
-            ),
+            )
         );
     }
 

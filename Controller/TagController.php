@@ -37,7 +37,10 @@ class TagController extends CrudController
 
     protected function getFields()
     {
-        return array('id' => 'ID', 'name' => 'Name');
+        return array(
+            'id'   => 'ID',
+            'name' => 'Name'
+        );
     }
 
     protected function getEntityLabelPlural()
@@ -50,7 +53,6 @@ class TagController extends CrudController
      *
      * @Route("/", name="admin_tag")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:index.html.twig")
      */
     public function indexAction()
     {
@@ -60,63 +62,55 @@ class TagController extends CrudController
     /**
      * Creates a new Tag entity.
      *
-         * @Route("/", name="admin_tag_create")
+     * @Route("/", name="admin_tag_create")
      * @Method("POST")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
-         */
+     */
     public function createAction(Request $request)
     {
-
-            return $this->doCreate($request);
-        }
+        return $this->doCreate($request);
+    }
 
     /**
      * Displays a form to create a new Tag entity.
      *
-         * @Route("/new", name="admin_tag_new")
+     * @Route("/new", name="admin_tag_new")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
-         */
+     */
     public function newAction()
     {
-
-            return $this->doNew();
-        }
+        return $this->doNew();
+    }
 
     /**
      * Displays a form to edit an existing Tag entity.
      *
-         * @Route("/{id}/edit", name="admin_tag_edit")
+     * @Route("/{id}/edit", name="admin_tag_edit")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
-         */
+     */
     public function editAction($id)
     {
-
-            return $this->doEdit($id);
-        }
+        return $this->doEdit($id);
+    }
 
     /**
      * Edits an existing Tag entity.
      *
-         * @Route("/{id}", name="admin_tag_update")
-     * @Method("PUT")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
-         */
+     * @Route("/{id}", name="admin_tag_update")
+     * @Method("GET|POST|PUT")
+     */
     public function updateAction(Request $request, $id)
     {
+        return $this->doUpdate($request, $id);
+    }
 
-            return $this->doUpdate($request, $id);
-        }
     /**
      * Deletes a Tag entity.
      *
-         * @Route("/{id}", name="admin_tag_delete")
-     * @Method("DELETE")
+     * @Route("/{id}/delete", name="admin_tag_delete")
+     * @Method("GET|DELETE")
      */
     public function deleteAction(Request $request, $id)
     {
-
         return $this->doDelete($request, $id);
     }
 

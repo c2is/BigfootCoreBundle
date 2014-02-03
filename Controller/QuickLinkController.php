@@ -42,7 +42,7 @@ class QuickLinkController extends CrudController
     protected function getFields()
     {
         return array(
-            'id'    => 'id',
+            'id'        => 'ID',
             'linkLabel' => 'linkLabel'
         );
     }

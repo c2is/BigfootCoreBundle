@@ -36,7 +36,10 @@ class TagCategoryController extends CrudController
 
     protected function getFields()
     {
-        return array('id' => 'ID', 'name' => 'Name');
+        return array(
+            'id'   => 'ID',
+            'name' => 'Name'
+        );
     }
 
     public function getEntityLabel()
@@ -54,7 +57,6 @@ class TagCategoryController extends CrudController
      *
      * @Route("/", name="admin_tag_category")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:index.html.twig")
      */
     public function indexAction()
     {
@@ -66,7 +68,6 @@ class TagCategoryController extends CrudController
      *
      * @Route("/", name="admin_tag_category_create")
      * @Method("POST")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
      */
     public function createAction(Request $request)
     {
@@ -78,7 +79,6 @@ class TagCategoryController extends CrudController
      *
      * @Route("/new", name="admin_tag_category_new")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
      */
     public function newAction()
     {
@@ -90,7 +90,6 @@ class TagCategoryController extends CrudController
      *
      * @Route("/{id}/edit", name="admin_tag_category_edit")
      * @Method("GET")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
      */
     public function editAction($id)
     {
@@ -101,8 +100,7 @@ class TagCategoryController extends CrudController
      * Edits an existing TagCategory entity.
      *
      * @Route("/{id}", name="admin_tag_category_update")
-     * @Method("PUT")
-     * @Template("BigfootCoreBundle:crud:form.html.twig")
+     * @Method("GET|POST|PUT")
      */
     public function updateAction(Request $request, $id)
     {
@@ -111,8 +109,8 @@ class TagCategoryController extends CrudController
     /**
      * Deletes a TagCategory entity.
      *
-     * @Route("/{id}", name="admin_tag_category_delete")
-     * @Method("DELETE")
+     * @Route("/{id}/delete", name="admin_tag_category_delete")
+     * @Method("GET|DELETE")
      */
     public function deleteAction(Request $request, $id)
     {
