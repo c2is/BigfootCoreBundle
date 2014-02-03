@@ -22,6 +22,6 @@ class CoreController extends BaseController
     {
         $board = $this->container->get('bigfoot.dashboard')->getBoard();
 
-        return $this->render(sprintf('%s::base.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array('dashboard' => $board));
+        return $this->render(sprintf('%s::layout.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array('dashboard' => $board));
     }
 }
