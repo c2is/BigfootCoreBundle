@@ -153,38 +153,10 @@ class QuickLinkController extends CrudController
      * Deletes a QuickLink entity.
      *
      * @Route("/delete/{id}", name="admin_quicklink_delete")
-     * @Method("GET")
+     * @Method("GET|DELETE")
      */
     public function deleteAction(Request $request, $id)
     {
-        $form = $this->createDeleteForm($id);
-        $form->submit($request);
-
-        $em = $this->container->get('doctrine')->getEntityManager();
-        $entity = $em->getRepository('BigfootCoreBundle:QuickLink')->findOneById($id);
-
-        if (!$entity) {
-            throw new NotFoundHttpException('Unable to find QuickLink entity.');
-        }
-
-        $em->remove($entity);
-        $em->flush();
-
-        return $this->redirect($request->headers->get('referer'));
-    }
-
-    /**
-     * Creates a form to delete a Sidebar entity by id.
-     *
-     * @param mixed $id The entity id
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    protected function createDeleteForm($id)
-    {
-        return $this->container->get('form.factory')->createBuilder('form', array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm()
-            ;
+        return $this->doDelete($request, $id);
     }
 }
