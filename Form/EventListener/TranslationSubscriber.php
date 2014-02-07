@@ -144,7 +144,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $translatableFields = $this->getTranslatableFields($entityClass);
                 $data = $event->getData();
 
-                foreach ($this->localeList as $locale) {
+                foreach ($this->localeList as $locale => $localeConf) {
                     if ($locale != $this->currentLocale) {
                         // Here we extract the field values from the submitted data
                         // Here type is useless, just used for getting the field
