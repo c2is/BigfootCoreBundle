@@ -11,7 +11,6 @@ parameters:
     route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
     translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
     sortable_type.class:          "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
-    available_languages:          [ 'fr', 'en' ]
 services:
     # Core controller listener ; used to set page title, breadcrumbs..
     kernel.listener.bigfoot_controller_listener:
@@ -62,7 +61,7 @@ services:
     # Entity translation in forms
     form.type.translatable:
         class: %translatable_type.class%
-        arguments: [ @service_container, '%available_languages%' ]
+        arguments: [ @service_container, '%bigfoot_core.languages.front%' ]
         tags:
             - { name: form.type, alias: translatable_entity }
     # Sortable form type
@@ -139,3 +138,9 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
         tags:
             - { name: kernel.event_subscriber }
+    # Twig
+    bigfoot_core.twig.locale_flags_extension:
+        class: Bigfoot\Bundle\CoreBundle\Twig\LocalesFlagsExtension
+        arguments: [ %bigfoot_core.languages.front% ]
+        tags:
+            - { name: twig.extension }

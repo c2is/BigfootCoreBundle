@@ -27,7 +27,28 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('from')->end()
                     ->end()
-                ->end();
+                ->end()
+                ->arrayNode('languages')
+                    ->children()
+                        ->arrayNode('back')
+                            ->prototype('scalar')->end()
+                            ->defaultValue(array('fr', 'en'))
+                        ->end()
+                        ->arrayNode('front')
+                            ->useAttributeAsKey('name')
+                                ->isRequired()
+                                ->requiresAtLeastOneElement()
+                                ->prototype('array')
+                                ->children()
+                                ->scalarNode('label')->isRequired()->end()
+                                ->scalarNode('value')->isRequired()->end()
+                                ->variableNode('parameters')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

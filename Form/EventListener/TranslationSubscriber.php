@@ -80,7 +80,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $translations = $repository->findTranslations($parentData);
 
                 // Iterating over the enabled locales
-                foreach ($this->localeList as $locale) {
+                foreach ($this->localeList as $locale => $localeConfig) {
                     // Case of the default locale : do not display the form
                     if ($locale != $this->currentLocale) {
 
@@ -173,7 +173,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
      */
     private function addTranslationlessFields($translatableFields, $parentForm, $form)
     {
-        foreach ($this->localeList as $locale) {
+        foreach ($this->localeList as $locale => $localeConfig) {
             // We  add the fields without translation
             if ($locale != $this->currentLocale)
                 $this->addTranslationlessFieldsForLocale($translatableFields, $parentForm, $form, $locale);
