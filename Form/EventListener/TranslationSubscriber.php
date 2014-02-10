@@ -222,7 +222,17 @@ class TranslationSubscriber implements EventSubscriberInterface {
         // Here we use reflection to get the class
         $reflectionClass = new \ReflectionClass($className);
         $translatableFields = array();
-        // and its entities
+
+        do {
+            $translatableFields = array_merge($translatableFields, $this->getTranslatableFieldsFromClass($reflectionClass));
+        } while ($reflectionClass = $reflectionClass->getParentClass());
+
+        return $translatableFields;
+    }
+
+    private function getTranslatableFieldsFromClass($reflectionClass)
+    {
+        $translatableFields = array();
         $reflectionProperties = $reflectionClass->getProperties();
         foreach ($reflectionProperties as $reflectionProperty) {
             // We use the annotation reader to get the properties annotated with the "Translatable" annotation
@@ -233,6 +243,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 $translatableFields[$reflectionProperty->getName()] = $mappingAnnotation->type;
             }
         }
+
         return $translatableFields;
     }
 }
