@@ -15,7 +15,7 @@ use Bigfoot\Bundle\CoreBundle\Controller\CrudController;
  * Tag controller.
  *
  * @Cache(maxage="0", smaxage="0", public="false")
- * @Route("/admin/tag")
+ * @Route("/tag")
  */
 class TagController extends CrudController
 {

@@ -35,7 +35,7 @@ class Builder
 
     public function createMainMenu(Request $request)
     {
-        $menu = $this->factory->createItem('main');
+        $menu = $this->factory->createItem('Home');
 
         $menu->setChildrenAttributes(
             array(

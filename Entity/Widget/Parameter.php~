@@ -42,7 +42,7 @@ class Parameter
     protected $widget;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bigfoot\Bundle\UserBundle\Entity\BigfootUser", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Bigfoot\Bundle\UserBundle\Entity\User", cascade={"persist"})
      * @ORM\JoinColumn(name="bigfoot_user_id", referencedColumnName="id")
      */
     protected $user;

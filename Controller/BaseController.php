@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
@@ -95,6 +96,26 @@ class BaseController extends Controller
         $this->get('session')->getFlashBag()->add($type, $text);
     }
 
+    protected function getThemeBundle()
+    {
+        return $this->container->getParameter('bigfoot.theme.bundle');
+    }
+
+    /**
+     * Render ajax
+     */
+    protected function renderAjax($status, $message, $content = null, $url = null)
+    {
+        return new JsonResponse(
+            array(
+                'status'  => $status,
+                'message' => $message,
+                'content' => $content,
+                'url'     => $url,
+            )
+        );
+    }
+
     /**
      * Get Security Context
      *
@@ -151,5 +172,13 @@ class BaseController extends Controller
     protected function getUserManager()
     {
         return $this->get('bigfoot_user.manager.user');
+    }
+
+    /**
+     * Get the menu item manager
+     */
+    protected function getMenuItemManager()
+    {
+        return $this->get('bigfoot_navigation.manager.menu_item');
     }
 }
