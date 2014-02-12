@@ -19,9 +19,19 @@ abstract class AbstractMailer
         $this->entityManager = $entityManager;
     }
 
+    public function getManager()
+    {
+        return $this->entityManager;
+    }
+
     public function setMailer(\Swift_Mailer $mailer)
     {
         $this->mailer = $mailer;
+    }
+
+    public function getMailer()
+    {
+        return $this->mailer;
     }
 
     public function setTemplating(EngineInterface $templating)
@@ -29,14 +39,29 @@ abstract class AbstractMailer
         $this->templating = $templating;
     }
 
+    public function getTemplating()
+    {
+        return $this->templating;
+    }
+
     public function setTranslator(Translator $translator)
     {
         $this->translator = $translator;
     }
 
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+
     public function setMailFrom($mailFrom)
     {
         $this->mailFrom = $mailFrom;
+    }
+
+    public function getMailFrom()
+    {
+        return $this->mailFrom;
     }
 
     public function sendMail($subject, $to, $body)
