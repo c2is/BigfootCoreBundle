@@ -386,7 +386,7 @@ abstract class CrudController extends BaseController
         if ($request->isXmlHttpRequest() && $status == true) {
             return $this->handleSuccessResponse($entity, $action);
         } elseif ($request->isXmlHttpRequest() && $status == false) {
-            return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action)->getContent());
+            return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
         } elseif ($status == true) {
             return $this->redirect($action);
         }
@@ -434,7 +434,7 @@ abstract class CrudController extends BaseController
     /**
      * Render form
      */
-    protected function renderForm($form, $action, $entity = null)
+    protected function renderForm($form, $action, $entity)
     {
         return $this->render(
             $this->getFormTemplate(),
@@ -444,6 +444,7 @@ abstract class CrudController extends BaseController
                 'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
                 'form_action'  => $action,
                 'form_submit'  => 'Submit',
+                'entity'       => $entity,
                 'modal'        => ($this->getRequest()->query->get('modal')) ?: false,
                 'cancel_route' => $this->getRouteNameForAction('index'),
             )
