@@ -64,48 +64,25 @@ class TagCategoryController extends CrudController
     }
 
     /**
-     * Creates a new TagCategory entity.
-     *
-     * @Route("/", name="admin_tag_category_create")
-     * @Method("POST")
-     */
-    public function createAction(Request $request)
-    {
-        return $this->doCreate($request);
-    }
-
-    /**
      * Displays a form to create a new TagCategory entity.
      *
      * @Route("/new", name="admin_tag_category_new")
-     * @Method("GET")
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
-        return $this->doNew();
+        return $this->doNew($request);
     }
 
     /**
      * Displays a form to edit an existing TagCategory entity.
      *
      * @Route("/{id}/edit", name="admin_tag_category_edit")
-     * @Method("GET")
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
-        return $this->doEdit($id);
+        return $this->doEdit($request, $id);
     }
 
-    /**
-     * Edits an existing TagCategory entity.
-     *
-     * @Route("/{id}", name="admin_tag_category_update")
-     * @Method("GET|POST|PUT")
-     */
-    public function updateAction(Request $request, $id)
-    {
-        return $this->doUpdate($request, $id);
-    }
     /**
      * Deletes a TagCategory entity.
      *

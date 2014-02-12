@@ -59,48 +59,25 @@ class TagController extends CrudController
 
         return $this->doIndex();
     }
-    /**
-     * Creates a new Tag entity.
-     *
-     * @Route("/", name="admin_tag_create")
-     * @Method("POST")
-     */
-    public function createAction(Request $request)
-    {
-        return $this->doCreate($request);
-    }
 
     /**
      * Displays a form to create a new Tag entity.
      *
      * @Route("/new", name="admin_tag_new")
-     * @Method("GET")
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
-        return $this->doNew();
+        return $this->doNew($request);
     }
 
     /**
      * Displays a form to edit an existing Tag entity.
      *
      * @Route("/{id}/edit", name="admin_tag_edit")
-     * @Method("GET")
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
-        return $this->doEdit($id);
-    }
-
-    /**
-     * Edits an existing Tag entity.
-     *
-     * @Route("/{id}", name="admin_tag_update")
-     * @Method("GET|POST|PUT")
-     */
-    public function updateAction(Request $request, $id)
-    {
-        return $this->doUpdate($request, $id);
+        return $this->doEdit($request, $id);
     }
 
     /**

@@ -16,7 +16,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 class LoadWidgetBackofficeData implements FixtureInterface
 {
     public function load(ObjectManager $manager)
-    {
+    {/*
         $widgetRecentActivity = new WidgetBackoffice();
         $widgetRecentActivity->setName('Bigfoot\Bundle\CoreBundle\Widget\RecentActivity');
         $widgetRecentActivity->setTitle('Recent activity');
@@ -59,8 +59,8 @@ class LoadWidgetBackofficeData implements FixtureInterface
             array(
                 'name' => 'user',
                 'title' =>'Users',
-                'entity' => 'Bigfoot\Bundle\UserBundle\Entity\BigfootUser',
-                'controller' => 'Bigfoot\Bundle\UserBundle\Controller\BigfootUserController'),
+                'entity' => 'Bigfoot\Bundle\UserBundle\Entity\User',
+                'controller' => 'Bigfoot\Bundle\UserBundle\Controller\UserController'),
             array(
                 'name' => 'menuItem',
                 'title' =>'Menu Item',
@@ -70,7 +70,7 @@ class LoadWidgetBackofficeData implements FixtureInterface
         $widgetParam1->setWidget($widgetRecentActivity);
         $manager->persist($widgetParam1);
 
-        $manager->flush();
+        $manager->flush();*/
     }
 
     /**
