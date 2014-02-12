@@ -94,7 +94,6 @@ services:
         scope: request
         tags:
             - { name: form.type, alias: bigfoot_bundle_corebundle_quicklinktype }
-
     # DoshBoardController
     bigfoot.dashboard:
         class: Bigfoot\Bundle\CoreBundle\Controller\DashboardController
@@ -102,6 +101,8 @@ services:
             - [setContainer, ["@service_container"]]
         tags:
             - { name: bigfoot.dashboard, alias: dashboard }
+
+
     # Token generator
     bigfoot_core.generator.token_generator:
         class: Bigfoot\Bundle\CoreBundle\Generator\TokenGenerator
@@ -123,7 +124,7 @@ services:
             - @doctrine.orm.entity_manager
             - @security.context
             - @event_dispatcher
-    # Menu Factory
+    # Menu main
     bigfoot_core.menu.main:
         class: Knp\Menu\MenuItem
         factory_service: bigfoot_core.menu_builder
@@ -133,6 +134,16 @@ services:
             - @request
         tags:
             - { name: knp_menu.menu, alias: main }
+    # Menu test
+    bigfoot_core.menu.test:
+        class: Knp\Menu\MenuItem
+        factory_service: bigfoot_core.menu_builder
+        factory_method: createTestMenu
+        scope: request
+        arguments:
+            - @request
+        tags:
+            - { name: knp_menu.menu, alias: test }
     # Menu Listener
     bigfoot_core.listener.menu:
         class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener

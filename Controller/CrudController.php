@@ -5,9 +5,6 @@ namespace Bigfoot\Bundle\CoreBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
-use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
 
@@ -15,6 +12,7 @@ use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Controller\BaseController;
 use Bigfoot\Bundle\CoreBundle\Theme\Menu\Item;
 use Bigfoot\Bundle\UserBundle\Entity\BigfootUser;
+
 /**
  * Crud controller.
  *
@@ -342,17 +340,6 @@ abstract class CrudController extends BaseController
                     )
                 )
             );
-
-            if ($this->has('security.acl.provider')) {
-                $aclProvider    = $this->get('security.acl.provider');
-                $objectIdentity = ObjectIdentity::fromDomainObject($entity);
-                $acl            = $aclProvider->createAcl($objectIdentity);
-
-                $user             = $this->getUser();
-                $securityIdentity = UserSecurityIdentity::fromAccount($user);
-
-                $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_OWNER);
-            }
 
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
