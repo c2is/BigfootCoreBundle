@@ -42,7 +42,7 @@ class Parameter
     protected $widget;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bigfoot\Bundle\UserBundle\Entity\BigfootUser", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Bigfoot\Bundle\UserBundle\Entity\User", cascade={"persist"})
      * @ORM\JoinColumn(name="bigfoot_user_id", referencedColumnName="id")
      */
     protected $user;
@@ -129,10 +129,10 @@ class Parameter
     /**
      * Set user
      *
-     * @param \Bigfoot\Bundle\UserBundle\Entity\BigfootUser $user
+     * @param \Bigfoot\Bundle\UserBundle\Entity\User $user
      * @return Parameter
      */
-    public function setUser(\Bigfoot\Bundle\UserBundle\Entity\BigfootUser $user = null)
+    public function setUser(\Bigfoot\Bundle\UserBundle\Entity\User $user = null)
     {
         $this->user = $user;
 
@@ -142,7 +142,7 @@ class Parameter
     /**
      * Get user
      *
-     * @return \Bigfoot\Bundle\UserBundle\Entity\BigfootUser
+     * @return \Bigfoot\Bundle\UserBundle\Entity\User
      */
     public function getUser()
     {

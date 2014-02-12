@@ -11,7 +11,7 @@ use Doctrine\ORM\Query;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Controller\BaseController;
-use Bigfoot\Bundle\UserBundle\Entity\BigfootUser;
+use Bigfoot\Bundle\UserBundle\Entity\User;
 
 /**
  * Crud controller.
@@ -22,9 +22,8 @@ use Bigfoot\Bundle\UserBundle\Entity\BigfootUser;
  * Routes used by this helper are calculated from its name (self::getName()) suffixed with the action's name.
  * Actions used are :
  * index: name
- * edit: name_edit
- * create : name_create
- * update : name_update
+ * new  : name_new
+ * edit : name_edit
  *
  * This helper only works for CRUDing entities situated in the Entity directory for which a Type class exists in the Form directory and is named after the entity's name suffixed with Type (eg: for the entity Bigfoot/Bundle/CoreBundle/Entity/Tag and form type Bigfoot/Bundle/CoreBundle/Form/TagType)
  */
@@ -39,22 +38,6 @@ abstract class CrudController extends BaseController
      * @var string The entity name, calculated from getEntity().
      */
     private $entityName;
-
-    /**
-     * @return string Route to be used as the homepage for this controller
-     */
-    public function getControllerIndex()
-    {
-        return $this->getName();
-    }
-
-    /**
-     * @return string Title to be used in the BackOffice for routes implemented by this controller
-     */
-    public function getControllerTitle()
-    {
-        return sprintf('%s admin', $this->getEntityLabelPlural());
-    }
 
     /**
      * Used to generate route names.
@@ -80,6 +63,22 @@ abstract class CrudController extends BaseController
     abstract protected function getFields();
 
     /**
+     * @return string Route to be used as the homepage for this controller
+     */
+    public function getControllerIndex()
+    {
+        return $this->getName();
+    }
+
+    /**
+     * @return string Title to be used in the BackOffice for routes implemented by this controller
+     */
+    public function getControllerTitle()
+    {
+        return sprintf('%s admin', $this->getEntityLabelPlural());
+    }
+
+    /**
      * @return string
      */
     protected function getBundleName()
@@ -103,16 +102,25 @@ abstract class CrudController extends BaseController
         return $this->entityName;
     }
 
+    /**
+     * @return string
+     */
     protected function getEntityLabel()
     {
         return $this->getEntityName();
     }
 
+    /**
+     * @return string
+     */
     protected function getEntityLabelPlural()
     {
         return sprintf('%ss', $this->getEntityLabel());
     }
 
+    /**
+     * @return object
+     */
     protected function getFormType()
     {
         $formClass = $this->getEntityTypeClass();
@@ -153,14 +161,20 @@ abstract class CrudController extends BaseController
         return array('bundle' => $bundleName, 'entity' => $entityName);
     }
 
-    public function getIndexTemplate()
+    /**
+     * @return string
+     */
+    protected function getIndexTemplate()
     {
-        return $this->container->getParameter('bigfoot.theme.bundle').':Crud:index.html.twig';
+        return $this->getThemeBundle().':crud:index.html.twig';
     }
 
-    public function getFormTemplate()
+    /**
+     * @return string
+     */
+    protected function getFormTemplate()
     {
-        return $this->container->getParameter('bigfoot.theme.bundle').':Crud:form.html.twig';
+        return $this->getThemeBundle().':crud:form.html.twig';
     }
 
     /**
@@ -173,6 +187,9 @@ abstract class CrudController extends BaseController
         return sprintf('Add %s', $this->getEntityName());
     }
 
+    /**
+     * @return string
+     */
     protected function getRouteNameForAction($action)
     {
         if (!$action or $action == 'index') {
@@ -248,275 +265,56 @@ abstract class CrudController extends BaseController
                 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
             );
 
-        return $this->render(
-            $this->getIndexTemplate(),
-            array(
-                'list_items'    => $this->getPagination($query, 10),
-                'list_title'    => $this->getEntityLabelPlural(),
-                'list_fields'   => $this->getFields(),
-                'actions'       => $this->getActions(),
-                'globalActions' => $this->getGlobalActions(),
-                'breadcrumbs'   => array(
-                    array(
-                        'label' => $this->getEntityLabelPlural(),
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                    )
-                ),
-            )
-        );
+        return $this->renderIndex($query, 10);
     }
 
     /**
      * Helper inserting a new entity into the database using Doctrine.
-     * If the acl provider service is loaded, adds an ACE on the entity with an OWNER mask.
-     *
-     * If the creation form is not valid, returns an array containing the entity and the form view.
-     * If the creation form is valid, redirects to the index action.
-     *
-     * Meant to be used in a basic create action.
      *
      * @param Request $request
+     *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    protected function doCreate(Request $request)
+    protected function doNew(Request $request)
     {
         $entityClass = $this->getEntityClass();
+        $entity      = new $entityClass();
+        $form        = $this->createForm($this->getFormType(), $entity);
+        $action      = $this->generateUrl($this->getRouteNameForAction('new'));
 
-        $entity = new $entityClass();
-        $form   = $this->createForm($this->getFormType(), $entity);
-        $form->submit($request);
+        if ('POST' === $request->getMethod()) {
+            $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            if ($entity instanceof BigfootUser) {
-                $this->getUserManager()->updatePassword($entity);
-            }
+            if ($form->isValid()) {
+                $this->prePersist($entity);
 
-            $this->persistAndFlush($entity);
+                $this->persistAndFlush($entity);
 
-            $tabPreview            = $this->container->getParameter('preview');
-            $renderPreview         = array();
-            $itemToMenu            = array();
-
-            foreach ($tabPreview as $preview) {
-                if (isset($preview[$this->getEntity()]) && isset($preview[$this->getEntity()]['route'])) {
-                    $previewParameters = $preview[$this->getEntity()];
-                    $tabParameters     = array();
-                    $tabMenuParameters = array();
-
-                    if (isset($previewParameters['parameters']) && sizeof($previewParameters['parameters']) > 0) {
-                        foreach ($previewParameters['parameters'] as $parameter) {
-                            $accessor = PropertyAccess::createPropertyAccessor();
-                            $tabParameters[key($parameter)] = $accessor->getValue($entity, $parameter[key($parameter)]);
-                            $tabMenuParameters[] = $accessor->getValue($entity, $parameter[key($parameter)]);
-                        }
-                    }
-
-                    $renderPreview = array(
-                        'route' => $this->container->get('router')->generate($previewParameters['route'], $tabParameters, true),
-                        'label' => 'Preview',
-                        'type'  => 'success'
-                    );
-                    break;
+                if (!$request->isXmlHttpRequest()) {
+                    $this->addSuccessFlash('The %s has been created.');
                 }
-            }
 
-            if (isset($previewParameters['route']) && isset($tabMenuParameters)) {
-                $itemToMenu = array(
-                    'route' => $this->container->get('router')->generate('admin_menu_item_new', array('preview' => true, 'route' => $previewParameters['route'], 'value' => serialize($tabMenuParameters)), true),
-                    'label' => 'Add this page to menu',
-                    'type'  => 'success'
-                );
+                return $this->handleResponse($request, $entity, true, 'edit');
             }
-
-            $this->addFlash(
-                'success',
-                $this->render(
-                    'BigfootCoreBundle:includes:flash.html.twig',
-                    array(
-                        'icon'    => 'ok',
-                        'heading' => 'Success!',
-                        'message' => sprintf('The %s has been created.', $this->getEntityName()),
-                        'actions' => array(
-                            array(
-                                'route' => $this->generateUrl($this->getRouteNameForAction('index')),
-                                'label' => 'Back to the listing',
-                                'type'  => 'success',
-                            ),
-                            array(
-                                'route' => $this->generateUrl($this->getRouteNameForAction('new')),
-                                'label' => sprintf('Add a new %s', $this->getEntityName()),
-                                'type'  => 'success',
-                            ),
-                            $renderPreview,
-                            $itemToMenu
-                        )
-                    )
-                )
-            );
 
             if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(
-                    array(
-                        'status'  => true,
-                        'message' => 'Successfully created!',
-                        'modal'   => 'add-item',
-                        'url'     => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
-                    )
-                );
-            } else {
-                return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+                return $this->handleResponse($request, $entity, false, 'new', $form);
             }
         }
 
-        if ($request->isXmlHttpRequest()) {
-            $content = $this->renderView(
-                $this->getFormTemplate(),
-                array(
-                    'form'         => $form->createView(),
-                    'form_method'  => 'POST',
-                    'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
-                    'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
-                    'form_submit'  => 'Create',
-                    'cancel_route' => $this->getRouteNameForAction('index'),
-                    'isAjax'       => $request->isXmlHttpRequest(),
-                    'modal'        => true,
-                    'breadcrumbs'  => array(
-                        array(
-                            'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                            'label' => $this->getEntityLabelPlural()
-                        ),
-                        array(
-                            'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
-                            'label' => sprintf('%s creation', $this->getEntityLabel())
-                        ),
-                    ),
-                )
-            );
-
-            return new JsonResponse(
-                array(
-                    'status'  => false,
-                    'message' => 'Error during addition!',
-                    'modal'   => 'add-item',
-                    'content' => $content
-                )
-            );
-        }
-
-        return $this->render(
-            $this->getFormTemplate(),
-            array(
-                'form'         => $form->createView(),
-                'form_method'  => 'POST',
-                'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
-                'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
-                'form_submit'  => 'Create',
-                'cancel_route' => $this->getRouteNameForAction('index'),
-                'isAjax'       => $request->isXmlHttpRequest(),
-                'breadcrumbs'  => array(
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                        'label' => $this->getEntityLabelPlural()
-                    ),
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
-                        'label' => sprintf('%s creation', $this->getEntityLabel())
-                    ),
-                ),
-            )
-        );
+        return $this->renderForm($form, $action, $entity);
     }
 
     /**
-     * Helper instantiating a new entity and creating a form.
-     *
-     * @return array An array containing the entity and the form view.
-     */
-    protected function doNew()
-    {
-        $entityClass = $this->getEntityClass();
-
-        $entity = new $entityClass();
-        $form   = $this->createForm($this->getFormType(), $entity);
-
-        return $this->render(
-            $this->getFormTemplate(),
-            array(
-                'form'         => $form->createView(),
-                'form_method'  => 'POST',
-                'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
-                'form_action'  => $this->generateUrl($this->getRouteNameForAction('create')),
-                'form_submit'  => 'Create',
-                'cancel_route' => $this->getRouteNameForAction('index'),
-                'isAjax'       => $this->getRequest()->isXmlHttpRequest(),
-                'breadcrumbs'  => array(
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                        'label' => $this->getEntityLabelPlural()
-                    ),
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('new')),
-                        'label' => sprintf('%s creation', $this->getEntityLabel())
-                    ),
-                ),
-            )
-        );
-    }
-
-    /**
-     * Helper creating an edit form for the entity with id $id.
-     *
-     * @param $id
-     * @return array An array containing the entity, the edit form view and the delete form view.
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
-     */
-    protected function doEdit($id)
-    {
-        $entity = $this->getRepository($this->getEntity())->find($id);
-
-        if (!$entity) {
-            throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
-        }
-
-        $editForm = $this->createForm($this->getFormType(), $entity);
-
-        return $this->render(
-            $this->getFormTemplate(),
-            array(
-                'form'              => $editForm->createView(),
-                'form_method'       => 'GET',
-                'form_action'       => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
-                'form_cancel_route' => $this->getRouteNameForAction('index'),
-                'form_title'        => sprintf('%s edit', $this->getEntityLabel()),
-                'isAjax'            => $this->getRequest()->isXmlHttpRequest(),
-                'breadcrumbs'       => array(
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                        'label' => $this->getEntityLabelPlural()
-                    ),
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
-                        'label' => sprintf('%s edit', $this->getEntityLabel())
-                    ),
-                ),
-            )
-        );
-    }
-
-    /**
-     * Helper updating an existing entity into the database using Doctrine.
-     *
-     * If the edit form is not valid, returns an array containing the entity, the edit form view and the delete form view.
-     * If the edit form is valid, redirects to the edit action.
-     *
-     * Meant to be used in a basic update action.
+     * Helper creating an edit form for the entity with id.
      *
      * @param Request $request
-     * @param int $id
+     * @param int     $id
+     *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
      */
-    protected function doUpdate(Request $request, $id)
+    protected function doEdit(Request $request, $id)
     {
         $entity = $this->getRepository($this->getEntity())->find($id);
 
@@ -524,97 +322,30 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
         }
 
-        $editForm = $this->createForm($this->getFormType(), $entity);
-        $editForm->submit($request);
+        $form   = $this->createForm($this->getFormType(), $entity);
+        $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
 
-        if ($editForm->isValid()) {
-            if ($entity instanceof BigfootUser) {
-                $this->getUserManager()->updatePassword($entity);
-            }
+        if ('POST' === $request->getMethod()) {
+            $form->handleRequest($request);
 
-            $this->persistAndFlush($entity);
+            if ($form->isValid()) {
+                $this->prePersist($entity);
 
-            $tabPreview            = $this->container->getParameter('preview');
-            $renderPreview         = array();
-            $itemToMenu            = array();
+                $this->persistAndFlush($entity);
 
-            foreach ($tabPreview as $preview) {
-                if (isset($preview[$this->getEntity()]) && isset($preview[$this->getEntity()]['route'])) {
-                    $previewParameters = $preview[$this->getEntity()];
-                    $tabParameters     = array();
-                    $tabMenuParameters = array();
-
-                    if (isset($previewParameters['parameters']) && sizeof($previewParameters['parameters']) > 0) {
-                        foreach ($previewParameters['parameters'] as $parameter) {
-                            $accessor = PropertyAccess::createPropertyAccessor();
-                            $tabParameters[key($parameter)] = $accessor->getValue($entity, $parameter[key($parameter)]);
-                            $tabMenuParameters[] = $accessor->getValue($entity, $parameter[key($parameter)]);
-                        }
-                    }
-
-                    $renderPreview = array(
-                        'route' => $this->container->get('router')->generate($previewParameters['route'], $tabParameters, true),
-                        'label' => 'Preview',
-                        'type'  => 'success'
-                    );
-                    break;
+                if (!$request->isXmlHttpRequest()) {
+                    $this->addSuccessFlash('The %s has been updated.');
                 }
+
+                return $this->handleResponse($request, $entity, true, 'edit');
             }
 
-            if (isset($previewParameters['route']) && isset($tabMenuParameters)) {
-                $itemToMenu = array(
-                    'route' => $this->container->get('router')->generate('admin_menu_item_new', array('preview' => true, 'route' => $previewParameters['route'], 'value' => serialize($tabMenuParameters)), true),
-                    'label' => 'Add this page to menu',
-                    'type'  => 'success'
-                );
+            if ($request->isXmlHttpRequest()) {
+                return $this->handleResponse($request, $entity, false, 'edit', $form);
             }
-
-            $this->addFlash(
-                'success',
-                $this->render(
-                    'BigfootCoreBundle:includes:flash.html.twig',
-                    array(
-                        'icon'    => 'ok',
-                        'heading' => 'Success!',
-                        'message' => sprintf('The %s has been updated.', $this->getEntityName()),
-                        'actions' => array(
-                            array(
-                                'route' => $this->generateUrl($this->getRouteNameForAction('index')),
-                                'label' => 'Back to the listing',
-                                'type'  => 'success',
-                            ),
-                            $renderPreview,
-                            $itemToMenu
-                        )
-                    )
-                )
-            );
-
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
         }
 
-        return $this->render(
-            $this->getFormTemplate(),
-            array(
-                'form'               => $editForm->createView(),
-                'form_method'        => 'POST',
-                'form_action'        => $this->generateUrl($this->getRouteNameForAction('update'), array('id' => $entity->getId())),
-                'form_cancel_route'  => $this->getRouteNameForAction('index'),
-                'form_title'         => sprintf('%s edit', $this->getEntityLabel()),
-                'delete_form_action' => $this->generateUrl($this->getRouteNameForAction('delete'), array('id' => $entity->getId())),
-                'isAjax'             => $request->isXmlHttpRequest(),
-                'breadcrumbs'        => array(
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('index')),
-                        'label' => $this->getEntityLabelPlural()
-                    ),
-                    array(
-                        'url'   => $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())),
-                        'label' => sprintf('%s edit', $this->getEntityLabel())
-                    ),
-                ),
-            )
-        );
+        return $this->renderForm($form, $action, $entity);
     }
 
     /**
@@ -624,6 +355,7 @@ abstract class CrudController extends BaseController
      *
      * @param Request $request
      * @param $id
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
      */
@@ -637,18 +369,124 @@ abstract class CrudController extends BaseController
 
         $this->removeAndFlush($entity);
 
+        if (!$request->isXmlHttpRequest()) {
+            $this->addSuccessFlash('The %s has been deleted.');
+        }
+
+        return $this->handleResponse($request, null, true, 'index');
+    }
+
+    /**
+     * Handle response
+     */
+    protected function handleResponse(Request $request, $entity = null, $status, $actionName = null, $form = null)
+    {
+        $action = $this->getActionByName($entity, $actionName);
+
+        if ($request->isXmlHttpRequest() && $status == true) {
+            return $this->handleSuccessResponse($entity, $action);
+        } elseif ($request->isXmlHttpRequest() && $status == false) {
+            return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action)->getContent());
+        } elseif ($status == true) {
+            return $this->redirect($action);
+        }
+    }
+
+    /**
+     * Handle success response
+     */
+    protected function handleSuccessResponse($entity = null, $action = null)
+    {
+        return $this->renderAjax(true, 'Success, please wait...', null, $action);
+    }
+
+    /**
+     * Get action by name
+     */
+    protected function getActionByName($entity = null, $name)
+    {
+        if ($name == 'new') {
+            return $action = $this->generateUrl($this->getRouteNameForAction('new'));
+        } elseif ($name == 'edit') {
+            return $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
+        } else {
+            return $action = $this->generateUrl($this->getRouteNameForAction('index'));
+        }
+    }
+
+    /**
+     * Render index
+     */
+    protected function renderIndex($query, $nbrPerPage)
+    {
+        return $this->render(
+            $this->getIndexTemplate(),
+            array(
+                'list_items'    => $this->getPagination($query, 10),
+                'list_title'    => $this->getEntityLabelPlural(),
+                'list_fields'   => $this->getFields(),
+                'actions'       => $this->getActions(),
+                'globalActions' => $this->getGlobalActions(),
+            )
+        );
+    }
+
+    /**
+     * Render form
+     */
+    protected function renderForm($form, $action, $entity = null)
+    {
+        return $this->render(
+            $this->getFormTemplate(),
+            array(
+                'form'         => $form->createView(),
+                'form_method'  => 'POST',
+                'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
+                'form_action'  => $action,
+                'form_submit'  => 'Submit',
+                'modal'        => ($this->getRequest()->query->get('modal')) ?: false,
+                'cancel_route' => $this->getRouteNameForAction('index'),
+            )
+        );
+    }
+
+    /**
+     * Add sucess flash
+     */
+    protected function addSuccessFlash($message)
+    {
         $this->addFlash(
             'success',
-            $this->render(
-                'BigfootCoreBundle:includes:flash.html.twig',
+            $this->renderView(
+                $this->getThemeBundle().':layout:flash.html.twig',
                 array(
                     'icon'    => 'ok',
                     'heading' => 'Success!',
-                    'message' => sprintf('The %s has been deleted.', $this->getEntityName()),
+                    'message' => sprintf($message, $this->getEntityName()),
+                    'actions' => array(
+                        array(
+                            'route' => $this->generateUrl($this->getRouteNameForAction('index')),
+                            'label' => 'Back to the listing',
+                            'type'  => 'success',
+                        ),
+                        array(
+                            'route' => $this->generateUrl($this->getRouteNameForAction('new')),
+                            'label' => sprintf('Add a new %s', $this->getEntityName()),
+                            'type'  => 'success',
+                        )
+                    )
                 )
             )
         );
+    }
 
-        return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
+    /**
+     * Pre persit entity
+     *
+     * @param object $entity entity
+     */
+    protected function prePersist($entity)
+    {
+
     }
 }

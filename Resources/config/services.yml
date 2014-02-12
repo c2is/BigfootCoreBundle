@@ -8,7 +8,6 @@ parameters:
     theme.section.page_content:   "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageContentSection"
     theme.section.footer:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\FooterSection"
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
-    route_manager.class:          "Bigfoot\\Bundle\\CoreBundle\\Route\\RouteManager"
     translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
     sortable_type.class:          "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
     available_languages:          [ 'fr', 'en' ]
@@ -49,10 +48,6 @@ services:
         class:        "%theme.section.footer%"
         arguments:    [@service_container]
         public: false
-    # Route management
-    bigfoot.route_manager:
-        class:        "%route_manager.class%"
-        arguments:    [@service_container]
     # Tags management
     bigfoot.form.type.bigfoot_tag:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\BigfootTagType
@@ -104,9 +99,17 @@ services:
             - { name: bigfoot.dashboard, alias: dashboard }
 
 
+    # Route Manager
+    bigfoot_core.manager.route:
+        class: Bigfoot\Bundle\CoreBundle\Manager\RouteManager
+        arguments:
+            - @kernel
+            - @routing.loader
+
     # Token generator
-    bigfoot_core.generator.token_generator:
+    bigfoot_core.generator.token:
         class: Bigfoot\Bundle\CoreBundle\Generator\TokenGenerator
+
     # Abstract Mailer
     bigfoot_core.mailer.abstract:
         class: Bigfoot\Bundle\CoreBundle\Mailer\AbstractMailer
@@ -117,6 +120,7 @@ services:
             - [setTemplating, ["@templating"]]
             - [setTranslator, ["@translator"]]
             - [setMailFrom, [ "%bigfoot_core.mailer.from%" ]]
+
     # Menu Builder
     bigfoot_core.menu_builder:
         class: Bigfoot\Bundle\CoreBundle\Menu\Builder
@@ -125,6 +129,7 @@ services:
             - @doctrine.orm.entity_manager
             - @security.context
             - @event_dispatcher
+
     # Menu main
     bigfoot_core.menu.main:
         class: Knp\Menu\MenuItem
@@ -135,6 +140,7 @@ services:
             - @request
         tags:
             - { name: knp_menu.menu, alias: main }
+
     # Menu test
     bigfoot_core.menu.test:
         class: Knp\Menu\MenuItem
@@ -145,8 +151,18 @@ services:
             - @request
         tags:
             - { name: knp_menu.menu, alias: test }
+
     # Menu Listener
     bigfoot_core.listener.menu:
         class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
         tags:
             - { name: kernel.event_subscriber }
+
+    # Menu Extension
+    bigfoot_core.twig.extension.menu:
+        class: Bigfoot\Bundle\CoreBundle\Twig\Extension\MenuExtension
+        arguments:
+            - @knp_menu.helper
+            - @knp_menu.matcher
+        tags:
+            - { name: twig.extension }

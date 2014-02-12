@@ -1,8 +1,9 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Route;
+namespace Bigfoot\Bundle\CoreBundle\Manager;
 
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Bundle\FrameworkBundle\Routing\DelegatingLoader;
+use AppKernel;
 
 /**
  * Uses the Symfony2 route loader to store a specific set of routes.
@@ -11,15 +12,24 @@ use Symfony\Component\DependencyInjection\Container;
  * For your routes to be available, you must use the RouteManager::addBundle and pass the bundle name (eg: "BigfootCoreBundle").
  * All routes defined in the Controller/ directory in that bundle for which a "label" option is set will be loaded by the RouteManager.
  *
- * Class RouteManager
- * @package Bigfoot\Bundle\CoreBundle\Route
+ * RouteManager
+ * @package Bigfoot\Bundle\CoreBundle\Manager
  */
 class RouteManager
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\Container
+     * Route Loader
+     *
+     * @var object
      */
-    protected $container;
+    protected $routeLoader;
+
+    /**
+     * Kernel
+     *
+     * @var object
+     */
+    protected $kernel;
 
     /**
      * Stores the parsed routes for performance concerns.
@@ -44,14 +54,18 @@ class RouteManager
     protected $loaded;
 
     /**
-     * @param Container $container
+     * Construct RouteManager
+     *
+     * @param kernel      $kernel
+     * @param routeLoader $routeLoader
      */
-    public function __construct(Container $container)
+    public function __construct(AppKernel $kernel, DelegatingLoader $routeLoader)
     {
-        $this->container = $container;
-        $this->bundles   = array();
-        $this->routes    = array();
-        $this->loaded    = array();
+        $this->kernel      = $kernel;
+        $this->routeLoader = $routeLoader;
+        $this->bundles     = array();
+        $this->routes      = array();
+        $this->loaded      = array();
     }
 
     /**
@@ -59,13 +73,12 @@ class RouteManager
      */
     protected function loadRoutes()
     {
-        $routeLoader = $this->container->get('routing.loader');
-        $routes      = $this->routes;
+        $routes = $this->routes;
 
         foreach ($this->bundles as $bundle) {
             if (!$this->loaded[$bundle]) {
-                $resource = $this->container->get('kernel')->locateResource(sprintf('@%s/Controller/', $bundle));
-                $routes = array_merge($routes, $routeLoader->load($resource)->all());
+                $resource = $this->kernel->locateResource(sprintf('@%s/Controller/', $bundle));
+                $routes   = array_merge($routes, $this->routeLoader->load($resource)->all());
             }
         }
 

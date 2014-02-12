@@ -18,10 +18,10 @@ class CoreController extends BaseController
     /**
      * @Route("/", name="admin_home")
      */
-    function homeAction()
+    public function homeAction()
     {
-        $board = $this->container->get('bigfoot.dashboard')->getBoard();
+        $dashboard = $this->get('bigfoot.dashboard')->getBoard();
 
-        return $this->render(sprintf('%s::layout.html.twig', $this->container->getParameter('bigfoot.theme.bundle')), array('dashboard' => $board));
+        return $this->render($this->getThemeBundle().':layout:home.html.twig', array('dashboard' => $dashboard));
     }
 }

@@ -17,6 +17,6 @@ class BigfootCoreBundle extends Bundle
      */
     public function boot()
     {
-        $this->container->get('bigfoot.route_manager')->addBundle($this->getName());
+        $this->container->get('bigfoot_core.manager.route')->addBundle($this->getName());
     }
 }
