@@ -14,57 +14,57 @@ abstract class AbstractMailer
     protected $translator;
     protected $mailFrom;
 
-    protected function setManager(EntityManager $entityManager)
+    public function setManager(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    protected function getManager()
+    public function getManager()
     {
         return $this->entityManager;
     }
 
-    protected function setMailer(\Swift_Mailer $mailer)
+    public function setMailer(\Swift_Mailer $mailer)
     {
         $this->mailer = $mailer;
     }
 
-    protected function getMailer()
+    public function getMailer()
     {
         return $this->mailer;
     }
 
-    protected function setTemplating(EngineInterface $templating)
+    public function setTemplating(EngineInterface $templating)
     {
         $this->templating = $templating;
     }
 
-    protected function getTemplating()
+    public function getTemplating()
     {
         return $this->templating;
     }
 
-    protected function setTranslator(Translator $translator)
+    public function setTranslator(Translator $translator)
     {
         $this->translator = $translator;
     }
 
-    protected function getTranslator()
+    public function getTranslator()
     {
         return $this->translator;
     }
 
-    protected function setMailFrom($mailFrom)
+    public function setMailFrom($mailFrom)
     {
         $this->mailFrom = $mailFrom;
     }
 
-    protected function getMailFrom()
+    public function getMailFrom()
     {
         return $this->mailFrom;
     }
 
-    protected function sendMail($subject, $to, $body)
+    public function sendMail($subject, $to, $body)
     {
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
