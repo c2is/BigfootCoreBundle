@@ -291,7 +291,7 @@ abstract class CrudController extends BaseController
                 $this->persistAndFlush($entity);
 
                 if (!$request->isXmlHttpRequest()) {
-                    $this->addSuccessFlash('The %s has been created.');
+                    $this->addSuccessFlash('The %entity% has been created.');
                 }
 
                 return $this->handleResponse($request, $entity, true, 'edit');
@@ -334,7 +334,7 @@ abstract class CrudController extends BaseController
                 $this->persistAndFlush($entity);
 
                 if (!$request->isXmlHttpRequest()) {
-                    $this->addSuccessFlash('The %s has been updated.');
+                    $this->addSuccessFlash('The %entity% has been updated.');
                 }
 
                 return $this->handleResponse($request, $entity, true, 'edit');
@@ -370,7 +370,7 @@ abstract class CrudController extends BaseController
         $this->removeAndFlush($entity);
 
         if (!$request->isXmlHttpRequest()) {
-            $this->addSuccessFlash('The %s has been deleted.');
+            $this->addSuccessFlash('The %entity% has been deleted.');
         }
 
         return $this->handleResponse($request, null, true, 'index');
@@ -441,7 +441,7 @@ abstract class CrudController extends BaseController
             array(
                 'form'         => $form->createView(),
                 'form_method'  => 'POST',
-                'form_title'   => sprintf('%s creation', $this->getEntityLabel()),
+                'form_title'   => $this->getTranslator()->trans('%entity% creation', array('%entity%' => $this->getEntityLabel())),
                 'form_action'  => $action,
                 'form_submit'  => 'Submit',
                 'entity'       => $entity,
@@ -459,11 +459,11 @@ abstract class CrudController extends BaseController
         $this->addFlash(
             'success',
             $this->renderView(
-                $this->getThemeBundle().':layout:flash.html.twig',
+                $this->getThemeBundle().':admin:flash.html.twig',
                 array(
                     'icon'    => 'ok',
                     'heading' => 'Success!',
-                    'message' => sprintf($message, $this->getEntityName()),
+                    'message' => $this->getTranslator()->trans($message, array('%entity%' => $this->getEntityName())),
                     'actions' => array(
                         array(
                             'route' => $this->generateUrl($this->getRouteNameForAction('index')),
@@ -472,7 +472,7 @@ abstract class CrudController extends BaseController
                         ),
                         array(
                             'route' => $this->generateUrl($this->getRouteNameForAction('new')),
-                            'label' => sprintf('Add a new %s', $this->getEntityName()),
+                            'label' => $this->getTranslator()->trans('Add a new %entity%', array('%entity%' => $this->getEntityName())),
                             'type'  => 'success',
                         )
                     )

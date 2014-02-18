@@ -150,6 +150,34 @@
                 <source>yesterday</source>
                 <target>hier</target>
             </trans-unit>
+            <trans-unit id="38">
+                <source>Success!</source>
+                <target>Success !</target>
+            </trans-unit>
+            <trans-unit id="39">
+                <source>Back to the listing</source>
+                <target>Retour au listing</target>
+            </trans-unit>
+            <trans-unit id="40">
+                <source>Add a new %entity%</source>
+                <target>Ajouter un nouveau %entity%</target>
+            </trans-unit>
+            <trans-unit id="41">
+                <source>The %entity% has been created.</source>
+                <target>Le %entity% a été créé.</target>
+            </trans-unit>
+            <trans-unit id="42">
+                <source>The %entity% has been updated.</source>
+                <target>Le %entity% a été mis à jour.</target>
+            </trans-unit>
+            <trans-unit id="43">
+                <source>The %entity% has been deleted.</source>
+                <target>Le %entity% a été supprimé.</target>
+            </trans-unit>
+            <trans-unit id="44">
+                <source>%entity% creation</source>
+                <target>Edition d'un %entity%</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

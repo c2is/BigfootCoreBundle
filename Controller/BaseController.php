@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Translation\Translator;
 
 /**
  * Base Controller
@@ -149,7 +150,7 @@ class BaseController extends Controller
     /**
      * Get Translator
      *
-     * @return Doctrine\ORM\EntityManager
+     * @return Translator
      */
     protected function getTranslator()
     {
