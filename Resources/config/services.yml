@@ -157,14 +157,7 @@ services:
         arguments: [@security.context]
         tags:
             - { name: kernel.event_subscriber }
-    # Menu Extension
-    bigfoot_core.twig.extension.menu:
-        class: Bigfoot\Bundle\CoreBundle\Twig\Extension\MenuExtension
-        arguments:
-            - @knp_menu.helper
-            - @knp_menu.matcher
-        tags:
-            - { name: twig.extension }
+
     # Twig
     bigfoot_core.twig.locale_flags_extension:
         class: Bigfoot\Bundle\CoreBundle\Twig\LocalesFlagsExtension
