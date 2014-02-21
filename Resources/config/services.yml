@@ -154,6 +154,7 @@ services:
     # Menu Listener
     bigfoot_core.listener.menu:
         class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
+        arguments: [@security.context]
         tags:
             - { name: kernel.event_subscriber }
     # Menu Extension

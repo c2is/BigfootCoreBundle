@@ -43,142 +43,144 @@ class Builder
             )
         );
 
-        $menu->addChild(
-            'dashboard',
-            array(
-                'label'          => 'Dashboard',
-                'route'          => 'admin_home',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'dashboard',
-                ),
-            )
-        );
-
-        $contentMenu = $menu->addChild(
-            'content',
-            array(
-                'label'          => 'Content',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'list-alt',
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $menu->addChild(
+                'dashboard',
+                array(
+                    'label'          => 'Dashboard',
+                    'route'          => 'admin_home',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'dashboard',
+                    ),
                 )
-            )
-        );
+            );
 
-        $contentMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
-
-        $mediaMenu = $menu->addChild(
-            'media',
-            array(
-                'label'          => 'Media',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'picture',
+            $contentMenu = $menu->addChild(
+                'content',
+                array(
+                    'label'          => 'Content',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'list-alt',
+                    )
                 )
-            )
-        );
+            );
 
-        $mediaMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
-
-        $structureMenu = $menu->addChild(
-            'structure',
-            array(
-                'label'          => 'Structure',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'building',
+            $contentMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
                 )
-            )
-        );
+            );
 
-        $structureMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
-
-        $seoMenu = $menu->addChild(
-            'seo',
-            array(
-                'label'          => 'Seo',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'rocket',
+            $mediaMenu = $menu->addChild(
+                'media',
+                array(
+                    'label'          => 'Media',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'picture',
+                    )
                 )
-            )
-        );
+            );
 
-        $seoMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
-
-        $fluxMenu = $menu->addChild(
-            'flux',
-            array(
-                'label'          => 'Flux',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'refresh',
+            $mediaMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
                 )
-            )
-        );
+            );
 
-        $fluxMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
-
-        $userMenu = $menu->addChild(
-            'user',
-            array(
-                'label'          => 'Users',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'group',
+            $structureMenu = $menu->addChild(
+                'structure',
+                array(
+                    'label'          => 'Structure',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'building',
+                    )
                 )
-            )
-        );
+            );
 
-        $userMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
+            $structureMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
+                )
+            );
 
-        $settingsMenu = $menu->addChild(
-            'Settings',
-            array(
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'wrench',
-                ),
-            )
-        );
+            $seoMenu = $menu->addChild(
+                'seo',
+                array(
+                    'label'          => 'Seo',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'rocket',
+                    )
+                )
+            );
 
-        $settingsMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
+            $seoMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
+                )
+            );
+
+            $fluxMenu = $menu->addChild(
+                'flux',
+                array(
+                    'label'          => 'Flux',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'refresh',
+                    )
+                )
+            );
+
+            $fluxMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
+                )
+            );
+
+            $userMenu = $menu->addChild(
+                'user',
+                array(
+                    'label'          => 'Users',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'group',
+                    )
+                )
+            );
+
+            $userMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
+                )
+            );
+
+            $settingsMenu = $menu->addChild(
+                'Settings',
+                array(
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'wrench',
+                    ),
+                )
+            );
+
+            $settingsMenu->setChildrenAttributes(
+                array(
+                    'class' => 'submenu',
+                )
+            );
+        }
 
         $this->eventDispatcher->dispatch(MenuEvent::GENERATE_MAIN, new GenericEvent($menu));
 
