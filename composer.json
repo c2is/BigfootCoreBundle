@@ -15,7 +15,8 @@
         "symfony/framework-bundle":          ">=2.3",
         "knplabs/knp-menu-bundle":           "2.0.*@dev",
         "knplabs/knp-paginator-bundle":      "~2.3",
-        "friendsofsymfony/jsrouting-bundle": "~1.1"
+        "friendsofsymfony/jsrouting-bundle": "~1.1",
+        "liip/imagine-bundle":               "~0.6"
     },
     "autoload": {
         "psr-0": { "Bigfoot\\Bundle\\CoreBundle": "" }
