@@ -151,12 +151,19 @@ services:
         tags:
             - { name: knp_menu.menu, alias: test }
 
-    # Menu Listener
-    bigfoot_core.listener.menu:
-        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
-        arguments: [@security.context]
+    # Menu Subscriber
+    bigfoot_core.subscriber.menu:
+        class: Bigfoot\Bundle\CoreBundle\Subscriber\MenuSubscriber
         tags:
             - { name: kernel.event_subscriber }
+
+    # Knp Subscriber
+    bigfoot_core.subscriber.knp:
+        class: Bigfoot\Bundle\CoreBundle\Subscriber\KnpSubscriber
+        calls:
+            - [setRequest, ["@?request="]]
+        tags:
+            - { name: knp_paginator.subscriber }
 
     # Twig
     bigfoot_core.twig.locale_flags_extension:

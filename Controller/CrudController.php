@@ -240,9 +240,10 @@ abstract class CrudController extends BaseController
 
         if (method_exists($this, 'newAction')) {
             $globalActions['new'] = array(
-                'label' => 'Add',
-                'route' => $this->getRouteNameForAction('new'),
-                'icon'  => 'pencil',
+                'label'      => 'Add',
+                'route'      => $this->getRouteNameForAction('new'),
+                'parameters' => array(),
+                'icon'       => 'pencil',
             );
         }
 
@@ -286,7 +287,7 @@ abstract class CrudController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->prePersist($entity);
+                $this->prePersist($entity, 'new');
 
                 $this->persistAndFlush($entity);
 
@@ -333,7 +334,7 @@ abstract class CrudController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->prePersist($entity);
+                $this->prePersist($entity, 'edit');
 
                 $this->persistAndFlush($entity);
 
@@ -471,7 +472,7 @@ abstract class CrudController extends BaseController
      *
      * @param object $entity entity
      */
-    protected function prePersist($entity)
+    protected function prePersist($entity, $action)
     {
     }
 }
