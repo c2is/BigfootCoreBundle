@@ -2,8 +2,12 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Translation\Translator;
 
 /**
@@ -14,7 +18,7 @@ class BaseController extends Controller
     /**
      * Get Entity Manager
      *
-     * @return Doctrine\ORM\EntityManager
+     * @return EntityManager
      */
     protected function getEntityManager()
     {
@@ -54,7 +58,7 @@ class BaseController extends Controller
      */
     protected function isGranted($role)
     {
-        return $this->getSecurity()->isGranted($state);
+        return $this->getSecurity()->isGranted($role);
     }
 
     /**
@@ -62,7 +66,7 @@ class BaseController extends Controller
      *
      * @param string $class the entity class
      *
-     * @return Doctrine\ORM\EntityRepository
+     * @return EntityRepository
      */
     protected function getRepository($class)
     {
@@ -120,7 +124,7 @@ class BaseController extends Controller
     /**
      * Get Security Context
      *
-     * @return Symfony\Component\Security\Core\SecurityContext
+     * @return SecurityContext
      */
     protected function getSecurity()
     {
@@ -130,7 +134,7 @@ class BaseController extends Controller
     /**
      * Get Session
      *
-     * @return Symfony\Component\Security\Core\SecurityContext
+     * @return SecurityContext
      */
     protected function getSession()
     {
@@ -140,7 +144,7 @@ class BaseController extends Controller
     /**
      * Get Templating
      *
-     * @return Symfony\Component\Security\Core\SecurityContext
+     * @return SecurityContext
      */
     protected function getTemplating()
     {
@@ -160,7 +164,7 @@ class BaseController extends Controller
     /**
      * Get the event dispatcher
      *
-     * @return Symfony\Component\EventDispatcher\EventDispatcher
+     * @return EventDispatcher
      */
     protected function getEventDispatcher()
     {
@@ -181,5 +185,13 @@ class BaseController extends Controller
     protected function getMenuItemManager()
     {
         return $this->get('bigfoot_navigation.manager.menu_item');
+    }
+
+    /**
+     * @return int
+     */
+    protected function getElementsPerPage()
+    {
+        return 10;
     }
 }

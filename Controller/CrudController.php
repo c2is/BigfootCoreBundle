@@ -265,7 +265,7 @@ abstract class CrudController extends BaseController
                 'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
             );
 
-        return $this->renderIndex($query, 10);
+        return $this->renderIndex($query);
     }
 
     /**
@@ -417,12 +417,12 @@ abstract class CrudController extends BaseController
     /**
      * Render index
      */
-    protected function renderIndex($query, $nbrPerPage)
+    protected function renderIndex($query)
     {
         return $this->render(
             $this->getIndexTemplate(),
             array(
-                'list_items'    => $this->getPagination($query, 10),
+                'list_items'    => $this->getPagination($query, $this->getElementsPerPage()),
                 'list_title'    => $this->getEntityLabelPlural(),
                 'list_fields'   => $this->getFields(),
                 'actions'       => $this->getActions(),
