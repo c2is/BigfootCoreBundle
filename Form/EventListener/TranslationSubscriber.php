@@ -73,7 +73,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
 
             //Case where there is data (edit);
             if ($parentData && method_exists($parentData, 'getId') && $parentData->getId()) {
-
                 // We get the entity manager and its translations
                 $em = $this->doctrineService->getManagerForClass($entityClass);
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
@@ -83,7 +82,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
                 foreach ($this->localeList as $locale => $localeConfig) {
                     // Case of the default locale : do not display the form
                     if ($locale != $this->currentLocale) {
-
                         // We first add the fields without translation
                         $this->addTranslationlessFieldsForLocale($translatableFields, $parentForm, $form, $locale);
 
@@ -104,7 +102,6 @@ class TranslationSubscriber implements EventSubscriberInterface {
                     }
                 }
 
-                // end of the process
                 return;
             }
 
@@ -204,6 +201,7 @@ class TranslationSubscriber implements EventSubscriberInterface {
                     $method = 'get'.ucfirst($field);
                     $params['data'] = $parentData->$method();
                     $parentData->setTranslatableLocale($this->currentLocale);
+                    $em->refresh($parentData);
                 }
 
                 $form->add(sprintf("%s-%s", $field, $locale), $fieldType, $params);
