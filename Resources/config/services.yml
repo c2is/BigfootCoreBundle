@@ -154,6 +154,7 @@ services:
     # Menu Subscriber
     bigfoot_core.subscriber.menu:
         class: Bigfoot\Bundle\CoreBundle\Subscriber\MenuSubscriber
+        arguments: [@security.context]
         tags:
             - { name: kernel.event_subscriber }
 
