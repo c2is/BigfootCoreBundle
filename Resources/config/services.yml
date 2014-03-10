@@ -151,20 +151,21 @@ services:
         tags:
             - { name: knp_menu.menu, alias: test }
 
-    # Menu Listener
-    bigfoot_core.listener.menu:
-        class: Bigfoot\Bundle\CoreBundle\Listener\MenuListener
+    # Menu Subscriber
+    bigfoot_core.subscriber.menu:
+        class: Bigfoot\Bundle\CoreBundle\Subscriber\MenuSubscriber
         arguments: [@security.context]
         tags:
             - { name: kernel.event_subscriber }
-    # Menu Extension
-    bigfoot_core.twig.extension.menu:
-        class: Bigfoot\Bundle\CoreBundle\Twig\Extension\MenuExtension
-        arguments:
-            - @knp_menu.helper
-            - @knp_menu.matcher
+
+    # Knp Subscriber
+    bigfoot_core.subscriber.knp:
+        class: Bigfoot\Bundle\CoreBundle\Subscriber\KnpSubscriber
+        calls:
+            - [setRequest, ["@?request="]]
         tags:
-            - { name: twig.extension }
+            - { name: knp_paginator.subscriber }
+
     # Twig
     bigfoot_core.twig.locale_flags_extension:
         class: Bigfoot\Bundle\CoreBundle\Twig\LocalesFlagsExtension

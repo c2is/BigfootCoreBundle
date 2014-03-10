@@ -1,6 +1,6 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Listener;
+namespace Bigfoot\Bundle\CoreBundle\Subscriber;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -10,9 +10,9 @@ use Bigfoot\Bundle\CoreBundle\Event\MenuEvent;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
- * Menu Listener
+ * Menu Subscriber
  */
-class MenuListener implements EventSubscriberInterface
+class MenuSubscriber implements EventSubscriberInterface
 {
     /**
      * @var \Symfony\Component\Security\Core\SecurityContextInterface

@@ -16,9 +16,9 @@ abstract class BaseCommand extends ContainerAwareCommand
     private $entityManager;
 
     /**
-     * @var \Bigfoot\Bundle\CoreBundle\Manager\RouteManager $routeManager
+     * @var \Symfony\Bundle\FrameworkBundle\Routing\Router $router
      */
-    private $routeManager;
+    private $router;
 
     /**
      * @var OutputInterface $output
@@ -46,7 +46,7 @@ abstract class BaseCommand extends ContainerAwareCommand
         parent::initialize($input, $output);
 
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $this->routeManager  = $this->getContainer()->get('bigfoot_core.manager.route');
+        $this->router        = $this->getContainer()->get('router');
         $this->output        = $output;
     }
 
@@ -67,11 +67,11 @@ abstract class BaseCommand extends ContainerAwareCommand
     }
 
     /**
-     * @return \Bigfoot\Bundle\CoreBundle\Manager\RouteManager $routeManager
+     * @return \Symfony\Bundle\FrameworkBundle\Routing\Router $router
      */
-    protected function getRouteManager()
+    protected function getRouter()
     {
-        return $this->routeManager;
+        return $this->router;
     }
 
     /**

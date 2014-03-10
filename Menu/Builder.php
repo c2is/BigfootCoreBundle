@@ -64,6 +64,11 @@ class Builder
                     'linkAttributes' => array(
                         'class' => 'dropdown-toggle',
                         'icon'  => 'list-alt',
+                    ),
+                    'extras' => array(
+                        'routes' => array(
+                            'admin_content_template_choose',
+                        )
                     )
                 )
             );

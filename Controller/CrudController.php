@@ -240,9 +240,10 @@ abstract class CrudController extends BaseController
 
         if (method_exists($this, 'newAction')) {
             $globalActions['new'] = array(
-                'label' => 'Add',
-                'route' => $this->getRouteNameForAction('new'),
-                'icon'  => 'pencil',
+                'label'      => 'Add',
+                'route'      => $this->getRouteNameForAction('new'),
+                'parameters' => array(),
+                'icon'       => 'pencil',
             );
         }
 
@@ -286,19 +287,23 @@ abstract class CrudController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->prePersist($entity);
+                $this->prePersist($entity, 'new');
 
                 $this->persistAndFlush($entity);
 
                 if (!$request->isXmlHttpRequest()) {
-                    $this->addSuccessFlash('The %entity% has been created.');
-                }
+                    $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
 
-                return $this->handleResponse($request, $entity, true, 'edit');
+                    $this->addSuccessFlash('The %entity% has been created.');
+
+                    return $this->redirect($action);
+                } else {
+                    return $this->handleSuccessResponse('new', $entity);
+                }
             }
 
             if ($request->isXmlHttpRequest()) {
-                return $this->handleResponse($request, $entity, false, 'new', $form);
+                return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
             }
         }
 
@@ -329,19 +334,21 @@ abstract class CrudController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->prePersist($entity);
+                $this->prePersist($entity, 'edit');
 
                 $this->persistAndFlush($entity);
 
                 if (!$request->isXmlHttpRequest()) {
                     $this->addSuccessFlash('The %entity% has been updated.');
-                }
 
-                return $this->handleResponse($request, $entity, true, 'edit');
+                    return $this->redirect($action);
+                } else {
+                    return $this->handleSuccessResponse('edit', $entity);
+                }
             }
 
             if ($request->isXmlHttpRequest()) {
-                return $this->handleResponse($request, $entity, false, 'edit', $form);
+                return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
             }
         }
 
@@ -371,46 +378,10 @@ abstract class CrudController extends BaseController
 
         if (!$request->isXmlHttpRequest()) {
             $this->addSuccessFlash('The %entity% has been deleted.');
-        }
 
-        return $this->handleResponse($request, null, true, 'index');
-    }
-
-    /**
-     * Handle response
-     */
-    protected function handleResponse(Request $request, $entity = null, $status, $actionName = null, $form = null)
-    {
-        $action = $this->getActionByName($entity, $actionName);
-
-        if ($request->isXmlHttpRequest() && $status == true) {
-            return $this->handleSuccessResponse($entity, $action);
-        } elseif ($request->isXmlHttpRequest() && $status == false) {
-            return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
-        } elseif ($status == true) {
-            return $this->redirect($action);
-        }
-    }
-
-    /**
-     * Handle success response
-     */
-    protected function handleSuccessResponse($entity = null, $action = null)
-    {
-        return $this->renderAjax(true, 'Success, please wait...', null, $action);
-    }
-
-    /**
-     * Get action by name
-     */
-    protected function getActionByName($entity = null, $name)
-    {
-        if ($name == 'new') {
-            return $action = $this->generateUrl($this->getRouteNameForAction('new'));
-        } elseif ($name == 'edit') {
-            return $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
         } else {
-            return $action = $this->generateUrl($this->getRouteNameForAction('index'));
+            return $this->renderAjax(true, 'The entity has beed deleted.');
         }
     }
 
@@ -439,14 +410,14 @@ abstract class CrudController extends BaseController
         return $this->render(
             $this->getFormTemplate(),
             array(
-                'form'         => $form->createView(),
-                'form_method'  => 'POST',
-                'form_title'   => $this->getTranslator()->trans('%entity% creation', array('%entity%' => $this->getEntityLabel())),
-                'form_action'  => $action,
-                'form_submit'  => 'Submit',
-                'entity'       => $entity,
-                'modal'        => ($this->getRequest()->query->get('modal')) ?: false,
-                'cancel_route' => $this->getRouteNameForAction('index'),
+                'form'        => $form->createView(),
+                'form_method' => 'POST',
+                'form_title'  => $this->getTranslator()->trans('%entity% creation', array('%entity%' => $this->getEntityLabel())),
+                'form_action' => $action,
+                'form_submit' => 'Submit',
+                'form_cancel' => $this->getRouteNameForAction('index'),
+                'entity'      => $entity,
+                'modal'       => $this->getRequest()->query->get('modal'),
             )
         );
     }
@@ -487,12 +458,21 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * Handle success response
+     */
+    protected function handleSuccessResponse($action, $entity = null)
+    {
+        $action = $this->generateUrl($this->getRouteNameForAction('new'));
+
+        return $this->renderAjax(true, 'Success, please wait...', null, $action);
+    }
+
+    /**
      * Pre persit entity
      *
      * @param object $entity entity
      */
-    protected function prePersist($entity)
+    protected function prePersist($entity, $action)
     {
-
     }
 }
