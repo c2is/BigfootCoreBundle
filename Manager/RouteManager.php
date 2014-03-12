@@ -53,19 +53,22 @@ class RouteManager
      */
     protected $loaded;
 
+    protected $router;
+
     /**
      * Construct RouteManager
      *
      * @param kernel      $kernel
      * @param routeLoader $routeLoader
      */
-    public function __construct(AppKernel $kernel, DelegatingLoader $routeLoader)
+    public function __construct(AppKernel $kernel, DelegatingLoader $routeLoader, $router)
     {
         $this->kernel      = $kernel;
         $this->routeLoader = $routeLoader;
         $this->bundles     = array();
         $this->routes      = array();
         $this->loaded      = array();
+        $this->router      = $router;
     }
 
     /**
@@ -117,6 +120,24 @@ class RouteManager
         }
 
         return $tabRoutes;
+    }
+
+    public function getArrayRouteCollection()
+    {
+        $routes  = $this->router->getRouteCollection();
+        $nRoutes = array();
+
+        foreach ($routes as $key => $route) {
+            $routeOptions = $route->getOptions();
+
+            if (isset($routeOptions['label'])) {
+                $nRoutes[$key] = $routeOptions['label'];
+            }
+        }
+
+        asort($nRoutes);
+
+        return $nRoutes;
     }
 
     /**

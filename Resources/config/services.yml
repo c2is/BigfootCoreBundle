@@ -104,6 +104,7 @@ services:
         arguments:
             - @kernel
             - @routing.loader
+            - @router
 
     # Token generator
     bigfoot_core.generator.token:
