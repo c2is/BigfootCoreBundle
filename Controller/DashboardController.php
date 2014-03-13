@@ -16,7 +16,7 @@ class DashboardController extends ContainerAware
 {
     public function getBoard()
     {
-        $user = $this->container->get('security.context')->getToken()->getUser();
+        /*$user = $this->container->get('security.context')->getToken()->getUser();
         $em = $this->container->get('doctrine');
 
         $queryBuilder = $em->getRepository('BigfootCoreBundle:Widget')
@@ -60,7 +60,9 @@ class DashboardController extends ContainerAware
         }
         usort($widgets, array(__CLASS__, 'sortWidgets'));
 
-        return $widgets;
+        return $widgets;*/
+
+        return array();
     }
 
     static function sortWidgets($w1, $w2)
