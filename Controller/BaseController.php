@@ -142,6 +142,17 @@ class BaseController extends Controller
     }
 
     /**
+     * Get Router
+     *
+     * @return SecurityContext
+     */
+    protected function getRouter()
+    {
+        return $this->get('router');
+    }
+
+
+    /**
      * Get Templating
      *
      * @return SecurityContext

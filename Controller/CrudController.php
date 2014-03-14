@@ -421,7 +421,8 @@ abstract class CrudController extends BaseController
                 'form_submit' => 'Submit',
                 'form_cancel' => $this->getRouteNameForAction('index'),
                 'entity'      => $entity,
-                'modal'       => $this->getRequest()->query->get('modal'),
+                'blank'       => $this->getRequest()->query->get('blank'),
+                'tpl'         => $this->getRequest()->query->get('tpl'),
             )
         );
     }
