@@ -178,6 +178,10 @@
                 <source>%entity% creation</source>
                 <target>Edition d'un %entity%</target>
             </trans-unit>
+            <trans-unit id="45">
+                <source>Are you sure ? The %entity% will be permanently deleted.</source>
+                <target>Êtes-vous sûr ? Le %entity% sera supprimé de manière permanente.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

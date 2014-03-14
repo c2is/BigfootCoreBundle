@@ -225,7 +225,7 @@ abstract class CrudController extends BaseController
                 'color' => 'red',
                 'class' => 'confirm-action',
                 'attributes' => array(
-                    'data-confirm-message' => 'Are you sure ? The item will be permanently deleted.',
+                    'data-confirm-message' => $this->getTranslator()->trans('Are you sure ? The %entity% will be permanently deleted.', array('%entity%' => $this->getEntityLabel())),
                 ),
             );
         }
