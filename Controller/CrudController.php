@@ -223,6 +223,10 @@ abstract class CrudController extends BaseController
                 'route' => $this->getRouteNameForAction('delete'),
                 'icon'  => 'trash',
                 'color' => 'red',
+                'class' => 'confirm-action',
+                'attributes' => array(
+                    'data-confirm-message' => 'Are you sure ? The item will be permanently deleted.',
+                ),
             );
         }
 
