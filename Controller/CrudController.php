@@ -421,8 +421,7 @@ abstract class CrudController extends BaseController
                 'form_submit' => 'Submit',
                 'form_cancel' => $this->getRouteNameForAction('index'),
                 'entity'      => $entity,
-                'blank'       => $this->getRequest()->query->get('blank'),
-                'tpl'         => $this->getRequest()->query->get('tpl'),
+                'layout'      => $this->getRequest()->query->get('layout') ?: '',
             )
         );
     }
@@ -477,7 +476,5 @@ abstract class CrudController extends BaseController
      *
      * @param object $entity entity
      */
-    protected function prePersist($entity, $action)
-    {
-    }
+    protected function prePersist($entity, $action) {}
 }
