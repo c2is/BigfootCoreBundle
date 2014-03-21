@@ -203,6 +203,6 @@ class BaseController extends Controller
      */
     protected function getElementsPerPage()
     {
-        return 10;
+        return 50;
     }
 }
