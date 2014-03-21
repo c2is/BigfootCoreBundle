@@ -18,7 +18,6 @@ $(function() {
                 $('.modal-header h3').html(title);
             });
         }, 1000);
-
     });
 
     /*
