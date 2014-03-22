@@ -43,42 +43,42 @@ class Builder
             )
         );
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
-            $menu->addChild(
-                'dashboard',
-                array(
-                    'label'          => 'Dashboard',
-                    'route'          => 'admin_home',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'dashboard',
-                    ),
-                )
-            );
+        $menu->addChild(
+            'dashboard',
+            array(
+                'label'          => 'Dashboard',
+                'route'          => 'admin_home',
+                'linkAttributes' => array(
+                    'class' => 'dropdown-toggle',
+                    'icon'  => 'dashboard',
+                ),
+            )
+        );
 
-            $contentMenu = $menu->addChild(
-                'content',
-                array(
-                    'label'          => 'Content',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'list-alt',
-                    ),
-                    'extras' => array(
-                        'routes' => array(
-                            'admin_content_template_choose',
-                        )
+        $contentMenu = $menu->addChild(
+            'content',
+            array(
+                'label'          => 'Content',
+                'url'            => '#',
+                'linkAttributes' => array(
+                    'class' => 'dropdown-toggle',
+                    'icon'  => 'list-alt',
+                ),
+                'extras' => array(
+                    'routes' => array(
+                        'admin_content_template_choose',
                     )
                 )
-            );
+            )
+        );
 
-            $contentMenu->setChildrenAttributes(
-                array(
-                    'class' => 'submenu',
-                )
-            );
+        $contentMenu->setChildrenAttributes(
+            array(
+                'class' => 'submenu',
+            )
+        );
 
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             $mediaMenu = $menu->addChild(
                 'media',
                 array(
@@ -96,6 +96,7 @@ class Builder
                     'class' => 'submenu',
                 )
             );
+        }
 
             $structureMenu = $menu->addChild(
                 'structure',
@@ -115,6 +116,7 @@ class Builder
                 )
             );
 
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             $seoMenu = $menu->addChild(
                 'seo',
                 array(
