@@ -62,8 +62,9 @@ class Builder
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $settingsMenu = $menu->addChild(
-                'Settings',
+                'settings',
                 array(
+                    'label'          => 'Settings',
                     'url'            => '#',
                     'linkAttributes' => array(
                         'class' => 'dropdown-toggle',
@@ -80,6 +81,7 @@ class Builder
         }
 
         $this->eventDispatcher->dispatch(MenuEvent::GENERATE_MAIN, new GenericEvent($menu));
+        $this->eventDispatcher->dispatch(MenuEvent::TERMINATE, new GenericEvent($menu));
 
         return $menu;
     }
