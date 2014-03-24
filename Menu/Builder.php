@@ -35,7 +35,12 @@ class Builder
 
     public function createMainMenu(Request $request)
     {
-        $menu = $this->factory->createItem('Home');
+        $menu = $this->factory->createItem(
+            'home',
+            array(
+                'label' => 'Home',
+            )
+        );
 
         $menu->setChildrenAttributes(
             array(
@@ -55,122 +60,7 @@ class Builder
             )
         );
 
-        $contentMenu = $menu->addChild(
-            'content',
-            array(
-                'label'          => 'Content',
-                'url'            => '#',
-                'linkAttributes' => array(
-                    'class' => 'dropdown-toggle',
-                    'icon'  => 'list-alt',
-                ),
-                'extras' => array(
-                    'routes' => array(
-                        'admin_content_template_choose',
-                    )
-                )
-            )
-        );
-
-        $contentMenu->setChildrenAttributes(
-            array(
-                'class' => 'submenu',
-            )
-        );
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            $mediaMenu = $menu->addChild(
-                'media',
-                array(
-                    'label'          => 'Media',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'picture',
-                    )
-                )
-            );
-
-            $mediaMenu->setChildrenAttributes(
-                array(
-                    'class' => 'submenu',
-                )
-            );
-        }
-
-            $structureMenu = $menu->addChild(
-                'structure',
-                array(
-                    'label'          => 'Structure',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'building',
-                    )
-                )
-            );
-
-            $structureMenu->setChildrenAttributes(
-                array(
-                    'class' => 'submenu',
-                )
-            );
-
-        if ($this->security->isGranted('ROLE_ADMIN')) {
-            $seoMenu = $menu->addChild(
-                'seo',
-                array(
-                    'label'          => 'Seo',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'rocket',
-                    )
-                )
-            );
-
-            $seoMenu->setChildrenAttributes(
-                array(
-                    'class' => 'submenu',
-                )
-            );
-
-            $fluxMenu = $menu->addChild(
-                'flux',
-                array(
-                    'label'          => 'Flux',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'refresh',
-                    )
-                )
-            );
-
-            $fluxMenu->setChildrenAttributes(
-                array(
-                    'class' => 'submenu',
-                )
-            );
-
-            $userMenu = $menu->addChild(
-                'user',
-                array(
-                    'label'          => 'Users',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'group',
-                    )
-                )
-            );
-
-            $userMenu->setChildrenAttributes(
-                array(
-                    'class' => 'submenu',
-                )
-            );
-
             $settingsMenu = $menu->addChild(
                 'Settings',
                 array(

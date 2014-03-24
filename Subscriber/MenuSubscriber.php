@@ -45,7 +45,22 @@ class MenuSubscriber implements EventSubscriberInterface
     public function onGenerateMain(GenericEvent $event)
     {
         $menu          = $event->getSubject();
-        $structureMenu = $menu->getChild('structure');
+        $root          = $menu->getRoot();
+        $structureMenu = $root->getChild('structure');
+
+        if (!$structureMenu) {
+            $structureMenu = $root->addChild(
+                'structure',
+                array(
+                    'label'          => 'Structure',
+                    'url'            => '#',
+                    'linkAttributes' => array(
+                        'class' => 'dropdown-toggle',
+                        'icon'  => 'building',
+                    )
+                )
+            );
+        }
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $tagMenu = $structureMenu->addChild(
