@@ -429,7 +429,7 @@ abstract class CrudController extends BaseController
     /**
      * Add sucess flash
      */
-    protected function addSuccessFlash($message)
+    protected function addSuccessFlash($message, $route = null)
     {
         $actions = array();
 
@@ -439,12 +439,20 @@ abstract class CrudController extends BaseController
             'type'  => 'success',
         );
 
-        if (method_exists($this,'newAction')) {
+        if ($route) {
             $actions[] = array(
-                'route' => $this->generateUrl($this->getRouteNameForAction('new')),
+                'route' => $route,
                 'label' => $this->getTranslator()->trans('Add a new %entity%', array('%entity%' => $this->getEntityName())),
                 'type'  => 'success',
             );
+        } else {
+            if (method_exists($this, 'newAction')) {
+                $actions[] = array(
+                    'route' => $this->generateUrl($this->getRouteNameForAction('new')),
+                    'label' => $this->getTranslator()->trans('Add a new %entity%', array('%entity%' => $this->getEntityName())),
+                    'type'  => 'success',
+                );
+            }
         }
 
         $this->addFlash(
