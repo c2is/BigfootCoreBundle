@@ -60,7 +60,7 @@ class QuickLinkController extends CrudController
      */
     public function quickLinkWidgetAction()
     {
-        $em = $this->container->get('doctrine')->getEntityManager();
+        $em = $this->getEntityManager();
         $quickLinks = $em->getRepository('BigfootCoreBundle:QuickLink')->findBy(array(),array('id' => 'desc'));
 
         return array(
