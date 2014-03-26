@@ -1,11 +1,13 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Command;
+namespace Bigfoot\Bundle\CoreBundle\Command\Bigfoot;
 
 use Bigfoot\Bundle\CoreBundle\Generator\BigfootCrudGenerator;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+
+use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
 
 /**
  * Heavily based on \Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand.
@@ -13,7 +15,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  * Class GenerateBigfootCrudCommand
  * @package Bigfoot\Bundle\CoreBundle\Command
  */
-class GenerateBigfootCrudCommand extends GenerateDoctrineCrudCommand
+class GenerateCrudCommand extends GenerateDoctrineCrudCommand
 {
 
     /**

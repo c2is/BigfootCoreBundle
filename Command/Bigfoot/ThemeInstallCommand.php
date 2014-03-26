@@ -1,6 +1,6 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Command;
+namespace Bigfoot\Bundle\CoreBundle\Command\Bigfoot;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,10 +9,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
+use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
+
 /**
  * Command that places the active bigfoot theme web assets into a given directory.
  */
-class BigfootThemeInstallCommand extends ContainerAwareCommand
+class ThemeInstallCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
@@ -67,13 +69,17 @@ EOT
             throw new \InvalidArgumentException('The symlink() function is not available on your system. You need to install the assets without the --symlink option.');
         }
 
-        $filesystem = $this->getContainer()->get('filesystem');
+        $filesystem    = $this->getContainer()->get('filesystem');
+        $themeBundle   = $this->getContainer()->get('kernel')->getBundle($this->getContainer()->getParameter('bigfoot.theme.bundle'));
+        $contentBundle = $this->getContainer()->get('kernel')->getBundle('BigfootContentBundle');
+        $images        = $contentBundle->getPath().'/Resources/public/images';
 
-        $bundle = $this->getContainer()->get('kernel')->getBundle($this->getContainer()->getParameter('bigfoot.theme.bundle'));
-        if (is_dir($originDir = $bundle->getPath().'/Resources/assets')) {
+        $this->recurseCopy($images, $targetArg.'/images');
+
+        if (is_dir($originDir = $themeBundle->getPath().'/Resources/assets')) {
             $targetDir = $targetArg.'/admin';
 
-            $output->writeln(sprintf('Installing bigfoot theme assets from <comment>%s</comment> into <comment>%s</comment>', $bundle->getNamespace(), $targetDir));
+            $output->writeln(sprintf('Installing bigfoot theme assets from <comment>%s</comment> into <comment>%s</comment>', $themeBundle->getNamespace(), $targetDir));
 
             $filesystem->remove($targetDir);
 
@@ -83,12 +89,31 @@ EOT
                 } else {
                     $relativeOriginDir = $originDir;
                 }
+
                 $filesystem->symlink($relativeOriginDir, $targetDir);
             } else {
                 $filesystem->mkdir($targetDir, 0777);
+
                 // We use a custom iterator to ignore VCS files
                 $filesystem->mirror($originDir, $targetDir, Finder::create()->in($originDir));
             }
         }
+    }
+
+    protected function recurseCopy($src, $dst) {
+        $dir = opendir($src);
+        @mkdir($dst);
+
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ( $file != '..' )) {
+                if (is_dir($src.'/'.$file)) {
+                    $this->recurseCopy($src.'/'.$file, $dst.'/'.$file);
+                } else {
+                    copy($src.'/'.$file, $dst.'/'.$file);
+                }
+            }
+        }
+
+        closedir($dir);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Command;
+namespace Bigfoot\Bundle\CoreBundle\Command\Bigfoot;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -10,10 +10,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
+use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
+
 /**
  * Runs bigfoot:theme:install and assets:install
  */
-class BigfootAssetsInstallCommand extends ContainerAwareCommand
+class AssetsInstallCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
@@ -43,12 +45,13 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $target = $input->getArgument('target');
-        $symlink = $input->getOption('symlink');
+        $target   = $input->getArgument('target');
+        $symlink  = $input->getOption('symlink');
         $relative = $input->getOption('relative');
+
         $input = new ArrayInput(array(
-            'target' => $target,
-            '--symlink' => $symlink,
+            'target'     => $target,
+            '--symlink'  => $symlink,
             '--relative' => $relative,
         ));
 
@@ -59,6 +62,7 @@ EOT
     protected function runCommand($name, ArrayInput $input, OutputInterface $output)
     {
         $command = $this->getApplication()->find($name);
+
         return $command->run($input, $output);
     }
 }
