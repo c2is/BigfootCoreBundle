@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
+use Bigfoot\Bundle\CoreBundle\Utils\CommonUtils;
 
 /**
  * Command that places the active bigfoot theme web assets into a given directory.
@@ -74,7 +75,7 @@ EOT
         $contentBundle = $this->getContainer()->get('kernel')->getBundle('BigfootContentBundle');
         $images        = $contentBundle->getPath().'/Resources/public/images';
 
-        $this->recurseCopy($images, $targetArg.'/images');
+        CommonUtils::recurseCopy($images, $targetArg.'/images');
 
         if (is_dir($originDir = $themeBundle->getPath().'/Resources/assets')) {
             $targetDir = $targetArg.'/admin';
@@ -98,22 +99,5 @@ EOT
                 $filesystem->mirror($originDir, $targetDir, Finder::create()->in($originDir));
             }
         }
-    }
-
-    protected function recurseCopy($src, $dst) {
-        $dir = opendir($src);
-        @mkdir($dst);
-
-        while (false !== ($file = readdir($dir))) {
-            if (($file != '.') && ( $file != '..' )) {
-                if (is_dir($src.'/'.$file)) {
-                    $this->recurseCopy($src.'/'.$file, $dst.'/'.$file);
-                } else {
-                    copy($src.'/'.$file, $dst.'/'.$file);
-                }
-            }
-        }
-
-        closedir($dir);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Util;
+namespace Bigfoot\Bundle\CoreBundle\Utils;
 
-class StringManager
+class StringUtils
 {
     /**
      * Camelize string
