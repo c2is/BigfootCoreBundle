@@ -285,7 +285,7 @@ abstract class CrudController extends BaseController
         $entityClass = $this->getEntityClass();
         $entity      = new $entityClass();
         $form        = $this->createForm($this->getFormType(), $entity);
-        $action      = $this->generateUrl($this->getRouteNameForAction('new'));
+        $action      = $this->generateUrl($this->getRouteNameForAction('new'), array('layout' => $request->get('layout', null)));
 
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
@@ -332,7 +332,7 @@ abstract class CrudController extends BaseController
         }
 
         $form   = $this->createForm($this->getFormType(), $entity);
-        $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
+        $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId(), 'layout' => $request->get('layout', null)));
 
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
