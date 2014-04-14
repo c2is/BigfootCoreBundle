@@ -96,30 +96,32 @@ services:
             - [setContainer, ["@service_container"]]
         tags:
             - { name: bigfoot.dashboard, alias: dashboard }
-
-
-    # Route Manager
-    bigfoot_core.manager.route:
-        class: Bigfoot\Bundle\CoreBundle\Manager\RouteManager
+    # Twig
+    bigfoot_core.twig.locale_flags_extension:
+        class: Bigfoot\Bundle\CoreBundle\Twig\LocalesFlagsExtension
         arguments:
-            - @kernel
-            - @routing.loader
-            - @router
+            - %bigfoot_core.languages.front%
+        tags:
+            - { name: twig.extension }
 
-    # Token generator
+
+
+
+
+    # Token Generator
     bigfoot_core.generator.token:
         class: Bigfoot\Bundle\CoreBundle\Generator\TokenGenerator
 
     # Abstract Mailer
     bigfoot_core.mailer.abstract:
         class: Bigfoot\Bundle\CoreBundle\Mailer\AbstractMailer
-        abstract:  true
+        abstract: true
         calls:
-            - [setManager, ["@doctrine.orm.entity_manager"]]
-            - [setMailer, ["@mailer"]]
-            - [setTemplating, ["@templating"]]
-            - [setTranslator, ["@translator"]]
-            - [setMailFrom, [ "%bigfoot_core.mailer.from%" ]]
+            - [setManager, ['@doctrine.orm.entity_manager']]
+            - [setMailer, ['@mailer']]
+            - [setTemplating, ['@templating']]
+            - [setTranslator, ['@translator']]
+            - [setMailFrom, ['%bigfoot_core.mailer.from%']]
 
     # Menu Builder
     bigfoot_core.menu_builder:
@@ -163,13 +165,6 @@ services:
     bigfoot_core.subscriber.knp:
         class: Bigfoot\Bundle\CoreBundle\Subscriber\KnpSubscriber
         calls:
-            - [setRequest, ["@?request="]]
+            - [setRequest, ['@?request=']]
         tags:
             - { name: knp_paginator.subscriber }
-
-    # Twig
-    bigfoot_core.twig.locale_flags_extension:
-        class: Bigfoot\Bundle\CoreBundle\Twig\LocalesFlagsExtension
-        arguments: [ %bigfoot_core.languages.front% ]
-        tags:
-            - { name: twig.extension }

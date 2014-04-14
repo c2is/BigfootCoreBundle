@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
-use Bigfoot\Bundle\CoreBundle\Utils\CommonUtils;
+use Bigfoot\Bundle\CoreBundle\Util\CommonUtil;
 
 /**
  * Command that places the active bigfoot theme web assets into a given directory.
@@ -75,7 +75,7 @@ EOT
         $contentBundle = $this->getContainer()->get('kernel')->getBundle('BigfootContentBundle');
         $images        = $contentBundle->getPath().'/Resources/public/images';
 
-        CommonUtils::recurseCopy($images, $targetArg.'/images');
+        CommonUtil::recurseCopy($images, $targetArg.'/images');
 
         if (is_dir($originDir = $themeBundle->getPath().'/Resources/assets')) {
             $targetDir = $targetArg.'/admin';

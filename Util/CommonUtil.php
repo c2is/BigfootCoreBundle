@@ -1,8 +1,8 @@
 <?php
 
-namespace Bigfoot\Bundle\CoreBundle\Utils;
+namespace Bigfoot\Bundle\CoreBundle\Util;
 
-class CommonUtils
+class CommonUtil
 {
     /**
      * Copy entire contents of a directory to another
