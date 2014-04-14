@@ -266,7 +266,6 @@ abstract class CrudController extends BaseController
      */
     protected function doIndex()
     {
-        $context     = 'gaumont';
         $entityClass = ltrim($this->getEntityClass(), '\\');
 
         $query = $this

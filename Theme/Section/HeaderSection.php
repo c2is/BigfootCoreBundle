@@ -21,10 +21,5 @@ class HeaderSection extends AbstractSection
      */
     protected function setDefaultParameters()
     {
-        $themeValues = $this->container->getParameter('bigfoot.theme.values');
-        $this->parameters = array(
-            'title'    => $themeValues['title'],
-            'subtitle' => $themeValues['subtitle'],
-        );
     }
 }

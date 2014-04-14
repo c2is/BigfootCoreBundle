@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Bigfoot\Bundle\ContextBundle\Entity\ContextRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Core\SecurityContext;
@@ -223,6 +224,7 @@ class BaseController extends Controller
 
     /**
      * Get the context repository
+     * @return ContextRepository
      */
     protected function getContextRepository()
     {

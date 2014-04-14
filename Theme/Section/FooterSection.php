@@ -21,9 +21,5 @@ class FooterSection extends AbstractSection
      */
     protected function setDefaultParameters()
     {
-        $themeValues = $this->container->getParameter('bigfoot.theme.values');
-        $this->parameters = array(
-            'title' => $themeValues['provided_by'],
-        );
     }
 }
