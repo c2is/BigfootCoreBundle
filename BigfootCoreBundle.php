@@ -12,11 +12,4 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class BigfootCoreBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function boot()
-    {
-        $this->container->get('bigfoot_core.manager.route')->addBundle($this->getName());
-    }
 }

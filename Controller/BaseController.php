@@ -2,13 +2,17 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Bigfoot\Bundle\ContextBundle\Entity\ContextRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Translation\Translator;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+
+use Bigfoot\Bundle\CoreBundle\Event\FormEvent;
 
 /**
  * Base Controller
@@ -107,6 +111,18 @@ class BaseController extends Controller
     }
 
     /**
+     * Create form
+     */
+    public function createForm($type, $data = null, array $options = array())
+    {
+        $form = parent::createForm($type, $data, $options);
+
+        $this->getEventDispatcher()->dispatch(FormEvent::CREATE, new GenericEvent($form));
+
+        return $form;
+    }
+
+    /**
      * Render ajax
      */
     protected function renderAjax($status, $message, $content = null, $url = null)
@@ -183,6 +199,22 @@ class BaseController extends Controller
     }
 
     /**
+     * Get the bigfoot context
+     */
+    protected function getContext()
+    {
+        return $this->get('bigfoot_context');
+    }
+
+    /**
+     * Get the bigfoot context manager
+     */
+    protected function getContextManager()
+    {
+        return $this->get('bigfoot_context.manager.context');
+    }
+
+    /**
      * Get the user manager
      */
     protected function getUserManager()
@@ -191,11 +223,12 @@ class BaseController extends Controller
     }
 
     /**
-     * Get the menu item manager
+     * Get the context repository
+     * @return ContextRepository
      */
-    protected function getMenuItemManager()
+    protected function getContextRepository()
     {
-        return $this->get('bigfoot_navigation.manager.menu_item');
+        return $this->get('bigfoot_context.repository.context');
     }
 
     /**

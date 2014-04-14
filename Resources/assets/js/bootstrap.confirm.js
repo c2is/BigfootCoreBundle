@@ -8,7 +8,7 @@
         {
             var confirmLink = $(this);
             modalEvent.preventDefault();
-            var targetData = $(modalEvent.target).data();console.log(targetData);
+            var targetData = $(modalEvent.target).data();
             var modal = Twig.render(confirmModal, targetData);
 
             confirmContainer.html(modal);

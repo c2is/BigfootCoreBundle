@@ -8,9 +8,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Comparison;
 
 use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Controller\BaseController;
+use Bigfoot\Bundle\CoreBundle\Event\FormEvent;
 use Bigfoot\Bundle\UserBundle\Entity\User;
 
 /**
@@ -87,6 +89,7 @@ abstract class CrudController extends BaseController
             $names = $this->getBundleAndEntityName();
             $this->bundleName = $names['bundle'];
         }
+
         return $this->bundleName;
     }
 
@@ -134,6 +137,7 @@ abstract class CrudController extends BaseController
     protected function getEntityClass()
     {
         $namespace = $this->get('kernel')->getBundle($this->getBundleName())->getNamespace();
+
         return sprintf('\\%s\\Entity\\%s', $namespace, $this->getEntityName());
     }
 
@@ -143,6 +147,7 @@ abstract class CrudController extends BaseController
     protected function getEntityTypeClass()
     {
         $namespace = $this->container->get('kernel')->getBundle($this->getBundleName())->getNamespace();
+
         return sprintf('\\%s\\Form\\%sType', $namespace, $this->getEntityName());
     }
 
@@ -261,14 +266,17 @@ abstract class CrudController extends BaseController
      */
     protected function doIndex()
     {
+        $entityClass = ltrim($this->getEntityClass(), '\\');
+
         $query = $this
-            ->getRepository($this->getEntity())
-            ->createQueryBuilder('e')
+            ->getContextRepository()
+            ->createContextQueryBuilder($entityClass)
             ->getQuery()
             ->setHint(
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
-                'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
-            );
+                'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
+            )
+            ->getResult();
 
         return $this->renderIndex($query);
     }
@@ -294,6 +302,8 @@ abstract class CrudController extends BaseController
                 $this->prePersist($entity, 'new');
 
                 $this->persistAndFlush($entity);
+
+                $this->postFlush($entity, 'new');
 
                 if (!$request->isXmlHttpRequest()) {
                     $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
@@ -341,6 +351,8 @@ abstract class CrudController extends BaseController
                 $this->prePersist($entity, 'edit');
 
                 $this->persistAndFlush($entity);
+
+                $this->postFlush($entity, 'edit');
 
                 if (!$request->isXmlHttpRequest()) {
                     $this->addSuccessFlash('The %entity% has been updated.');
@@ -485,4 +497,11 @@ abstract class CrudController extends BaseController
      * @param object $entity entity
      */
     protected function prePersist($entity, $action) {}
+
+    /**
+     * Post flush entity
+     *
+     * @param object $entity entity
+     */
+    protected function postFlush($entity, $action) {}
 }
