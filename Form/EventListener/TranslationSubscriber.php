@@ -37,7 +37,7 @@ class TranslationSubscriber implements EventSubscriberInterface
     public function __construct($localeList, RegistryInterface $doctrine, Reader $annotationReader, $defaultLocale)
     {
         $this->localeList       = $localeList;
-        $this->doctrine  = $doctrine;
+        $this->doctrine         = $doctrine;
         $this->annotationReader = $annotationReader;
         $this->defaultLocale    = $defaultLocale;
     }
@@ -98,13 +98,13 @@ class TranslationSubscriber implements EventSubscriberInterface
                 foreach ($translatableFields as $fieldName => $fieldType) {
                     $defaultLocaleValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
                 }
-                $parentData->setTranslatableLocale($this->currentLocale);
+                $parentData->setTranslatableLocale($this->getLocale());
                 $em->refresh($parentData);
 
                 $translations[$defaultLocale] = $defaultLocaleValues;
             }
 
-            unset($locales[$this->currentLocale]);
+            unset($locales[$this->getLocale()]);
             foreach ($locales as $locale => $localeConfig) {
                 foreach ($translatableFields as $fieldName => $fieldType) {
                     $data = '';
