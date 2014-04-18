@@ -7,33 +7,34 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * Translation type used to automatically add translation on forms depending of translatable objects.
- *
- * @package Bigfoot\Bundle\SeoBundle\Form
+ * Class TranslatedEntityType
+ * @package Bigfoot\Bundle\CoreBundle\Form\Type
  */
 class TranslatedEntityType extends AbstractType
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    protected $container;
+    /** @var \Bigfoot\Bundle\CoreBundle\Form\EventListener\TranslationSubscriber */
+    protected $translationSubscriber;
 
-    /**
-     * @var
-     */
+    /** @var \Symfony\Component\HttpFoundation\Request */
+    protected $request;
+
+    /** @var array */
     protected $localeList;
 
     /**
-     * @param ContainerInterface $container
+     * @param TranslationSubscriber $translationSubscriber
+     * @param Request $request
      * @param $localeList
      */
-    public function __construct(ContainerInterface $container, $localeList)
+    public function __construct(TranslationSubscriber $translationSubscriber, Request $request, $localeList)
     {
-        $this->container = $container;
-        $this->localeList = $localeList;
+        $this->translationSubscriber = $translationSubscriber;
+        $this->request               = $request;
+        $this->localeList            = $localeList;
     }
 
     /**
@@ -44,7 +45,10 @@ class TranslatedEntityType extends AbstractType
     {
         $builder->add('translatedEntity', 'hidden' );
 
-        $builder->addEventSubscriber(new TranslationSubscriber($this->localeList, $this->container->get('doctrine'), $this->container->get('annotation_reader'), $this->container->get('request')->getLocale(), $this->container->getParameter('locale')));
+        $translationSubscriber = $this->translationSubscriber;
+        $translationSubscriber->setLocale($this->request->getLocale());
+
+        $builder->addEventSubscriber($translationSubscriber);
     }
 
     /**
@@ -54,9 +58,9 @@ class TranslatedEntityType extends AbstractType
     {
         $resolver->setDefaults(array(
             'translation_class' => null,
-            'mapped' => false,
-            'label' => false,
-            'attr' => array(
+            'mapped'            => false,
+            'label'             => false,
+            'attr'              => array(
                 'class' => 'translatable-fields'
             ),
         ));

@@ -17,6 +17,26 @@ services:
         arguments: [@bigfoot.theme]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+    # Kernel Listener
+    bigfoot_core.kernel_listener:
+        class: Bigfoot\Bundle\CoreBundle\Listener\KernelListener
+        arguments:
+            - @stof_doctrine_extensions.listener.translatable
+            - %locale%
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onEarlyKernelRequest, priority: 50 }
+            - { name: kernel.event_listener, event: kernel.request, method: onLateKernelRequest , priority: -50 }
+
+    # Kernel Listener
+    bigfoot_core.translatable_subscriber:
+        class: Bigfoot\Bundle\CoreBundle\Form\EventListener\TranslationSubscriber
+        arguments:
+            - %bigfoot_core.languages.front%
+            - @doctrine
+            - @annotation_reader
+            - %locale%
+
     # Services dedicated to the BackOffice theme
     bigfoot.theme:
         class:        "%theme.class%"
@@ -56,9 +76,14 @@ services:
     # Entity translation in forms
     form.type.translatable:
         class: %translatable_type.class%
-        arguments: [ @service_container, '%bigfoot_core.languages.front%' ]
+        scope: request
+        arguments:
+            - @bigfoot_core.translatable_subscriber
+            - @request
+            - %bigfoot_core.languages.front%
         tags:
             - { name: form.type, alias: translatable_entity }
+
     # Sortable form type
     form.type.sortable:
         class: %sortable_type.class%
@@ -103,10 +128,6 @@ services:
             - %bigfoot_core.languages.front%
         tags:
             - { name: twig.extension }
-
-
-
-
 
     # Token Generator
     bigfoot_core.generator.token:
