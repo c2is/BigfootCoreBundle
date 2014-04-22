@@ -71,95 +71,84 @@ class TranslationSubscriber implements EventSubscriberInterface
 
     /**
      * @param FormEvent $event
-     * @throws \Exception
      */
     public function preSetData(FormEvent $event)
     {
-        try {
-            $em                 = $this->doctrine->getManager();
-            $defaultLocale      = $this->defaultLocale;
-            $locales            = $this->localeList;
-            $form               = $event->getForm();
-            $parentForm         = $form->getParent();
-            $parentData         = $parentForm->getData();
-            $entityClass        = get_class($parentData);
-            $translatableFields = $this->getTranslatableFields($entityClass);
-            $propertyAccessor   = PropertyAccess::createPropertyAccessor();
+        $em                 = $this->doctrine->getManager();
+        $defaultLocale      = $this->defaultLocale;
+        $locales            = $this->localeList;
+        $form               = $event->getForm();
+        $parentForm         = $form->getParent();
+        $parentData         = $parentForm->getData();
+        $entityClass        = get_class($parentData);
+        $translatableFields = $this->getTranslatableFields($entityClass);
+        $propertyAccessor   = PropertyAccess::createPropertyAccessor();
 
-            $translations = array();
-            if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
-                /** @var TranslationRepository $repository */
-                $repository   = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
-                $translations = $repository->findTranslations($parentData);
+        $translations = array();
+        if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
+            /** @var TranslationRepository $repository */
+            $repository   = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+            $translations = $repository->findTranslations($parentData);
 
-                $defaultLocaleValues = array();
-                $parentData->setTranslatableLocale($defaultLocale);
-                $em->refresh($parentData);
-                foreach ($translatableFields as $fieldName => $fieldType) {
-                    $defaultLocaleValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
-                }
-                $parentData->setTranslatableLocale($this->getLocale());
-                $em->refresh($parentData);
-
-                $translations[$defaultLocale] = $defaultLocaleValues;
+            $defaultLocaleValues = array();
+            $parentData->setTranslatableLocale($defaultLocale);
+            $em->refresh($parentData);
+            foreach ($translatableFields as $fieldName => $fieldType) {
+                $defaultLocaleValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
             }
+            $parentData->setTranslatableLocale($this->getLocale());
+            $em->refresh($parentData);
 
-            unset($locales[$this->getLocale()]);
-            foreach ($locales as $locale => $localeConfig) {
-                foreach ($translatableFields as $fieldName => $fieldType) {
-                    $data = '';
-                    if (isset($translations[$locale][$fieldName])) {
-                        $data = $translations[$locale][$fieldName];
-                    }
+            $translations[$defaultLocale] = $defaultLocaleValues;
+        }
 
-                    if ($parentForm->has($fieldName)) {
-                        $fieldType = $parentForm->get($fieldName)->getConfig()->getType()->getInnerType();
-                        $fieldAttr = $parentForm->get($fieldName)->getConfig()->getOption('attr');
-                        $form->add(sprintf("%s-%s", $fieldName, $locale), $fieldType, array('data' => $data, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $fieldName, 'data-locale' => $locale))));
-                    }
+        unset($locales[$this->getLocale()]);
+        foreach ($locales as $locale => $localeConfig) {
+            foreach ($translatableFields as $fieldName => $fieldType) {
+                $data = '';
+                if (isset($translations[$locale][$fieldName])) {
+                    $data = $translations[$locale][$fieldName];
+                }
+
+                if ($parentForm->has($fieldName)) {
+                    $fieldType = $parentForm->get($fieldName)->getConfig()->getType()->getInnerType();
+                    $fieldAttr = $parentForm->get($fieldName)->getConfig()->getOption('attr');
+                    $form->add(sprintf('%s-%s', $fieldName, $locale), $fieldType, array('data' => $data, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $fieldName, 'data-locale' => $locale))));
                 }
             }
-        } catch (\Exception $e) {
-            $secondException = new \Exception("The object that was given to the form you wanted to translate isn't an entity one. Untranslatable in this case.", $e->getCode(), $e);
-            throw $secondException;
         }
     }
 
     /**
      * @param FormEvent $event
-     * @throws \Exception
      */
     public function postSubmit(FormEvent $event)
     {
-        try {
-            $form       = $event->getForm();
-            $parentForm = $form->getParent();
-            $parentData = $parentForm->getData();
+        $form       = $event->getForm();
+        $parentForm = $form->getParent();
+        $parentData = $parentForm->getData();
 
-            if ($parentData) {
-                $entityClass        = get_class($parentData);
-                $em                 = $this->doctrine->getManagerForClass($entityClass);
-                /** @var TranslationRepository $repository */
-                $repository         = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
-                $translatableFields = $this->getTranslatableFields($entityClass);
-                $data               = $event->getData();
-                $locales            = $this->localeList;
+        if ($parentData) {
+            $entityClass        = get_class($parentData);
+            $em                 = $this->doctrine->getManagerForClass($entityClass);
+            /** @var TranslationRepository $repository */
+            $repository         = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+            $translatableFields = $this->getTranslatableFields($entityClass);
+            $data               = $event->getData();
+            $locales            = $this->localeList;
 
-                foreach ($locales as $locale => $localeConf) {
-                    foreach ($translatableFields as $field => $type) {
-                        $fieldData = '';
-                        if (isset($data[$field])) {
-                            $fieldData = $data[$field];
-                        } elseif (isset($data[$field."-".$locale])) {
-                            $fieldData = $data[$field."-".$locale];
-                        }
-                        $repository->translate($parentData, $field, $locale, $fieldData);
+            foreach ($locales as $locale => $localeConf) {
+                foreach ($translatableFields as $field => $type) {
+                    $fieldData       = '';
+                    $localeFieldName = sprintf('%s-%s', $field, $locale);
+                    if (isset($data[$field])) {
+                        $fieldData = $data[$field];
+                    } elseif (isset($data[$localeFieldName])) {
+                        $fieldData = $data[$localeFieldName];
                     }
+                    $repository->translate($parentData, $field, $locale, $fieldData);
                 }
             }
-        } catch (\Exception $e) {
-            $secondException = new \Exception("The object that was given to the form you wanted to translate isn't an entity one. Untranslatable in this case.", $e->getCode(), $e);
-            throw $secondException;
         }
     }
 
