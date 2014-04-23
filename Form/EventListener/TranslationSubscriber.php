@@ -88,18 +88,21 @@ class TranslationSubscriber implements EventSubscriberInterface
         if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
             /** @var TranslationRepository $repository */
             $repository   = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
-            $translations = $repository->findTranslations($parentData);
+            $translations = array();
 
-            $defaultLocaleValues = array();
-            $parentData->setTranslatableLocale($defaultLocale);
-            $em->refresh($parentData);
-            foreach ($translatableFields as $fieldName => $fieldType) {
-                $defaultLocaleValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
+            foreach ($locales as $locale => $localeConfig) {
+                $localeValues = array();
+                $parentData->setTranslatableLocale($locale);
+                $em->refresh($parentData);
+                foreach ($translatableFields as $fieldName => $fieldType) {
+                    $localeValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
+                }
+
+                $translations[$locale] = $localeValues;
             }
+
             $parentData->setTranslatableLocale($this->getLocale());
             $em->refresh($parentData);
-
-            $translations[$defaultLocale] = $defaultLocaleValues;
         }
 
         unset($locales[$this->getLocale()]);
@@ -139,14 +142,16 @@ class TranslationSubscriber implements EventSubscriberInterface
 
             foreach ($locales as $locale => $localeConf) {
                 foreach ($translatableFields as $field => $type) {
-                    $fieldData       = '';
-                    $localeFieldName = sprintf('%s-%s', $field, $locale);
-                    if (isset($data[$field])) {
-                        $fieldData = $data[$field];
-                    } elseif (isset($data[$localeFieldName])) {
-                        $fieldData = $data[$localeFieldName];
+                    if ($parentForm->has($field)) {
+                        $fieldData       = '';
+                        $localeFieldName = sprintf('%s-%s', $field, $locale);
+                        if (isset($data[$field])) {
+                            $fieldData = $data[$field];
+                        } elseif (isset($data[$localeFieldName])) {
+                            $fieldData = $data[$localeFieldName];
+                        }
+                        $repository->translate($parentData, $field, $locale, $fieldData);
                     }
-                    $repository->translate($parentData, $field, $locale, $fieldData);
                 }
             }
         }
@@ -166,7 +171,7 @@ class TranslationSubscriber implements EventSubscriberInterface
 
         do {
             $translatableFields = array_merge($translatableFields, $this->getTranslatableFieldsFromClass($reflectionClass));
-        } while ($reflectionClass = $reflectionClass->getParentClass());
+        } while (false and $reflectionClass = $reflectionClass->getParentClass());
 
         return $translatableFields;
     }
