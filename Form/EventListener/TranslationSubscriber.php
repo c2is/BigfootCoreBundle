@@ -150,7 +150,9 @@ class TranslationSubscriber implements EventSubscriberInterface
                         } elseif (isset($data[$localeFieldName])) {
                             $fieldData = $data[$localeFieldName];
                         }
-                        $repository->translate($parentData, $field, $locale, $fieldData);
+                        if ($field != 'slug' || $fieldData) {
+                            $repository->translate($parentData, $field, $locale, $fieldData);
+                        }
                     }
                 }
             }
