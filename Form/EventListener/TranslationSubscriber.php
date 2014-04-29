@@ -86,8 +86,6 @@ class TranslationSubscriber implements EventSubscriberInterface
 
         $translations = array();
         if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
-            /** @var TranslationRepository $repository */
-            $repository   = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
             $translations = array();
 
             foreach ($locales as $locale => $localeConfig) {
@@ -173,7 +171,7 @@ class TranslationSubscriber implements EventSubscriberInterface
 
         do {
             $translatableFields = array_merge($translatableFields, $this->getTranslatableFieldsFromClass($reflectionClass));
-        } while (false and $reflectionClass = $reflectionClass->getParentClass());
+        } while ($reflectionClass = $reflectionClass->getParentClass());
 
         return $translatableFields;
     }
