@@ -75,7 +75,6 @@ class TranslationSubscriber implements EventSubscriberInterface
     public function preSetData(FormEvent $event)
     {
         $em                 = $this->doctrine->getManager();
-        $defaultLocale      = $this->defaultLocale;
         $locales            = $this->localeList;
         $form               = $event->getForm();
         $parentForm         = $form->getParent();
@@ -143,10 +142,10 @@ class TranslationSubscriber implements EventSubscriberInterface
                     if ($parentForm->has($field)) {
                         $fieldData       = '';
                         $localeFieldName = sprintf('%s-%s', $field, $locale);
-                        if (isset($data[$field])) {
-                            $fieldData = $data[$field];
-                        } elseif (isset($data[$localeFieldName])) {
+                        if (isset($data[$localeFieldName])) {
                             $fieldData = $data[$localeFieldName];
+                        } elseif (isset($data[$field])) {
+                            $fieldData = $data[$field];
                         }
                         if ($field != 'slug' || $fieldData) {
                             $repository->translate($parentData, $field, $locale, $fieldData);
