@@ -18,7 +18,7 @@ class KnpSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            // 'knp_pager.items' => array('items', 1)
+            'knp_pager.items' => array('items', 1)
         );
     }
 
