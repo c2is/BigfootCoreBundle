@@ -272,9 +272,11 @@ abstract class CrudController extends BaseController
             ->getContextRepository()
             ->createContextQueryBuilder($entityClass);
 
-        foreach ($this->getFields()['join'] as $key => $field) {
-            $queryBuilder
-                ->join('e.'.$field, $key);
+        foreach ($this->getFields() as $key => $field) {
+            if (isset($field['join'])) {
+                $queryBuilder
+                    ->join('e.'.$key, $field['join']);
+            }
         }
 
         $query = $queryBuilder
