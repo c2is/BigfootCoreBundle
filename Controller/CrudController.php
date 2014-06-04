@@ -268,21 +268,16 @@ abstract class CrudController extends BaseController
     {
         $entityClass = ltrim($this->getEntityClass(), '\\');
 
-        $queryBuilder = $this
+        $query = $this
             ->getContextRepository()
-            ->createContextQueryBuilder($entityClass);
-
-        foreach ($this->getFields()['join'] as $key => $field) {
-            $queryBuilder
-                ->join('e.'.$field, $key);
-        }
-
-        $query = $queryBuilder
+            ->createContextQueryBuilder($entityClass)
             ->getQuery()
             ->setHint(
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
                 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
-            );
+            )
+            // ->getResult()
+            ;
 
         return $this->renderIndex($query);
     }
