@@ -276,8 +276,7 @@ abstract class CrudController extends BaseController
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
                 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
             )
-            // ->getResult()
-            ;
+            ->getResult();
 
         return $this->renderIndex($query);
     }
@@ -477,8 +476,8 @@ abstract class CrudController extends BaseController
                     'heading' => 'Success!',
                     'message' => $this->getTranslator()->trans($message, array('%entity%' => $this->getEntityName())),
                     'actions' => $actions
+                    )
                 )
-            )
         );
     }
 
@@ -497,16 +496,12 @@ abstract class CrudController extends BaseController
      *
      * @param object $entity entity
      */
-    protected function prePersist($entity, $action)
-    {
-    }
+    protected function prePersist($entity, $action) {}
 
     /**
      * Post flush entity
      *
      * @param object $entity entity
      */
-    protected function postFlush($entity, $action)
-    {
-    }
+    protected function postFlush($entity, $action) {}
 }
