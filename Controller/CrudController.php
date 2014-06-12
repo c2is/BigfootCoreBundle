@@ -81,6 +81,65 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * Get filters
+     *
+     * @return array
+     */
+    protected function getFilters()
+    {
+        return array();
+    }
+
+    /**
+     * Get filter manager
+     *
+     * @return Bigfoot\Bundle\CoreBundle\Manager\FilterManager
+     */
+    protected function getFilterManager()
+    {
+        return $this->container->get('bigfoot_core.manager.filters');
+    }
+
+    /**
+     * Get global filters
+     *
+     * @return mixed
+     */
+    protected function getGlobalFilters()
+    {
+        $filters = $this->getFilters();
+
+        if (empty($filters)) {
+            return null;
+        }
+
+        $datas = array(
+            'referer' => $this->getEntity(),
+            'fields'  => $filters
+        );
+
+        return $datas;
+    }
+
+    /**
+     * Get full filters
+     *
+     * @return array
+     */
+    protected function generateFiltersForm()
+    {
+        $datas = $this->getGlobalFilters();
+
+        if (empty($datas)) {
+            return null;
+        }
+
+        $entityName = $this->getEntityName();
+
+        return $this->getFilterManager()->generateFilters($datas, strtolower($entityName));
+    }
+
+    /**
      * @return string
      */
     protected function getBundleName()
@@ -260,25 +319,41 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * Get query
+     *
+     * @return Query
+     */
+    private function getQuery()
+    {
+        $entityClass = ltrim($this->getEntityClass(), '\\');
+        $entityName  = $this->getEntityName();
+
+        $query = $this
+            ->getContextRepository()
+            ->createContextQueryBuilder($entityClass);
+
+        $query = $this->getFilterManager()->filterQuery($query, strtolower($entityName), $this->getGlobalFilters());
+
+        $query
+            ->getQuery()
+            ->setHint(
+                Query::HINT_CUSTOM_OUTPUT_WALKER,
+                'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
+            );
+
+        return $query;
+    }
+
+    /**
      * Meant to be used in a basic index action.
      *
      * @return array An array containing the entities.
      */
     protected function doIndex()
     {
-        $entityClass = ltrim($this->getEntityClass(), '\\');
+        $result = $this->getQuery()->getQuery()->getResult();
 
-        $query = $this
-            ->getContextRepository()
-            ->createContextQueryBuilder($entityClass)
-            ->getQuery()
-            ->setHint(
-                Query::HINT_CUSTOM_OUTPUT_WALKER,
-                'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
-            )
-            ->getResult();
-
-        return $this->renderIndex($query);
+        return $this->renderIndex($result);
     }
 
     /**
@@ -414,6 +489,7 @@ abstract class CrudController extends BaseController
                 'list_fields'   => $this->getFields(),
                 'actions'       => $this->getActions(),
                 'globalActions' => $this->getGlobalActions(),
+                'list_filters'  => $this->generateFiltersForm()->createView()
             )
         );
     }
@@ -476,8 +552,8 @@ abstract class CrudController extends BaseController
                     'heading' => 'Success!',
                     'message' => $this->getTranslator()->trans($message, array('%entity%' => $this->getEntityName())),
                     'actions' => $actions
-                    )
                 )
+            )
         );
     }
 
@@ -496,12 +572,18 @@ abstract class CrudController extends BaseController
      *
      * @param object $entity entity
      */
-    protected function prePersist($entity, $action) {}
+    protected function prePersist($entity, $action)
+    {
+
+    }
 
     /**
      * Post flush entity
      *
      * @param object $entity entity
      */
-    protected function postFlush($entity, $action) {}
+    protected function postFlush($entity, $action)
+    {
+
+    }
 }
