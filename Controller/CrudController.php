@@ -268,9 +268,18 @@ abstract class CrudController extends BaseController
     {
         $entityClass = ltrim($this->getEntityClass(), '\\');
 
-        $query = $this
+        $queryBuilder = $this
             ->getContextRepository()
-            ->createContextQueryBuilder($entityClass)
+            ->createContextQueryBuilder($entityClass);
+
+        foreach ($this->getFields() as $key => $field) {
+            if (isset($field['join'])) {
+                $queryBuilder
+                    ->leftJoin('e.'.$key, $field['join']);
+            }
+        }
+
+        $query = $queryBuilder
             ->getQuery()
             ->setHint(
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
