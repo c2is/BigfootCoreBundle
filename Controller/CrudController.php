@@ -358,7 +358,7 @@ abstract class CrudController extends BaseController
      */
     protected function doIndex()
     {
-        $result = $this->getQuery()->getQuery()->getResult();
+        $result = $this->getQuery()->getResult();
 
         return $this->renderIndex($result);
     }
@@ -496,7 +496,7 @@ abstract class CrudController extends BaseController
                 'list_fields'   => $this->getFields(),
                 'actions'       => $this->getActions(),
                 'globalActions' => $this->getGlobalActions(),
-                'list_filters'  => $this->generateFiltersForm()->createView()
+                'list_filters'  => $this->generateFiltersForm() ? $this->generateFiltersForm() ->createView() : null
             )
         );
     }
