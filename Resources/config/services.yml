@@ -148,10 +148,18 @@ services:
     bigfoot_core.menu_builder:
         class: Bigfoot\Bundle\CoreBundle\Menu\Builder
         arguments:
-            - @knp_menu.factory
             - @doctrine.orm.entity_manager
             - @security.context
             - @event_dispatcher
+            - @bigfoot_core.manager.menu
+
+    # Menu Manager
+    bigfoot_core.manager.menu:
+        class: Bigfoot\Bundle\CoreBundle\Menu\MenuManager
+        arguments:
+            - @knp_menu.factory
+            - @doctrine.orm.entity_manager
+            - @security.context
 
     # Menu main
     bigfoot_core.menu.main:
