@@ -44,27 +44,32 @@ class MenuSubscriber implements EventSubscriberInterface
      */
     public function onGenerateMain(GenericEvent $event)
     {
-        $menu          = $event->getSubject();
-        $root          = $menu->getRoot();
-        $structureMenu = $root->getChild('structure');
+        $builder = $event->getSubject();
 
-        if (!$structureMenu) {
-            $structureMenu = $root->addChild(
-                'structure',
-                array(
-                    'label'          => 'Structure',
-                    'url'            => '#',
-                    'linkAttributes' => array(
-                        'class' => 'dropdown-toggle',
-                        'icon'  => 'building',
+        if (!$builder->childExists('structure')) {
+            $builder
+                ->addChild(
+                    'structure',
+                    array(
+                        'label'          => 'Structure',
+                        'url'            => '#',
+                        'linkAttributes' => array(
+                            'class' => 'dropdown-toggle',
+                            'icon'  => 'building',
+                        )
+                    ),
+                    array(
+                        'children-attributes' => array(
+                            'class' => 'submenu'
+                        )
                     )
-                )
-            );
+                );
         }
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
-            $tagMenu = $structureMenu->addChild(
-                'tag_menu',
+        $builder
+            ->addChildFor(
+                'structure',
+                'structure_tag',
                 array(
                     'label'          => 'Tag',
                     'url'            => '#',
@@ -72,17 +77,16 @@ class MenuSubscriber implements EventSubscriberInterface
                         'class' => 'dropdown-toggle',
                         'icon'  => 'tag',
                     )
-                )
-            );
-
-            $tagMenu->setChildrenAttributes(
+                ),
                 array(
-                    'class' => 'submenu',
+                    'children-attributes' => array(
+                        'class' => 'submenu'
+                    )
                 )
-            );
-
-            $tagMenu->addChild(
-                'category',
+            )
+            ->addChildFor(
+                'structure_tag',
+                'structure_tag_category',
                 array(
                     'label'  => 'Category',
                     'route'  => 'admin_tag_category',
@@ -96,10 +100,10 @@ class MenuSubscriber implements EventSubscriberInterface
                         'icon' => 'double-angle-right',
                     )
                 )
-            );
-
-            $tagMenu->addChild(
-                'tag',
+            )
+            ->addChildFor(
+                'structure_tag',
+                'structure_tag_tag',
                 array(
                     'label'  => 'Tag',
                     'route'  => 'admin_tag',
@@ -114,6 +118,5 @@ class MenuSubscriber implements EventSubscriberInterface
                     )
                 )
             );
-        }
     }
 }
