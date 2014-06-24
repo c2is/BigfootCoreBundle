@@ -90,7 +90,8 @@ class BaseController extends Controller
         return $this->get('knp_paginator')->paginate(
             $query,
             $this->getRequest()->query->get('page', 1),
-            $elementsPerPage
+            $elementsPerPage,
+            array('distinct' => false)
         );
     }
 

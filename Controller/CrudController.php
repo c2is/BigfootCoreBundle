@@ -325,6 +325,11 @@ abstract class CrudController extends BaseController
      */
     private function getQuery()
     {
+        $count = $this
+            ->getEntityManager()
+            ->createQuery('SELECT COUNT(e) FROM ' . $this->getEntityClass() . ' e')
+            ->getSingleScalarResult();
+
         $entityClass = ltrim($this->getEntityClass(), '\\');
         $entityName  = $this->getEntityName();
 
@@ -346,7 +351,8 @@ abstract class CrudController extends BaseController
             ->setHint(
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
                 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
-            );
+            )
+            ->setHint('knp_paginator.count', $count);
 
         return $query;
     }
@@ -358,7 +364,7 @@ abstract class CrudController extends BaseController
      */
     protected function doIndex()
     {
-        $result = $this->getQuery()->getResult();
+        $result = $this->getQuery();
 
         return $this->renderIndex($result);
     }
