@@ -216,6 +216,14 @@ class BaseController extends Controller
     }
 
     /**
+     * Get the bigfoot settings manager
+     */
+    protected function getSettingsManager()
+    {
+        return $this->get('bigfoot_core.manager.settings');
+    }
+
+    /**
      * Get the user manager
      */
     protected function getUserManager()
