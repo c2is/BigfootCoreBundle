@@ -27,7 +27,7 @@ class FilterType extends AbstractType
     /**
      * Constructor
      *
-     * @param Session $session
+     * @param FilterManager $manager
      */
     public function __construct(FilterManager $manager)
     {
