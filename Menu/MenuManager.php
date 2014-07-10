@@ -328,18 +328,20 @@ class MenuManager
             return true;
         }
 
+        $granted = false;
         $roleMenu = $this->repository->findOneBySlug($slug);
 
         if ($roleMenu instanceof RoleMenu) {
             if (count($roleMenu->getRoles())) {
+                $granted = false;
                 foreach ($roleMenu->getArrayRoles() as $role) {
-                    if (!in_array($role, $roles)) {
-                        return false;
+                    if (in_array($role, $roles)) {
+                        $granted = true;
                     }
                 }
             }
         }
 
-        return true;
+        return $granted;
     }
 }
