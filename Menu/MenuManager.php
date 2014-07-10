@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Menu;
 
+use Bigfoot\Bundle\UserBundle\Entity\Role;
 use Symfony\Component\Security\Core\SecurityContext;
 
 use Doctrine\ORM\EntityManager;
@@ -278,11 +279,17 @@ class MenuManager
      */
     private function isGranted($slug)
     {
+        $roles = $this->user->getRoles();
+
+        /** @var Role $role */
+        if (in_array('ROLE_ADMIN', $roles)) {
+            return true;
+        }
+
         $roleMenu = $this->repository->findOneBySlug($slug);
 
         if ($roleMenu instanceof RoleMenu) {
             if (count($roleMenu->getRoles())) {
-                $roles = $this->user->getRoles();
                 foreach ($roleMenu->getArrayRoles() as $role) {
                     if (!in_array($role, $roles)) {
                         return false;
