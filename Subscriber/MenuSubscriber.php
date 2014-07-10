@@ -117,6 +117,17 @@ class MenuSubscriber implements EventSubscriberInterface
                         'icon' => 'double-angle-right',
                     )
                 )
+            )
+            ->addChildFor(
+                'settings',
+                'settings_global',
+                array(
+                    'label'  => 'bigfoot_core.menu.label.settings',
+                    'route'  => 'admin_settings_global',
+                    'linkAttributes' => array(
+                        'icon'  => 'wrench',
+                    )
+                )
             );
     }
 }
