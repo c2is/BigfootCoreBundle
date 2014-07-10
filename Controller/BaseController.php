@@ -3,6 +3,8 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\ContextBundle\Entity\ContextRepository;
+use Doctrine\ORM\Query;
+use Knp\Component\Pager\Paginator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Core\SecurityContext;
@@ -80,14 +82,16 @@ class BaseController extends Controller
     /**
      * Get Pagination
      *
-     * @param arrayCollection $query           elements to paginate
-     * @param integer         $elementsPerPage elements per page
+     * @param Query   $query
+     * @param integer $elementsPerPage elements per page
      *
-     * @return arrayCollection
+     * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
     protected function getPagination($query, $elementsPerPage)
     {
-        return $this->get('knp_paginator')->paginate(
+        /** @var Paginator $paginator */
+        $paginator = $this->get('knp_paginator');
+        return $paginator->paginate(
             $query,
             $this->getRequest()->query->get('page', 1),
             $elementsPerPage,

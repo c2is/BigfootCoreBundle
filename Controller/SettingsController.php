@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
-use Bigfoot\Bundle\CoreBundle\Controller\CoreController;
 use Bigfoot\Bundle\CoreBundle\Entity\Settings;
 
 /**
@@ -19,7 +18,7 @@ use Bigfoot\Bundle\CoreBundle\Entity\Settings;
  *
  * @package BigfootCoreController
  */
-class SettingsController extends CoreController
+class SettingsController extends BaseController
 {
     /**
      * Globale settings action

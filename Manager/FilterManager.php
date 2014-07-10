@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
 use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -82,6 +83,41 @@ class FilterManager
     }
 
     /**
+     * @param Request $request
+     */
+    public function registerFilters($entityName, $globalFilters)
+    {
+        $form = $this->generateFilters($globalFilters, $entityName);
+        $form->submit($this->request);
+
+        $datas   = $form->getData();
+        $filters = $globalFilters['fields'];
+
+        if ($this->request->request->get('clear', null) != null) {
+            $this->session->set('bigfoot.crud.index.filters.'.$entityName, array());
+
+            return true;
+        }
+
+        foreach ($filters as $key => $filter) {
+            if (isset($datas[$filter['name']]) && $datas[$filter['name']] !== null) {
+                $data    = $datas[$filter['name']];
+
+                switch ($filter['type']) {
+                    case 'entity':
+                        $datas[$filter['name']] = $data->getId();
+
+                        break;
+                }
+            }
+        }
+
+        $this->session->set('bigfoot.crud.index.filters.'.strtolower($entityName), $datas);
+
+        return true;
+    }
+
+    /**
      * Filter query
      *
      * @param  Query $query
@@ -90,28 +126,18 @@ class FilterManager
      */
     public function filterQuery($query, $entityName, $globalFilters)
     {
-        if ($this->request->isMethod('POST')) {
-            $form = $this->generateFilters($globalFilters, $entityName);
-            $form->handleRequest($this->request);
-
-            $datas   = $form->getData();
+        $datas = $this->session->get('bigfoot.crud.index.filters.'.strtolower($entityName), null);
+        if ($datas) {
             $filters = $globalFilters['fields'];
-
-            if ($this->request->request->get('clear', null) != null) {
-                $this->session->set('bigfoot.crud.index.filters.'.$entityName, array());
-
-                return $query;
-            }
 
             foreach ($filters as $key => $filter) {
                 if (isset($datas[$filter['name']]) && $datas[$filter['name']] !== null) {
                     $options = $filter['options'];
-                    $data    = $datas[$filter['name']];
+                    $data = $datas[$filter['name']];
 
                     switch ($filter['type']) {
                         case 'entity':
-                            $datas[$filter['name']] = $data->getId();
-
+                            $data = $this->getEntity($filter, $datas[$filter['name']]);
                             if ($alias = $this->hasJoin('e.'.$options['relation'])) {
                                 $this->deleteJoin('e.'.$options['relation']);
                                 $this->addJoin('e.'.$options['relation'], $alias, 'WITH _r'.$key.'.id = '.$data->getId());
@@ -156,12 +182,6 @@ class FilterManager
                     }
                 }
             }
-
-            $this->session->set('bigfoot.crud.index.filters.'.strtolower($entityName), $datas);
-
-            // echo $query->getQuery()->getSQL();
-            // var_dump($query->getParameters());
-            // die();
         }
 
         return $this->hydrateQuery($query);
@@ -214,7 +234,7 @@ class FilterManager
      *
      * @param  array $datas
      *
-     * @return FormView
+     * @return FormInterface
      */
     public function generateFilters($datas, $key)
     {

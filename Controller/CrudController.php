@@ -364,6 +364,12 @@ abstract class CrudController extends BaseController
      */
     protected function doIndex()
     {
+        $request = $this->getRequest();
+        if ($request->isMethod('POST')) {
+            $this->getFilterManager()->registerFilters($this->getEntityName(), $this->getGlobalFilters());
+            return $this->redirect($this->generateUrl($this->getControllerIndex()));
+        }
+
         $result = $this->getQuery();
 
         return $this->renderIndex($result);
