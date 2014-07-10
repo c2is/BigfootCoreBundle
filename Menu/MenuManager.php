@@ -97,6 +97,44 @@ class MenuManager
     }
 
     /**
+     * Delete node
+     *
+     * @param  string $slug
+     *
+     * @return mixed
+     */
+    public function deleteNode($slug)
+    {
+        return $this->delete($slug, $this->children);
+    }
+
+    /**
+     * Delete
+     * use recursively to delete node in tree
+     *
+     * @param  string $slug
+     * @param  array $nodes
+     *
+     * @return mixed
+     */
+    public function delete($slug, &$nodes)
+    {
+        foreach ($nodes as $key => $node) {
+            if ($node->slug == $slug) {
+                unset($nodes[$key]);
+
+                return $this;
+            }
+
+            if (count($node->children)) {
+                $this->delete($slug, $node->children);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Add child
      *
      * @param string $slug
@@ -114,7 +152,7 @@ class MenuManager
         $child->children = array();
         $child->parent   = null;
 
-        $this->children[] = $child;
+        $this->children[$slug] = $child;
 
         return $this;
     }
@@ -144,7 +182,7 @@ class MenuManager
         $child->children = array();
         $child->parent   = $parentSlug;
 
-        $parent->children[] = $child;
+        $parent->children[$slug] = $child;
 
         return $this;
     }
@@ -197,6 +235,10 @@ class MenuManager
     {
         if ($this->menu === null) {
             throw new \Exception("Before to create a child node you need to call MenuManager::createRoot() to create the parent node menu");
+        }
+
+        if (empty($node)) {
+            return;
         }
 
         $slug    = $node->slug;

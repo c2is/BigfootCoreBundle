@@ -106,7 +106,11 @@ class Builder
         $this->eventDispatcher->dispatch(MenuEvent::GENERATE_MAIN, new GenericEvent($builder));
         $this->eventDispatcher->dispatch(MenuEvent::TERMINATE, new GenericEvent($builder));
 
-        return $builder->createMenu();
+        $menu = $builder->createMenu();
+
+        $this->eventDispatcher->dispatch(MenuEvent::RENDER_MENU, new GenericEvent($menu));
+
+        return $menu;
     }
 
     /**
