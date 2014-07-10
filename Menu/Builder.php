@@ -91,6 +91,9 @@ class Builder
                 array(
                     'label'          => 'Settings',
                     'url'            => '#',
+                    'attributes' => array(
+                        'class' => 'parent',
+                    ),
                     'linkAttributes' => array(
                         'class' => 'dropdown-toggle',
                         'icon'  => 'wrench',
@@ -98,7 +101,7 @@ class Builder
                 ),
                 array(
                     'children-attributes' => array(
-                        'class' => 'submenu'
+                        'class' => 'submenu parent'
                     )
                 )
             );

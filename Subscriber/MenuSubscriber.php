@@ -51,11 +51,13 @@ class MenuSubscriber implements EventSubscriberInterface
                 ->addChild(
                     'structure',
                     array(
-                        'label'          => 'Structure',
-                        'url'            => '#',
+                        'label'      => 'Structure',
+                        'url'        => '#',
+                        'attributes' => array(
+                            'class' => 'parent',
+                        ),
                         'linkAttributes' => array(
-                            'class' => 'dropdown-toggle',
-                            'icon'  => 'building',
+                            'class' => 'dropdown-toggle fa fa-building',
                         )
                     ),
                     array(
