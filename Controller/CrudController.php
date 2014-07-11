@@ -77,7 +77,7 @@ abstract class CrudController extends BaseController
      */
     public function getControllerTitle()
     {
-        return sprintf('%s admin', $this->getEntityLabelPlural());
+        return $this->getTranslator()->trans('bigfoot_core.crud.controller.default_title', array('%entity%' => $this->getEntityLabelPlural()));
     }
 
     /**
@@ -248,7 +248,7 @@ abstract class CrudController extends BaseController
      */
     protected function getAddLabel()
     {
-        return sprintf('Add %s', $this->getEntityName());
+        return $this->getTranslator()->trans('bigfoot_core.crud.new.title', array('%entity%' => $this->getEntityName()));
     }
 
     /**
@@ -274,7 +274,7 @@ abstract class CrudController extends BaseController
 
         if (method_exists($this, 'editAction')) {
             $actions['edit'] = array(
-                'label' => 'Edit',
+                'label' => 'bigfoot_core.crud.actions.edit.label',
                 'route' => $this->getRouteNameForAction('edit'),
                 'icon'  => 'edit',
                 'color' => 'green',
@@ -283,13 +283,13 @@ abstract class CrudController extends BaseController
 
         if (method_exists($this, 'deleteAction')) {
             $actions['delete'] = array(
-                'label' => 'Delete',
+                'label' => 'bigfoot_core.crud.actions.delete.label',
                 'route' => $this->getRouteNameForAction('delete'),
                 'icon'  => 'trash',
                 'color' => 'red',
                 'class' => 'confirm-action',
                 'attributes' => array(
-                    'data-confirm-message' => $this->getTranslator()->trans('Are you sure ? The %entity% will be permanently deleted.', array('%entity%' => $this->getEntityLabel())),
+                    'data-confirm-message' => $this->getTranslator()->trans('bigfoot_core.crud.actions.delete.confirm', array('%entity%' => $this->getEntityLabel())),
                 ),
             );
         }
@@ -308,7 +308,7 @@ abstract class CrudController extends BaseController
 
         if (method_exists($this, 'newAction')) {
             $globalActions['new'] = array(
-                'label'      => 'Add',
+                'label'      => 'bigfoot_core.crud.actions.new.label',
                 'route'      => $this->getRouteNameForAction('new'),
                 'parameters' => array(),
                 'icon'       => 'pencil',
@@ -338,7 +338,7 @@ abstract class CrudController extends BaseController
             ->createContextQueryBuilder($entityClass);
 
         foreach ($this->getFields() as $key => $field) {
-            if (isset($field['join'])) {
+            if (is_array($field) && isset($field['join'])) {
                 $queryBuilder
                     ->leftJoin('e.'.$key, $field['join']);
             }
@@ -402,7 +402,7 @@ abstract class CrudController extends BaseController
                 if (!$request->isXmlHttpRequest()) {
                     $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
 
-                    $this->addSuccessFlash('The %entity% has been created.');
+                    $this->addSuccessFlash('bigfoot_core.flash.new.confirm');
 
                     return $this->redirect($action);
                 } else {
@@ -432,7 +432,7 @@ abstract class CrudController extends BaseController
         $entity = $this->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
+            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.edit.errors.not_found', array('%entity%', $this->getEntity())));
         }
 
         $form   = $this->createForm($this->getFormType(), $entity);
@@ -449,7 +449,7 @@ abstract class CrudController extends BaseController
                 $this->postFlush($entity, 'edit');
 
                 if (!$request->isXmlHttpRequest()) {
-                    $this->addSuccessFlash('The %entity% has been updated.');
+                    $this->addSuccessFlash('bigfoot_core.flash.edit.confirm');
 
                     return $this->redirect($action);
                 } else {
@@ -481,17 +481,17 @@ abstract class CrudController extends BaseController
         $entity = $this->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw new NotFoundHttpException(sprintf('Unable to find %s entity.', $this->getEntity()));
+            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete.errors.not_found', array('%entity%', $this->getEntity())));
         }
 
         $this->removeAndFlush($entity);
 
         if (!$request->isXmlHttpRequest()) {
-            $this->addSuccessFlash('The %entity% has been deleted.');
+            $this->addSuccessFlash('bigfoot_core.flash.delete.confirm');
 
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
         } else {
-            return $this->renderAjax(true, 'The entity has beed deleted.');
+            return $this->renderAjax(true, $this->getTranslator()->trans('bigfoot_core.delete.confirm'));
         }
     }
 
@@ -500,15 +500,29 @@ abstract class CrudController extends BaseController
      */
     protected function renderIndex($query)
     {
+        $fields = array();
+        foreach ($this->getFields() as $key => $field) {
+            if (!is_array($field)) {
+                $fields[$field] = array(
+                    'label' => sprintf('bigfoot_core.crud.fields.%s.%s.label', $this->getName(), $field),
+                );
+            } else {
+                if (!isset($field['label'])) {
+                    $field['label'] = sprintf('bigfoot_core.crud.fields.%s.%s.label', $this->getName(), $key);
+                }
+                $fields[$key] = $field;
+            }
+        }
+
         return $this->render(
             $this->getIndexTemplate(),
             array(
                 'list_items'    => $this->getPagination($query, $this->getElementsPerPage()),
                 'list_title'    => $this->getEntityLabelPlural(),
-                'list_fields'   => $this->getFields(),
+                'list_fields'   => $fields,
                 'actions'       => $this->getActions(),
                 'globalActions' => $this->getGlobalActions(),
-                'list_filters'  => $this->generateFiltersForm() ? $this->generateFiltersForm() ->createView() : null
+                'list_filters'  => $this->generateFiltersForm() ? $this->generateFiltersForm()->createView() : null
             )
         );
     }
@@ -523,9 +537,9 @@ abstract class CrudController extends BaseController
             array(
                 'form'        => $form->createView(),
                 'form_method' => 'POST',
-                'form_title'  => $this->getTranslator()->trans('%entity% creation', array('%entity%' => $this->getEntityLabel())),
+                'form_title'  => $this->getTranslator()->trans('bigfoot_core.crud.edit.title', array('%entity%' => $this->getEntityLabel())),
                 'form_action' => $action,
-                'form_submit' => 'Submit',
+                'form_submit' => 'bigfoot_core.crud.submit',
                 'form_cancel' => $this->getRouteNameForAction('index'),
                 'entity'      => $entity,
                 'layout'      => $this->getRequest()->query->get('layout') ?: '',
@@ -536,29 +550,33 @@ abstract class CrudController extends BaseController
     /**
      * Add sucess flash
      */
-    protected function addSuccessFlash($message, $route = null)
+    protected function addSuccessFlash($message, array $additionnalActions = array())
     {
         $actions = array();
 
         $actions[] = array(
             'route' => $this->generateUrl($this->getRouteNameForAction('index')),
-            'label' => 'Back to the listing',
+            'label' => 'bigfoot_core.flash.actions.back.label',
             'type'  => 'success',
         );
 
-        if ($route) {
+        if (method_exists($this, 'newAction')) {
             $actions[] = array(
-                'route' => $route,
-                'label' => $this->getTranslator()->trans('Add a new %entity%', array('%entity%' => $this->getEntityName())),
+                'route' => $this->generateUrl($this->getRouteNameForAction('new')),
+                'label' => 'bigfoot_core.flash.actions.new.label',
                 'type'  => 'success',
             );
-        } else {
-            if (method_exists($this, 'newAction')) {
-                $actions[] = array(
-                    'route' => $this->generateUrl($this->getRouteNameForAction('new')),
-                    'label' => $this->getTranslator()->trans('Add a new %entity%', array('%entity%' => $this->getEntityName())),
-                    'type'  => 'success',
-                );
+        }
+
+        if ($additionnalActions) {
+            foreach ($additionnalActions as $action) {
+                if (isset($action['route']) and isset($action['label'])) {
+                    $actions[] = array(
+                        'route' => $action['route'],
+                        'label' => $action['label'],
+                        'type'  => 'success',
+                    );
+                }
             }
         }
 
@@ -567,10 +585,11 @@ abstract class CrudController extends BaseController
             $this->renderView(
                 $this->getThemeBundle().':admin:flash.html.twig',
                 array(
-                    'icon'    => 'ok',
-                    'heading' => 'Success!',
-                    'message' => $this->getTranslator()->trans($message, array('%entity%' => $this->getEntityName())),
-                    'actions' => $actions
+                    'icon'        => 'ok',
+                    'heading'     => 'bigfoot_core.flash.header.title.success',
+                    'message'     => $message,
+                    'actions'     => $actions,
+                    'transParams' => array('%entity%' => $this->getEntityName()),
                 )
             )
         );
@@ -583,7 +602,7 @@ abstract class CrudController extends BaseController
     {
         $action = $this->generateUrl($this->getRouteNameForAction('new'));
 
-        return $this->renderAjax(true, 'Success, please wait...', null, $action);
+        return $this->renderAjax(true, $this->getTranslator()->trans('bigfoot_core.success.wait'), null, $action);
     }
 
     /**

@@ -113,9 +113,9 @@ class QuickLinkController extends CrudController
      */
     public function newAction()
     {
-        $arrayNew = $this->doNew();
+        $arrayNew = $this->doNew($this->getRequest());
         $arrayNew['isAjax'] = true;
-        $arrayNew['modal_title'] = 'Ajouter cette page à l\'accès rapide';
+        $arrayNew['modal_title'] = 'bigfoot_core.quick_link.modal.title';
 
         return $arrayNew;
     }

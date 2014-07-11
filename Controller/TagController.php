@@ -38,18 +38,14 @@ class TagController extends CrudController
     protected function getFields()
     {
         return array(
-            'id'       => array(
-                'label' => 'ID',
-            ),
-            'name'     => array(
-                'label' => 'Name',
-            ),
+            'id',
+            'name',
         );
     }
 
     protected function getEntityLabelPlural()
     {
-        return 'Tags';
+        return 'bigfoot_core.controller.admin_tag.entity.label_plural';
     }
 
     /**

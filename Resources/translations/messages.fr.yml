@@ -1,51 +1,62 @@
-Cancel: "Annuler"
-Edit: "Modifier"
-Create: "Créer"
-Actions: "Actions"
-ID: "ID"
-Name: "Nom"
-Label: "Libellé"
-Settings: "Paramétrage"
-Logout: "Déconnexion"
-Add a tag: "Ajouter un tag"
-Categories: "Catégories"
-Add a category: "Ajouter une catégorie"
-Tags category creation: "Création d'une catégorie de tags"
-Tags category edit: "Edition d'une catégorie de tags"
-Tags category edition: "Edition d'une catégorie de tags"
-Submit: "Valider"
-Add an item: "Ajouter un objet"
-Tags category: "Catégorie de tags"
-Tags categories: "Catégories de tags"
-Tag edit: "Edition d'un tag"
-Tag %name% edit: "Edition du tag %name%"
-Tags category %name% edit: "Edition de la catégorie de tags %name%"
-Category: "Catégorie"
-Tags categories admin: "Administration des catégories de tag"
-Tags admin: "Administration des tags"
-Delete: "Supprimer"
-Please confirm: "Veuillez confirmer"
-Are you sure you want to perform this action ? The object will be permanently lost.: "Etes-vous sûr de vouloir effectuer cette action ? L'objet sera supprimé de manière permanente"
-Confirm: "Confirmer"
-%username% created element %name%.: "%username% a crée l'élément %name%."
-%username% updated element %name%.: "%username% a mis à jour l'élément %name%."
-See element: "Voir l'élément"
-No history found: "Pas d'historique trouvé"
-Show history from last: "Voir l'historique pour les"
-days: "jours"
-today: "aujourd'hui"
-yesterday: "hier"
-Success!: "Success !"
-Back to the listing: "Retour au listing"
-Add a new %entity%: "Ajouter un nouveau %entity%"
-The %entity% has been created.: "Le %entity% a été créé."
-The %entity% has been updated.: "Le %entity% a été mis à jour."
-The %entity% has been deleted.: "Le %entity% a été supprimé."
-%entity% creation: "Edition d'un %entity%"
-Are you sure ? The %entity% will be permanently deleted.: "Êtes-vous sûr ? Le %entity% sera supprimé de manière permanente."
-
-
 bigfoot_core:
+    crud:
+        actions:
+            edit:
+                label: "Edition"
+            delete:
+                label: "Suppression"
+                confirm: "Êtes-vous sûr ? Le %entity% sera supprimé de manière permanente."
+            new:
+                label: "Création"
+        delete:
+            confirm: "L'entité a été supprimée."
+            errors:
+                not_found: "L'entité %entity% n'a pas pu être trouvée"
+        edit:
+            title: "Edition de %entity%"
+            errors:
+                not_found: "L'entité %entity% n'a pas pu être trouvée"
+        new:
+            title: "Ajout d'un %entity%"
+        submit: "Valider"
+        controller:
+            default_title: "Administration de %entity%"
+            admin_tag_category:
+                entity:
+                    label: "Catégorie de tags"
+                    label_plural: "Categories de tags"
+            admin_tag:
+                entity:
+                    label: "Tag"
+                    label_plural: "Tags"
+        fields:
+            admin_tag_category:
+                id:
+                    label: "ID"
+                name:
+                    label: "Nom"
+            admin_tag:
+                id:
+                    label: "ID"
+                name:
+                    label: "Nom"
+
+    flash:
+        actions:
+            back:
+                label: "Retour au listing"
+            new:
+                label: "Ajout d'un %entity%"
+        header:
+            title:
+                success: "Success !"
+        new:
+            confirm: "Le %entity% a été créé."
+        edit:
+            confirm: "Le %entity% a été mis à jour."
+        delete:
+            confirm: "Le %entity% a été supprimé."
+
     menu:
         label:
             settings: "Paramètres globaux"
@@ -53,3 +64,10 @@ bigfoot_core:
     settings:
         form:
             title: "Paramètres globaux"
+
+    success:
+        wait: "Success ! Veuillez patienter..."
+
+    quick_link:
+        modal:
+            title: "Ajouter cette page à l'accès rapide"

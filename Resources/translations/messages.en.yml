@@ -1,0 +1,73 @@
+bigfoot_core:
+    crud:
+        actions:
+            edit:
+                label: "Edit"
+            delete:
+                label: "Delete"
+                confirm: "Are you sure ? The %entity% will be permanently deleted."
+            new:
+                label: "Create"
+        delete:
+            confirm: "The entity has beed deleted."
+            errors:
+                not_found: "Unable to find %entity% entity"
+        edit:
+            title: "Editing %entity%"
+            errors:
+                not_found: "Unable to find %entity% entity"
+        new:
+            title: "Add %entity%"
+        submit: "Submit"
+        controller:
+            default_title: "%entity% admin"
+            admin_tag_category:
+                entity:
+                    label: "Tags category"
+                    label_plural: "Tags categories"
+            admin_tag:
+                entity:
+                    label: "Tag"
+                    label_plural: "Tags"
+        fields:
+            admin_tag_category:
+                id:
+                    label: "ID"
+                name:
+                    label: "Name"
+            admin_tag:
+                id:
+                    label: "ID"
+                name:
+                    label: "Name"
+
+    flash:
+        actions:
+            back:
+                label: "Back to the listing"
+            new:
+                label: "Add a new %entity%"
+        header:
+            title:
+                success: "Success!"
+        new:
+            confirm: "The %entity% has been created."
+        edit:
+            confirm: "The %entity% has been updated."
+        delete:
+            confirm: "The %entity% has been deleted."
+
+    menu:
+        label:
+            settings: "Global settings"
+
+    settings:
+        form:
+            title: "Global settings"
+
+    success:
+        wait: "Success, please wait..."
+
+    quick_link:
+        modal:
+            title: "Add this page to the quick links"
