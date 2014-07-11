@@ -94,7 +94,7 @@ class FilterManager
         $filters = $globalFilters['fields'];
 
         if ($this->request->request->get('clear', null) != null) {
-            $this->session->set('bigfoot.crud.index.filters.'.$entityName, array());
+            $this->session->set('bigfoot.crud.index.filters.'.strtolower($entityName), array());
 
             return true;
         }
