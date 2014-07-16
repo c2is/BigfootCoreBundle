@@ -280,18 +280,20 @@ class MenuManager
     public function createChild($parent, $children)
     {
         foreach ($children as $child) {
-            $node = $parent->addChild($child->slug, $child->params);
+            if ($this->isGranted($child->slug)) {
+                $node = $parent->addChild($child->slug, $child->params);
 
-            foreach ($child->options as $type => $option) {
-                switch ($type) {
-                    case 'children-attributes':
-                        $node->setChildrenAttributes($option);
-                        break;
+                foreach ($child->options as $type => $option) {
+                    switch ($type) {
+                        case 'children-attributes':
+                            $node->setChildrenAttributes($option);
+                            break;
+                    }
                 }
-            }
 
-            if (count($child->children)) {
-                $this->createChild($node, $child->children);
+                if (count($child->children)) {
+                    $this->createChild($node, $child->children);
+                }
             }
         }
 
