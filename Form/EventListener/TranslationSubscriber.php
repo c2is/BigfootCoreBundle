@@ -11,6 +11,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
+use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as  BigfootTranslationRepository;
+
 /**
  * Class TranslationSubscriber
  * @package Bigfoot\Bundle\CoreBundle\Form\EventListener
@@ -131,11 +133,18 @@ class TranslationSubscriber implements EventSubscriberInterface
         if ($parentData) {
             $entityClass        = get_class($parentData);
             $em                 = $this->doctrine->getManagerForClass($entityClass);
-            /** @var TranslationRepository $repository */
-            $repository         = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
             $translatableFields = $this->getTranslatableFields($entityClass);
             $data               = $event->getData();
             $locales            = $this->localeList;
+
+            $reflectionClass  = new \ReflectionClass($entityClass);
+            $gedmoAnnotations = $this->annotationReader->getClassAnnotation($reflectionClass, 'Gedmo\\Mapping\\Annotation\\TranslationEntity');
+
+            if($gedmoAnnotations !== null && $gedmoAnnotations->class != '') {
+                $repository = new BigfootTranslationRepository($em, $this->annotationReader);
+            } else {
+                $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+            }
 
             foreach ($locales as $locale => $localeConf) {
                 foreach ($translatableFields as $field => $type) {
@@ -148,6 +157,10 @@ class TranslationSubscriber implements EventSubscriberInterface
                             $fieldData = $data[$field];
                         }
                         if ($field != 'slug' || $fieldData) {
+                            if($repository instanceof BigfootTranslationRepository && $this->currentLocale == $locale) {
+                                $getMethod = sprintf('get%s', ucfirst($field));
+                                $fieldData = $parentData->$getMethod();
+                            }
                             $repository->translate($parentData, $field, $locale, $fieldData);
                         }
                     }
