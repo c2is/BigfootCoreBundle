@@ -26,8 +26,19 @@ class SettingsManager
         $this->settings = current($settings);
     }
 
+    /**
+     * Get settings
+     *
+     * @param  string $name
+     * @param  mixed $default
+     * @return mixed
+     */
     public function getSetting($name, $default = null)
     {
+        if (!$this->settings) {
+            return null;
+        }
+
         return $this->settings->getSetting($name, $default);
     }
 }
