@@ -346,6 +346,8 @@ abstract class CrudController extends BaseController
 
         $queryBuilder = $this->getFilterManager()->filterQuery($queryBuilder, strtolower($entityName), $this->getGlobalFilters());
 
+        $this->postQuery($queryBuilder);
+
         $query = $queryBuilder
             ->getQuery()
             ->setHint(
@@ -365,6 +367,7 @@ abstract class CrudController extends BaseController
     protected function doIndex()
     {
         $request = $this->getRequest();
+
         if ($request->isMethod('POST')) {
             $this->getFilterManager()->registerFilters($this->getEntityName(), $this->getGlobalFilters());
             return $this->redirect($this->generateUrl($this->getControllerIndex()));
@@ -621,6 +624,16 @@ abstract class CrudController extends BaseController
      * @param object $entity entity
      */
     protected function postFlush($entity, $action)
+    {
+
+    }
+
+    /**
+     * Post get query
+     *
+     * @param QueryBuilder $qb
+     */
+    protected function postQuery($qb)
     {
 
     }
