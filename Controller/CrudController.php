@@ -548,6 +548,18 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * @return string
+     */
+    protected function getNewUrl()
+    {
+        if (method_exists($this, 'newAction')) {
+            return $this->generateUrl($this->getRouteNameForAction('new'));
+        } else {
+            return '';
+        }
+    }
+
+    /**
      * Add sucess flash
      */
     protected function addSuccessFlash($message, array $additionnalActions = array())
@@ -560,9 +572,9 @@ abstract class CrudController extends BaseController
             'type'  => 'success',
         );
 
-        if (method_exists($this, 'newAction')) {
+        if ($this->getNewUrl()) {
             $actions[] = array(
-                'route' => $this->generateUrl($this->getRouteNameForAction('new')),
+                'route' => $this->getNewUrl(),
                 'label' => 'bigfoot_core.flash.actions.new.label',
                 'type'  => 'success',
             );
