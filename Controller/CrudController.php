@@ -183,6 +183,20 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * @return string
+     */
+    protected function getFormEntityLabel($visibility)
+    {
+        if (!empty($visibility)) {
+            $key = $visibility == 'new' ? 'bigfoot_core.crud.new.title' : 'bigfoot_core.crud.edit.title';
+
+            return $this->getTranslator()->trans($key, array('%entity%' => $this->getEntityLabel()));
+        }
+
+        return $this->getTranslator()->trans('bigfoot_core.crud.edit.title', array('%entity%' => $this->getEntityLabel()));
+    }
+
+    /**
      * @return object
      */
     protected function getFormType()
@@ -348,6 +362,8 @@ abstract class CrudController extends BaseController
 
         $queryBuilder = $this->getFilterManager()->filterQuery($queryBuilder, strtolower($entityName), $this->getGlobalFilters());
 
+        $this->postQuery($queryBuilder);
+
         $query = $queryBuilder
             ->getQuery()
             ->setHint(
@@ -367,6 +383,7 @@ abstract class CrudController extends BaseController
     protected function doIndex()
     {
         $request = $this->getRequest();
+
         if ($request->isMethod('POST')) {
             $this->getFilterManager()->registerFilters($this->getEntityName(), $this->getGlobalFilters());
             return $this->redirect($this->generateUrl($this->getControllerIndex()));
@@ -423,7 +440,7 @@ abstract class CrudController extends BaseController
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
-        return $this->renderForm($form, $action, $entity);
+        return $this->renderForm($form, $action, $entity, 'new');
     }
 
     /**
@@ -476,7 +493,7 @@ abstract class CrudController extends BaseController
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
-        return $this->renderForm($form, $action, $entity);
+        return $this->renderForm($form, $action, $entity, 'edit');
     }
 
     /**
@@ -544,14 +561,14 @@ abstract class CrudController extends BaseController
     /**
      * Render form
      */
-    protected function renderForm($form, $action, $entity)
+    protected function renderForm($form, $action, $entity, $visibility = null)
     {
         return $this->render(
             $this->getFormTemplate(),
             array(
                 'form'        => $form->createView(),
                 'form_method' => 'POST',
-                'form_title'  => $this->getTranslator()->trans('bigfoot_core.crud.edit.title', array('%entity%' => $this->getEntityLabel())),
+                'form_title'  => $this->getFormEntityLabel($visibility),
                 'form_action' => $action,
                 'form_submit' => 'bigfoot_core.crud.submit',
                 'form_cancel' => $this->getRouteNameForAction('index'),
@@ -560,6 +577,18 @@ abstract class CrudController extends BaseController
                 'form_name'   => $this->getName(),
             )
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getNewUrl()
+    {
+        if (method_exists($this, 'newAction')) {
+            return $this->generateUrl($this->getRouteNameForAction('new'));
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -575,9 +604,9 @@ abstract class CrudController extends BaseController
             'type'  => 'success',
         );
 
-        if (method_exists($this, 'newAction')) {
+        if ($this->getNewUrl()) {
             $actions[] = array(
-                'route' => $this->generateUrl($this->getRouteNameForAction('new')),
+                'route' => $this->getNewUrl(),
                 'label' => 'bigfoot_core.flash.actions.new.label',
                 'type'  => 'success',
             );
@@ -636,6 +665,16 @@ abstract class CrudController extends BaseController
      * @param object $entity entity
      */
     protected function postFlush($entity, $action)
+    {
+
+    }
+
+    /**
+     * Post get query
+     *
+     * @param QueryBuilder $qb
+     */
+    protected function postQuery($qb)
     {
 
     }
