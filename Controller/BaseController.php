@@ -5,6 +5,7 @@ namespace Bigfoot\Bundle\CoreBundle\Controller;
 use Bigfoot\Bundle\ContextBundle\Entity\ContextRepository;
 use Doctrine\ORM\Query;
 use Knp\Component\Pager\Paginator;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Core\SecurityContext;
@@ -250,5 +251,52 @@ class BaseController extends Controller
     protected function getElementsPerPage()
     {
         return 50;
+    }
+
+    /**
+     * @param Form $form
+     * @return array
+     */
+    protected function getFormErrorsAsArray(Form $form)
+    {
+        return array_merge($this->getErrorsArray($form), $this->getErrorsFromSubForm($form, $form->getName()));
+    }
+
+    /**
+     * @param Form $form The form subject to validation
+     * @param string $prefix The field name prefix (concatenation of parents names).
+     * @return array
+     */
+    private function getErrorsFromSubForm(Form $form, $prefix)
+    {
+        $errors = array();
+        foreach ($form->all() as $child) {
+            $errors = array_merge($errors, $this->getErrorsArray($child, $prefix), $this->getErrorsFromSubForm($child, sprintf('%s[%s]', $prefix, $child->getName())));
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @param Form $form The form
+     * @param string $namePrefix The field name prefix (concatenation of parents names).
+     * @return array The form errors, as an array
+     */
+    private function getErrorsArray(Form $form, $namePrefix = '')
+    {
+        $formName = $namePrefix ? sprintf('%s[%s]', $namePrefix, $form->getName()) : $form->getName();
+
+        $errors = array();
+        foreach ($form->getErrors() as $error) {
+            if (!isset($errors[$formName])) {
+                $errors[$formName] = array();
+            }
+            $errors[$formName][] = array(
+                'field' => $form->getName(),
+                'message' => $error->getMessage(),
+            );
+        }
+
+        return $errors;
     }
 }

@@ -2,9 +2,11 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
@@ -408,11 +410,17 @@ abstract class CrudController extends BaseController
                 } else {
                     return $this->handleSuccessResponse('new', $entity);
                 }
+            } else {
+                /** @var Session $session */
+                $session = $this->get('session');
+                $session->set('bigfoot_core.crud.form.'.$this->getName().'.errors', $this->getFormErrorsAsArray($form));
             }
 
             if ($request->isXmlHttpRequest()) {
                 return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
             }
+
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
         return $this->renderForm($form, $action, $entity);
@@ -455,11 +463,17 @@ abstract class CrudController extends BaseController
                 } else {
                     return $this->handleSuccessResponse('edit', $entity);
                 }
+            } else {
+                /** @var Session $session */
+                $session = $this->get('session');
+                $session->set('bigfoot_core.crud.form.'.$this->getName().'.errors', $this->getFormErrorsAsArray($form));
             }
 
             if ($request->isXmlHttpRequest()) {
                 return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
             }
+
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
         }
 
         return $this->renderForm($form, $action, $entity);
@@ -543,6 +557,7 @@ abstract class CrudController extends BaseController
                 'form_cancel' => $this->getRouteNameForAction('index'),
                 'entity'      => $entity,
                 'layout'      => $this->getRequest()->query->get('layout') ?: '',
+                'form_name'   => $this->getName(),
             )
         );
     }
