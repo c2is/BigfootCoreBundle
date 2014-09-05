@@ -291,7 +291,16 @@ abstract class CrudController extends BaseController
                 'label' => 'bigfoot_core.crud.actions.edit.label',
                 'route' => $this->getRouteNameForAction('edit'),
                 'icon'  => 'edit',
-                'color' => 'green',
+                'color' => 'green'
+            );
+        }
+
+        if (method_exists($this, 'duplicateAction')) {
+            $actions['duplicate'] = array(
+                'label' => 'bigfoot_core.crud.actions.duplicate.label',
+                'route' => $this->getRouteNameForAction('duplicate'),
+                'icon'  => 'copy',
+                'color' => 'green'
             );
         }
 
@@ -304,7 +313,7 @@ abstract class CrudController extends BaseController
                 'class' => 'confirm-action',
                 'attributes' => array(
                     'data-confirm-message' => $this->getTranslator()->trans('bigfoot_core.crud.actions.delete.confirm', array('%entity%' => $this->getEntityLabel())),
-                ),
+                )
             );
         }
 
@@ -510,6 +519,34 @@ abstract class CrudController extends BaseController
         } else {
             return $this->renderAjax(true, $this->getTranslator()->trans('bigfoot_core.delete.confirm'));
         }
+    }
+
+    /**
+     * Helper duplicate an entity through Doctrine.
+     *
+     * Redirects to the index action.
+     *
+     * @param Request $request
+     * @param $id
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
+     */
+    protected function doDuplicate(Request $request, $id)
+    {
+        $entity = $this->getRepository($this->getEntity())->find($id);
+
+        if (!$entity) {
+            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete.errors.not_found', array('%entity%', $this->getEntity())));
+        }
+
+        // You need implemente __clone method in your entity to format object like you want
+        $new = clone($entity);
+        $this->persistAndFlush($new);
+
+        $this->addSuccessFlash('bigfoot_core.flash.duplicate.confirm');
+
+        return $this->redirect($this->generateUrl($this->getRouteNameForAction('index')));
     }
 
     /**
