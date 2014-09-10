@@ -410,7 +410,10 @@ abstract class CrudController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->prePersist($entity, 'new');
+                $return = $this->prePersist($entity, 'new');
+                if($return instanceof RedirectResponse) {
+                    return $return;
+                }
 
                 $this->persistAndFlush($entity);
 
@@ -459,7 +462,10 @@ abstract class CrudController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->prePersist($entity, 'edit');
+                $return = $this->prePersist($entity, 'edit');
+                if($return instanceof RedirectResponse) {
+                    return $return;
+                }
 
                 $this->persistAndFlush($entity);
 
