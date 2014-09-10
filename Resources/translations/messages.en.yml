@@ -8,6 +8,8 @@ bigfoot_core:
                 confirm: "Are you sure ? The %entity% will be permanently deleted."
             new:
                 label: "Create"
+            duplicate:
+                label: "Duplicate"
         delete:
             confirm: "The entity has beed deleted."
             errors:
@@ -56,6 +58,8 @@ bigfoot_core:
             confirm: "The %entity% has been updated."
         delete:
             confirm: "The %entity% has been deleted."
+        duplicate:
+            confirm: "The %entity% has been duplicated."
 
     menu:
         label:
