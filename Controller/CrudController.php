@@ -393,6 +393,16 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * Checks if the entity is valid
+     *
+     * @return boolean
+     */
+    protected function isEntityValid($form)
+    {
+        return true;
+    }
+
+    /**
      * Helper inserting a new entity into the database using Doctrine.
      *
      * @param Request $request
@@ -409,11 +419,8 @@ abstract class CrudController extends BaseController
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
 
-            if ($form->isValid()) {
-                $return = $this->prePersist($entity, 'new');
-                if($return instanceof RedirectResponse) {
-                    return $return;
-                }
+            if ($form->isValid() and $this->isEntityValid($form)) {
+                $this->prePersist($entity, 'new');
 
                 $this->persistAndFlush($entity);
 
@@ -461,11 +468,8 @@ abstract class CrudController extends BaseController
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
 
-            if ($form->isValid()) {
-                $return = $this->prePersist($entity, 'edit');
-                if($return instanceof RedirectResponse) {
-                    return $return;
-                }
+            if ($form->isValid() and $this->isEntityValid($form)) {
+                $this->prePersist($entity, 'edit');
 
                 $this->persistAndFlush($entity);
 
