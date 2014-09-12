@@ -64,7 +64,7 @@ abstract class AbstractMailer
         return $this->mailFrom;
     }
 
-    public function sendMail($subject, $to, $body)
+    public function sendMail($subject, $to, $body, $cc = null, $bcc = null)
     {
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
@@ -72,6 +72,14 @@ abstract class AbstractMailer
             ->setTo($to)
             ->setContentType('text/html')
             ->setBody($body);
+
+        if ($cc) {
+            $message->setCc($cc);
+        }
+
+        if ($bcc) {
+            $message->setBcc($bcc);
+        }
 
         $this->mailer->send($message);
     }
