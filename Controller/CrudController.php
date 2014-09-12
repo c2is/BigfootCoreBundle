@@ -437,7 +437,7 @@ abstract class CrudController extends BaseController
                 return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
             }
 
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('new')));
         }
 
         return $this->renderForm($form, $action, $entity, 'new');
