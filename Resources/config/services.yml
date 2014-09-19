@@ -128,6 +128,10 @@ services:
             - %bigfoot_core.languages.front%
         tags:
             - { name: twig.extension }
+    bigfoot_core.twig.translatable_label_extension:
+        class: Bigfoot\Bundle\CoreBundle\Twig\TranslatableLabelExtension
+        tags:
+            - { name: twig.extension }
 
     # Token Generator
     bigfoot_core.generator.token:
@@ -221,10 +225,18 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Manager\SettingsManager
         arguments:
             - @doctrine.orm.entity_manager
-
     bigfoot_core.form.type.settings:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\SettingsType
         arguments:
             - @event_dispatcher
         tags:
             - { name: form.type, alias: bigfoot_core_settings_type }
+    bigfoot_core.form.type.translatable_label:
+        class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelType
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @request
+            - %bigfoot_core.languages.front%
+        tags:
+            - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_labeltype }
+        scope: request
