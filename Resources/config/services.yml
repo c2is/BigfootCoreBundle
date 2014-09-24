@@ -10,6 +10,9 @@ parameters:
     kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
     translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
     sortable_type.class:          "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
+    bigfoot.crud.formatter.loader.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\Loader"
+    bigfoot.crud.formatter.date.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\DateFormatter"
+    bigfoot.crud.formatter.trans.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\TranslationFormatter"
 services:
     # Core controller listener ; used to set page title, breadcrumbs..
     kernel.listener.bigfoot_controller_listener:
@@ -83,6 +86,19 @@ services:
             - %bigfoot_core.languages.front%
         tags:
             - { name: form.type, alias: translatable_entity }
+    # CRUD
+    bigfoot_core.crud.formatter.loader:
+        class: %bigfoot.crud.formatter.loader.class%
+    bigfoot_core.crud.formatter.date:
+        class: %bigfoot.crud.formatter.date.class%
+        tags:
+            - { name: bigfoot.crud.formatter, alias: date }
+    bigfoot_core.crud.formatter.trans:
+        class: %bigfoot.crud.formatter.trans.class%
+        arguments:
+            - @translator
+        tags:
+            - { name: bigfoot.crud.formatter, alias: trans }
 
     # Sortable form type
     form.type.sortable:
@@ -130,6 +146,12 @@ services:
             - { name: twig.extension }
     bigfoot_core.twig.translatable_label_extension:
         class: Bigfoot\Bundle\CoreBundle\Twig\TranslatableLabelExtension
+        tags:
+            - { name: twig.extension }
+    bigfoot_core.twig.translatable_label_extension:
+        class: Bigfoot\Bundle\CoreBundle\Twig\Crud\FormatterExtension
+        arguments:
+            - @bigfoot_core.crud.formatter.loader
         tags:
             - { name: twig.extension }
 
