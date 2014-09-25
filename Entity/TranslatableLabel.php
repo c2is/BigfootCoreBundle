@@ -7,8 +7,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class TranslatableLabel
- * @ORM\Entity(repositoryClass="Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository")
- * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_locale", columns={"name", "domain"})})
+ * @ORM\Entity
+ * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_locale", columns={"name", "domain", "locale"})})
  * @package Bigfoot\Bundle\CoreBundle\Entity
  */
 class TranslatableLabel
@@ -32,6 +32,13 @@ class TranslatableLabel
     /**
      * @var string
      *
+     * @ORM\Column(name="locale", type="string", length=5)
+     */
+    private $locale;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
@@ -39,7 +46,6 @@ class TranslatableLabel
     /**
      * @var string
      *
-     * @Gedmo\Translatable
      * @ORM\Column(name="value", type="text")
      */
     private $value;
@@ -50,34 +56,6 @@ class TranslatableLabel
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="multiline", type="boolean")
-     */
-    private $multiline = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="pluralized", type="boolean")
-     */
-    private $pluralized = false;
-
-    /**
-     * @var \DateTime $updated
-     *
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(name="edited_at", type="datetime")
-     */
-    private $editedAt;
-
-    /**
-     * @var string
-     * @Gedmo\Locale
-     */
-    private $locale;
 
     /**
      * @param int $id
@@ -118,7 +96,7 @@ class TranslatableLabel
     /**
      * @param string $locale
      */
-    public function setTranslatableLocale($locale)
+    public function setLocale($locale)
     {
         $this->locale = $locale;
 
@@ -185,71 +163,5 @@ class TranslatableLabel
     public function getDescription()
     {
         return $this->description;
-    }
-
-    /**
-     * @param boolean $multiline
-     * @return $this
-     */
-    public function setMultiline($multiline)
-    {
-        $this->multiline = $multiline;
-
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isMultiline()
-    {
-        return $this->multiline;
-    }
-
-    /**
-     * @param boolean $pluralized
-     * @return $this
-     */
-    public function setPluralized($pluralized)
-    {
-        $this->pluralized = $pluralized;
-
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPluralized()
-    {
-        return $this->pluralized;
-    }
-
-    /**
-     * @param \DateTime $editedAt
-     * @return $this
-     */
-    public function setEditedAt($editedAt)
-    {
-        $this->editedAt = $editedAt;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getEditedAt()
-    {
-        return $this->editedAt;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCategory()
-    {
-        $posSecondDot = strpos($this->name, '.', strpos($this->name, '.')+1);
-        return $posSecondDot !== false ? substr($this->name, 0, $posSecondDot) : $this->name;
     }
 }

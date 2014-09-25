@@ -2,7 +2,6 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -72,19 +71,11 @@ class FilterManager
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
-
-    /**
      * Get filter in session
      *
      * @param  string $entity
      *
-     * @return mixed
+     * @return miuxed
      */
     public function getSessionFilter($entity)
     {
@@ -129,9 +120,9 @@ class FilterManager
     /**
      * Filter query
      *
-     * @param  QueryBuilder $query
+     * @param  Query $query
      *
-     * @return QueryBuilder
+     * @return Query
      */
     public function filterQuery($query, $entityName, $globalFilters)
     {
@@ -145,10 +136,6 @@ class FilterManager
                     $data = $datas[$filter['name']];
 
                     switch ($filter['type']) {
-                        case 'repositoryMethod':
-                            $repo = $this->entityManager->getRepository($globalFilters['referer']);
-                            $repo->{$options['method']}($query, $datas[$filter['name']]);
-                            break;
                         case 'entity':
                             $data = $this->getEntity($filter, $datas[$filter['name']]);
                             if ($alias = $this->hasJoin('e.'.$options['relation'])) {
@@ -203,12 +190,16 @@ class FilterManager
     /**
      * Hydrate query
      *
-     * @param  QueryBuilder $query
+     * @param  Query $query
      *
-     * @return QueryBuilder
+     * @return Query
      */
     private function hydrateQuery($query)
     {
+        // var_dump($this->joins);
+        // var_dump($this->wheres);
+        // die();
+
         foreach ($this->joins as $join) {
             $query
                 ->innerjoin($join['relation'].' '.$join['alias'], $join['on']);
@@ -260,14 +251,6 @@ class FilterManager
             $options = isset($field['options']) ? $field['options'] : array();
 
             switch ($field['type']) {
-                case 'repositoryMethod':
-                    if (!isset($options['choicesMethod'])) {
-                        throw new \Exception("You must define a repository method to generate the list of choices");
-                    }
-
-                    $field['referer'] = $datas['referer'];
-                    $filters[] = $field;
-                    break;
                 case 'choice':
                     if (!isset($options['choices'])) {
                         throw new \Exception("You must define an array of choices");

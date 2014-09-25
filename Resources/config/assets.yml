@@ -1,5 +1,0 @@
-assetic:
-    assets:
-        jquery:
-            inputs:
-                - '@BigfootCoreBundle/Resources/assets/js/jquery-1.10.0.js'

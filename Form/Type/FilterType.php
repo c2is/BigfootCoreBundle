@@ -60,7 +60,9 @@ class FilterType extends AbstractType
                         'label'    => $filter['placeholder'],
                     )
                 );
-            } elseif ($filter['type'] == 'entity') {
+            }
+
+            if ($filter['type'] == 'entity') {
                 if (!empty($value)) {
                     $value = $this->manager->getEntity($filter, $value);
                 }
@@ -76,23 +78,14 @@ class FilterType extends AbstractType
                         'data'     => $value,
                     )
                 );
-            } elseif (($filter['type'] == 'referer' && $options['type'] == 'text') || $filter['type'] == 'search') {
+            }
+
+            if (($filter['type'] == 'referer' && $options['type'] == 'text') || $filter['type'] == 'search') {
                 $builder->add(
                     $filter['name'],
                     'text',
                     array(
                         'required' => false,
-                        'data'     => $value,
-                        'label'    => $filter['placeholder'],
-                    )
-                );
-            } elseif ($filter['type'] == 'repositoryMethod') {
-                $builder->add(
-                    $filter['name'],
-                    'choice',
-                    array(
-                        'required' => false,
-                        'choices'  => $this->manager->getEntityManager()->getRepository($filter['referer'])->{$options['choicesMethod']}(),
                         'data'     => $value,
                         'label'    => $filter['placeholder'],
                     )
