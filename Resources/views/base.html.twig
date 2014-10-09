@@ -17,14 +17,9 @@
 
     {% block stylesheets %}
         {% stylesheets
-            'admin/css/jquery-ui.css'
-            'admin/css/bootstrap.min.css'
-            'admin/css/jqtree.css'
-            'admin/css/screen.css'
-            'admin/vendor/bootstrap-glyphicons/css/bootstrap-glyphicons.css'
-            'admin/vendor/select2/select2.css'
+            '@admin_css'
             filter='cssrewrite'
-            output='css/admin/admin.css'
+            output='css/admin.css'
         %}
         <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
@@ -154,23 +149,13 @@
 {% endblock body %}
 {% block javascripts %}
     {% javascripts
-        'admin/js/jquery-1.10.0.js'
-        'admin/js/bootstrap.min.js'
-        'admin/js/jquery-ui-1.10.1.custom.min.js'
-        'admin/vendor/select2/select2.min.js'
-        'admin/js/jquery.portfolio.js'
-        'admin/js/custom.js'
-        'admin/js/bootstrap.confirm.js'
-        'admin/js/tree.jquery.js'
-        '%kernel.root_dir%/../vendor/jms/twig-js/twig.js'
-        output='js/admin/scripts.js' %}
+        '@admin_js'
+        output='js/scripts.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% javascripts
-        "@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig"
-        "@BigfootCoreBundle/Resources/views/modal/confirm.html.twig"
-        filter="twig_js"
-        output='js/admin/twigs.js' %}
+        '@admin_twig_js'
+        output='js/twigs.js' %}
         <script language="javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     <script language="javascript" src="{{ asset('assets/vendor/ckeditor/ckeditor.js') }}"></script>
