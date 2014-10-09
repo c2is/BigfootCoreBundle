@@ -41,9 +41,13 @@ protected function getFilters()
             'name'        => 'director',
             'type'        => 'entity',
             'options' => array(
-                'class'    => 'SandboxCastingBundle:Director',
-                'property' => 'fullName',
-                'relation' => 'director'
+                'class'         => 'SandboxCastingBundle:Director',
+                'property'      => 'fullName',
+                'relation'      => 'director',
+                'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('e')
+                            ->orderBy('e.name', 'ASC');
+                }
             )
         )
     );
@@ -57,6 +61,8 @@ class: namespace of class (ie AcmeDemoBundle:Acme
 property: attribute to display in form render
 
 relation: relation between the reference entity and this entity
+
+query_builder: function to act on the result of entity field
 
 ###3.Choice
 

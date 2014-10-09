@@ -71,11 +71,12 @@ class FilterType extends AbstractType
                     $filter['name'],
                     'entity',
                     array(
-                        'class'    => $options['class'],
-                        'property' => $options['property'],
-                        'required' => false,
-                        'label'    => $filter['placeholder'],
-                        'data'     => $value,
+                        'class'         => $options['class'],
+                        'property'      => $options['property'],
+                        'required'      => false,
+                        'label'         => $filter['placeholder'],
+                        'data'          => $value,
+                        'query_builder' => isset($options['query_builder']) ? $options['query_builder'] : null,
                     )
                 );
             }
