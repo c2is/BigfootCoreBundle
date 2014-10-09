@@ -1,0 +1,23 @@
+assetic:
+    bundles:
+        - 'BigfootCoreBundle'
+    assets:
+        admin_js:
+            inputs:
+                - 'bundles/bigfootcore/js/nestable.js'
+                - 'bundles/bigfootcore/js/bootstrap-modalmanager.js'
+                - 'bundles/bigfootcore/js/bootstrap-modal.js'
+                - 'bundles/bigfootcore/js/modal.js'
+                - 'bundles/bigfootcore/js/jquery.form.js'
+                - 'bundles/fosjsrouting/js/router.js'
+        admin_css:
+            inputs:
+                - 'bundles/bigfootcore/css/bootstrap-modal-bs3patch.css'
+                - 'bundles/bigfootcore/css/bootstrap-modal.css'
+            filters:
+                - 'cssrewrite'
+        admin_twig_js:
+            inputs:
+                - '@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig'
+            filters:
+                - 'twig_js'
