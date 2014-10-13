@@ -31,6 +31,10 @@ bigfoot_core:
                 entity:
                     label: "Tag"
                     label_plural: "Tags"
+            admin_translatable_label:
+                entity:
+                    label: "Libellé traductible"
+                    label_plural: "Libellés traductibles"
         fields:
             admin_tag_category:
                 id:
@@ -42,6 +46,15 @@ bigfoot_core:
                     label: "ID"
                 name:
                     label: "Name"
+            admin_translatable_label:
+                category:
+                    label: "Category"
+                name:
+                    label: "Identifier"
+                value:
+                    label: "Translation"
+                editedAt:
+                    label: "Last edited"
 
     flash:
         actions:

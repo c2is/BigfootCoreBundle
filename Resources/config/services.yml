@@ -144,7 +144,7 @@ services:
             - %bigfoot_core.languages.front%
         tags:
             - { name: twig.extension }
-    bigfoot_core.twig.translatable_label_extension:
+    bigfoot_core.twig.formatter_extension:
         class: Bigfoot\Bundle\CoreBundle\Twig\Crud\FormatterExtension
         arguments:
             - @bigfoot_core.crud.formatter.loader

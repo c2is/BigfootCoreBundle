@@ -42,6 +42,15 @@ bigfoot_core:
                     label: "ID"
                 name:
                     label: "Nom"
+            admin_translatable_label:
+                category:
+                    label: "Catégorie"
+                name:
+                    label: "Identifiant"
+                value:
+                    label: "Traduction"
+                editedAt:
+                    label: "Dernière édition le"
 
     flash:
         actions:
