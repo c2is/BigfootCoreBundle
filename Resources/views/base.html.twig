@@ -18,10 +18,12 @@
     {% block stylesheets %}
         {% stylesheets
             '@admin_css'
+            output='css/bigfoot.css'
             filter='cssrewrite'
-            output='css/admin.css'
+            debug=false
+            combine=true
         %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+            <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
     {% endblock %}
 </head>
@@ -148,17 +150,26 @@
 </div>
 {% endblock body %}
 {% block javascripts %}
+
     {% javascripts
+        '@admin_jquery'
         '@admin_js'
-        output='js/scripts.js' %}
-        <script language="javascript" src="{{ asset_url }}"></script>
+        output='js/bigfoot.js'
+        debug=false
+        combine=true
+    %}
+        <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
+
     {% javascripts
         '@admin_twig_js'
-        output='js/twigs.js' %}
-        <script language="javascript" src="{{ asset_url }}"></script>
+        output='js/bigfoot_twigs.js'
+        filter='twig_js'
+        debug=false
+        combine=true
+    %}
+        <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
-    <script language="javascript" src="{{ asset('assets/vendor/ckeditor/ckeditor.js') }}"></script>
 {% endblock javascripts %}
 </body>
 </html>

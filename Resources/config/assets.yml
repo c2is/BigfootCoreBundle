@@ -1,6 +1,4 @@
 assetic:
-    bundles:
-        - 'BigfootCoreBundle'
     assets:
         admin_js:
             inputs:
@@ -14,10 +12,6 @@ assetic:
             inputs:
                 - 'bundles/bigfootcore/css/bootstrap-modal-bs3patch.css'
                 - 'bundles/bigfootcore/css/bootstrap-modal.css'
-            filters:
-                - 'cssrewrite'
         admin_twig_js:
             inputs:
                 - '@BigfootCoreBundle/Resources/views/translation/locale_tabs.html.twig'
-            filters:
-                - 'twig_js'
