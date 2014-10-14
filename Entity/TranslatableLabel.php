@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Class TranslatableLabel
  * @ORM\Entity
- * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_locale", columns={"name", "domain", "locale"})})
+ * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name", columns={"name", "domain"})})
  * @package Bigfoot\Bundle\CoreBundle\Entity
  */
 class TranslatableLabel
@@ -32,13 +32,6 @@ class TranslatableLabel
     /**
      * @var string
      *
-     * @ORM\Column(name="locale", type="string", length=5)
-     */
-    private $locale;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
@@ -46,6 +39,7 @@ class TranslatableLabel
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @ORM\Column(name="value", type="text")
      */
     private $value;
@@ -58,7 +52,38 @@ class TranslatableLabel
     private $description;
 
     /**
-     * @param int $id
+     * @var bool
+     *
+     * @ORM\Column(name="plural", type="boolean")
+     */
+    private $plural = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="multiline", type="boolean")
+     */
+    private $multiline = false;
+
+    /**
+     * @var \DateTime
+     *
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(name="edited_at", type="datetime", nullable=true)
+     */
+    private $editedAt;
+
+    /**
+     * @param $id
+     * @return $this
      */
     public function setId($id)
     {
@@ -76,7 +101,8 @@ class TranslatableLabel
     }
 
     /**
-     * @param string $domain
+     * @param $domain
+     * @return $this
      */
     public function setDomain($domain)
     {
@@ -94,25 +120,8 @@ class TranslatableLabel
     }
 
     /**
-     * @param string $locale
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
-    /**
-     * @param string $name
+     * @param $name
+     * @return $this
      */
     public function setName($name)
     {
@@ -130,7 +139,8 @@ class TranslatableLabel
     }
 
     /**
-     * @param string $value
+     * @param $value
+     * @return $this
      */
     public function setValue($value)
     {
@@ -148,7 +158,8 @@ class TranslatableLabel
     }
 
     /**
-     * @param string $description
+     * @param $description
+     * @return $this
      */
     public function setDescription($description)
     {
@@ -163,5 +174,92 @@ class TranslatableLabel
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param boolean $plural
+     * @return $this
+     */
+    public function setPlural($plural)
+    {
+        $this->plural = $plural;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPlural()
+    {
+        return $this->plural;
+    }
+
+    /**
+     * @param boolean $multiline
+     * @return $this
+     */
+    public function setMultiline($multiline)
+    {
+        $this->multiline = $multiline;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getMultiline()
+    {
+        return $this->multiline;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     * @return $this
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $editedAt
+     * @return $this
+     */
+    public function setEditedAt($editedAt)
+    {
+        $this->editedAt = $editedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEditedAt()
+    {
+        return $this->editedAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategory()
+    {
+        if (strpos($this->getName(), '.') === false) {
+            return $this->getName();
+        }
+        return substr($this->getName(), 0, strpos($this->getName(), '.', strpos($this->getName(), '.') + 1));
     }
 }
