@@ -88,3 +88,10 @@ bigfoot_core:
     quick_link:
         modal:
             title: "Add this page to the quick links"
+    translatable_label:
+        plural:
+            standard_0: "Value for singular"
+            standard_1: "Value for plural"
+        form:
+            value:
+                label: 'Label'

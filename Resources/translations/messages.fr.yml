@@ -84,3 +84,10 @@ bigfoot_core:
     quick_link:
         modal:
             title: "Ajouter cette page à l'accès rapide"
+    translatable_label:
+        plural:
+            standard_0: "Valeur poru le singulier"
+            standard_1: "Valeur poru le pluriel"
+        form:
+            value:
+                label: 'Libellé'

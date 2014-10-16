@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 use Bigfoot\Bundle\CoreBundle\Controller\CrudController;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -113,45 +114,21 @@ class TranslatableLabelController extends CrudController
      */
     public function editAction(Request $request, $id)
     {
-        $entity = $this->getRepository($this->getEntity())->find($id);
+        return $this->doEdit($request, $id);
+    }
 
-        if (!$entity) {
-            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.edit.errors.not_found', array('%entity%', $this->getEntity())));
+    /**
+     * @param $id
+     * @return object
+     */
+    protected function getFormEntity($id)
+    {
+        $entity = parent::getFormEntity($id);
+        if ($entity) {
+            $entity->setTranslatableLocale($this->container->getParameter('locale'));
+            $this->getEntityManager()->refresh($entity);
         }
 
-        $form   = $this->createForm($this->getFormType(), $entity);
-        $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id, 'layout' => $request->get('layout', null)));
-
-        if ('POST' === $request->getMethod()) {
-            $form->handleRequest($request);
-
-            if ($form->isValid() and $this->isEntityValid($form)) {
-                $this->prePersist($entity, 'edit');
-
-                $this->persistAndFlush($entity);
-
-                $this->postFlush($entity, 'edit');
-
-                if (!$request->isXmlHttpRequest()) {
-                    $this->addSuccessFlash('bigfoot_core.flash.edit.confirm');
-
-                    return $this->redirect($action);
-                } else {
-                    return $this->handleSuccessResponse('edit', $entity);
-                }
-            } else {
-                /** @var Session $session */
-                $session = $this->get('session');
-                $session->set('bigfoot_core.crud.form.'.$this->getName().'.errors', $this->getFormErrorsAsArray($form));
-            }
-
-            if ($request->isXmlHttpRequest()) {
-                return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
-            }
-
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
-        }
-
-        return $this->renderForm($form, $action, $entity, 'edit');
+        return $entity;
     }
 }

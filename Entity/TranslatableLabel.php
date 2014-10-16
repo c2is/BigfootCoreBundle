@@ -2,12 +2,15 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Translation\MessageSelector;
 
 /**
  * Class TranslatableLabel
- * @ORM\Entity
+ * @Gedmo\TranslationEntity(class="Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation")
+ * @ORM\Entity(repositoryClass="Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository")
  * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name", columns={"name", "domain"})})
  * @package Bigfoot\Bundle\CoreBundle\Entity
  */
@@ -80,6 +83,30 @@ class TranslatableLabel
      * @ORM\Column(name="edited_at", type="datetime", nullable=true)
      */
     private $editedAt;
+
+    /**
+     * @ORM\OneToMany(
+     *   targetEntity="TranslatableLabelTranslation",
+     *   mappedBy="object",
+     *   cascade={"persist", "remove"}
+     * )
+     */
+    private $translations;
+
+    /**
+     * @var string
+     *
+     * @Gedmo\Locale
+     */
+    private $locale;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+    }
 
     /**
      * @param $id
@@ -190,7 +217,7 @@ class TranslatableLabel
     /**
      * @return boolean
      */
-    public function getPlural()
+    public function isPlural()
     {
         return $this->plural;
     }
@@ -209,7 +236,7 @@ class TranslatableLabel
     /**
      * @return boolean
      */
-    public function getMultiline()
+    public function isMultiline()
     {
         return $this->multiline;
     }
@@ -253,6 +280,25 @@ class TranslatableLabel
     }
 
     /**
+     * @return mixed
+     */
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param TranslatableLabelTranslation $t
+     */
+    public function addTranslation(TranslatableLabelTranslation $t)
+    {
+        if (!$this->translations->contains($t)) {
+            $this->translations[] = $t;
+            $t->setObject($this);
+        }
+    }
+
+    /**
      * @return string
      */
     public function getCategory()
@@ -261,5 +307,18 @@ class TranslatableLabel
             return $this->getName();
         }
         return substr($this->getName(), 0, strpos($this->getName(), '.', strpos($this->getName(), '.') + 1));
+    }
+
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param $locale
+     */
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

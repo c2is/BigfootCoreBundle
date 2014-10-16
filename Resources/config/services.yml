@@ -86,6 +86,17 @@ services:
             - %bigfoot_core.languages.front%
         tags:
             - { name: form.type, alias: translatable_entity }
+    # Translatable label
+    form.type.translatable_label:
+        class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelType
+        arguments: [@bigfoot_context, @doctrine.orm.entity_manager, %locale%, @bigfoot_core.manager.translatable_label]
+        tags:
+            - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_labeltype }
+    form.type.translatable_label_translation:
+        class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelTranslationType
+        arguments: [@bigfoot_context, @doctrine.orm.entity_manager, %locale%, @bigfoot_core.manager.translatable_label]
+        tags:
+            - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_label_translationtype }
     # CRUD
     bigfoot_core.crud.formatter.loader:
         class: %bigfoot.crud.formatter.loader.class%
@@ -250,3 +261,7 @@ services:
             - @event_dispatcher
         tags:
             - { name: form.type, alias: bigfoot_core_settings_type }
+
+    # Labels
+    bigfoot_core.manager.translatable_label:
+        class: Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager

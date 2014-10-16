@@ -2,6 +2,8 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Translation;
 
+use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
+use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
@@ -19,14 +21,15 @@ class DatabaseLoader implements LoaderInterface
     {
         $catalogue = new MessageCatalogue($locale);
 
+        /** @var TranslatableLabelRepository $repository */
         $repository = $this->entityManager->getRepository('BigfootCoreBundle:TranslatableLabel');
-        $translatableLabels = $repository->findBy(array(
-            'locale' => $locale,
-            'domain' => $domain,
-        ));
+        $translatableLabels = $repository->findAllForLocaleAndDomain($locale, $domain);
 
-        foreach ($translatableLabels as $translatableLabel) {
-            $catalogue->set($translatableLabel->getName(), $translatableLabel->getValue(), $domain);
+        if ($translatableLabels) {
+            /** @var TranslatableLabel $translatableLabel */
+            foreach ($translatableLabels as $translatableLabel) {
+                $catalogue->set($translatableLabel->getName(), $translatableLabel->getValue(), $domain);
+            }
         }
 
         return $catalogue;
