@@ -32,7 +32,6 @@ class TranslationRepository extends EntityRepository
 
             $listener->setTranslationInDefaultLocale(spl_object_hash($entity), $field, $trans);
         } else {
-
             $translationClassRepository = $this->em->getRepository($entityTranslationClass);
             $translation = $translationClassRepository->findOneBy(array(
                 'locale' => $locale,

@@ -52,7 +52,7 @@ class TranslatableLabelRepository extends EntityRepository
         ;
 
         $toReturn = array();
-        
+
         foreach ($results as $result) {
             $toReturn[$result['category']] = $result['category'];
         }

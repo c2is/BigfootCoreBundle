@@ -86,8 +86,8 @@ bigfoot_core:
             title: "Ajouter cette page à l'accès rapide"
     translatable_label:
         plural:
-            standard_0: "Valeur poru le singulier"
-            standard_1: "Valeur poru le pluriel"
+            standard_0: "Valeur pour le singulier"
+            standard_1: "Valeur pour le pluriel"
             explicit: "Valeur pour %interval%"
         form:
             value:

@@ -50,6 +50,7 @@ class TranslatableLabel
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
