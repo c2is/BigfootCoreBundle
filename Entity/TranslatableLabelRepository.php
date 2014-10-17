@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * TranslatableLabelRepository
@@ -37,5 +38,31 @@ class TranslatableLabelRepository extends EntityRepository
             )
             ->getResult()
         ;
+    }
+
+    public function getCategories()
+    {
+        $results = $this
+            ->createQueryBuilder('e')
+            ->select('SUBSTRING_INDEX(SUBSTRING_INDEX(e.name, \'.\', 2), \'.\', -2) as category')
+            ->distinct()
+            ->orderBy('category')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $toReturn = array();
+        
+        foreach ($results as $result) {
+            $toReturn[$result['category']] = $result['category'];
+        }
+
+        return $toReturn;
+    }
+
+    public function addCategoryFilter(QueryBuilder $query, $search)
+    {
+        $search .= '.%';
+        return $query->andWhere('e.name LIKE :search')->setParameter(':search', $search);
     }
 }

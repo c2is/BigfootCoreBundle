@@ -49,7 +49,7 @@ class FilterType extends AbstractType
             $options = isset($filter['options']) ? $filter['options'] : array();
             $value   = isset($datas[$filter['name']]) ? $datas[$filter['name']] : null;
 
-            if ($filter['type'] == 'choice' || ($filter['type'] == 'referer' && $options['type'] == 'choice')) {
+            if ($filter['type'] == 'choice' || $filter['type'] == 'repositoryMethod' || ($filter['type'] == 'referer' && $options['type'] == 'choice')) {
                 $builder->add(
                     $filter['name'],
                     'choice',
