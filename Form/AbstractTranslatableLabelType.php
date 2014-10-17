@@ -8,6 +8,7 @@ use Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Translation\Translator;
 
 abstract class AbstractTranslatableLabelType extends AbstractType
 {
@@ -25,18 +26,23 @@ abstract class AbstractTranslatableLabelType extends AbstractType
     /** @var \Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager */
     protected $labelManager;
 
+    /** @var \Symfony\Component\Translation\Translator */
+    protected $translator;
+
     /**
      * @param ContextService $context
      * @param EntityManager $em
      * @param string $defaultLocale
      * @param TranslatableLabelManager $labelManager
+     * @param Translator $translator
      */
-    public function __construct($context, $em, $defaultLocale, $labelManager)
+    public function __construct($context, $em, $defaultLocale, $labelManager, $translator)
     {
         $this->context = $context;
         $this->em = $em;
         $this->defaultLocale = $defaultLocale;
         $this->labelManager = $labelManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -64,7 +70,7 @@ abstract class AbstractTranslatableLabelType extends AbstractType
         foreach ($explicitRules as $interval => $value) {
             $form->add(self::PLURAL_FIELD_PREFIX.$labelManager->transformInterval($interval), $labelManager->getValueFieldType($label), array(
                 'required' => false,
-                'label' => sprintf('Value for %s', $interval),
+                'label' => $this->translator->trans('bigfoot_core.translatable_label.plural.explicit', array('%interval%' => $interval)),
                 'data' => $value,
                 'mapped' => false,
                 'attr' => array(

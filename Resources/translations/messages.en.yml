@@ -92,6 +92,9 @@ bigfoot_core:
         plural:
             standard_0: "Value for singular"
             standard_1: "Value for plural"
+            explicit: "Value for %interval%"
         form:
             value:
                 label: 'Label'
+            category:
+                title: 'Category'

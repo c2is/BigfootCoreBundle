@@ -89,12 +89,12 @@ services:
     # Translatable label
     form.type.translatable_label:
         class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelType
-        arguments: [@bigfoot_context, @doctrine.orm.entity_manager, %locale%, @bigfoot_core.manager.translatable_label]
+        arguments: [@bigfoot_context, @doctrine.orm.entity_manager, %locale%, @bigfoot_core.manager.translatable_label, @translator]
         tags:
             - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_labeltype }
     form.type.translatable_label_translation:
         class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelTranslationType
-        arguments: [@bigfoot_context, @doctrine.orm.entity_manager, %locale%, @bigfoot_core.manager.translatable_label]
+        arguments: [@bigfoot_context, @doctrine.orm.entity_manager, %locale%, @bigfoot_core.manager.translatable_label, @translator]
         tags:
             - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_label_translationtype }
     # CRUD

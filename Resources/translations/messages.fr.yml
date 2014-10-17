@@ -88,6 +88,9 @@ bigfoot_core:
         plural:
             standard_0: "Valeur poru le singulier"
             standard_1: "Valeur poru le pluriel"
+            explicit: "Valeur pour %interval%"
         form:
             value:
                 label: 'Libellé'
+            category:
+                title: 'Catégorie'
