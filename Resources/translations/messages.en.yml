@@ -77,6 +77,8 @@ bigfoot_core:
     menu:
         label:
             settings: "Global settings"
+        label:
+            translations: "Translations"
 
     settings:
         form:
