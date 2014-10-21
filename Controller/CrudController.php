@@ -254,6 +254,11 @@ abstract class CrudController extends BaseController
      */
     protected function getFormTemplate()
     {
+        $themeSpecificTemplate = sprintf('%s:%s:form.html.twig', $this->getThemeBundle(), $this->getEntityName());
+        if ($this->get('templating')->exists($themeSpecificTemplate)) {
+            return $themeSpecificTemplate;
+        }
+
         return $this->getThemeBundle().':crud:form.html.twig';
     }
 
@@ -473,7 +478,7 @@ abstract class CrudController extends BaseController
      */
     protected function doEdit(Request $request, $id)
     {
-        $entity = $this->getRepository($this->getEntity())->find($id);
+        $entity = $this->getFormEntity($id);
 
         if (!$entity) {
             throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.edit.errors.not_found', array('%entity%', $this->getEntity())));
@@ -724,5 +729,14 @@ abstract class CrudController extends BaseController
     protected function postQuery($qb)
     {
 
+    }
+
+    /**
+     * @param $id
+     * @return object
+     */
+    protected function getFormEntity($id)
+    {
+        return $this->getRepository($this->getEntity())->find($id);
     }
 }

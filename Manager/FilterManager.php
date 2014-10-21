@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
+use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -136,6 +137,12 @@ class FilterManager
                     $data = $datas[$filter['name']];
 
                     switch ($filter['type']) {
+                        case 'repositoryMethod':
+                            $em = $this->entityManager;
+                            $repo = $em->getRepository($globalFilters['referer']);
+
+                            $repo->addCategoryFilter($query, $data);
+                            break;
                         case 'entity':
                             $data = $this->getEntity($filter, $datas[$filter['name']]);
                             if ($alias = $this->hasJoin('e.'.$options['relation'])) {
@@ -251,6 +258,21 @@ class FilterManager
             $options = isset($field['options']) ? $field['options'] : array();
 
             switch ($field['type']) {
+                case 'repositoryMethod':
+                    if (!isset($options['method'])) {
+                        throw new \Exception("You must define a repository method to call to apply the filter");
+                    }
+                    if (!isset($options['choicesMethod'])) {
+                        throw new \Exception("You must define a repository method to call to generate the choices list");
+                    }
+
+                    $em = $this->entityManager;
+                    /** @var TranslatableLabelRepository $repo */
+                    $repo = $em->getRepository($datas['referer']);
+                    $field['options']['choices'] = $repo->getCategories();
+
+                    $filters[] = $field;
+                    break;
                 case 'choice':
                     if (!isset($options['choices'])) {
                         throw new \Exception("You must define an array of choices");

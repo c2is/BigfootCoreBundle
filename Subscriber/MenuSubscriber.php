@@ -68,6 +68,28 @@ class MenuSubscriber implements EventSubscriberInterface
                 );
         }
 
+        if (!$builder->childExists('content')) {
+            $builder
+                ->addChild(
+                    'content',
+                    array(
+                        'label'      => 'Content',
+                        'url'        => '#',
+                        'attributes' => array(
+                            'class' => 'parent',
+                        ),
+                        'linkAttributes' => array(
+                            'class' => 'dropdown-toggle fa fa-building',
+                        )
+                    ),
+                    array(
+                        'children-attributes' => array(
+                            'class' => 'submenu'
+                        )
+                    )
+                );
+        }
+
         $builder
             ->addChildFor(
                 'structure',
@@ -128,6 +150,22 @@ class MenuSubscriber implements EventSubscriberInterface
                     'route'  => 'admin_settings_global',
                     'linkAttributes' => array(
                         'icon'  => 'wrench',
+                    )
+                )
+            )
+            ->addChildFor(
+                'content',
+                'content_translations',
+                array(
+                    'label'  => 'bigfoot_core.menu.label.translations',
+                    'route'  => 'admin_translatable_label',
+                    'extras' => array(
+                        'routes' => array(
+                            'admin_translatable_label_edit',
+                        )
+                    ),
+                    'linkAttributes' => array(
+                        'icon'  => 'flag',
                     )
                 )
             );

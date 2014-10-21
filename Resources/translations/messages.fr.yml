@@ -42,6 +42,15 @@ bigfoot_core:
                     label: "ID"
                 name:
                     label: "Nom"
+            admin_translatable_label:
+                category:
+                    label: "Catégorie"
+                name:
+                    label: "Identifiant"
+                value:
+                    label: "Traduction"
+                editedAt:
+                    label: "Dernière édition le"
 
     flash:
         actions:
@@ -64,6 +73,8 @@ bigfoot_core:
     menu:
         label:
             settings: "Paramètres globaux"
+        label:
+            translations: "Traductions"
 
     settings:
         form:
@@ -75,3 +86,13 @@ bigfoot_core:
     quick_link:
         modal:
             title: "Ajouter cette page à l'accès rapide"
+    translatable_label:
+        plural:
+            standard_0: "Valeur pour le singulier"
+            standard_1: "Valeur pour le pluriel"
+            explicit: "Valeur pour %interval%"
+        form:
+            value:
+                label: 'Libellé'
+            category:
+                title: 'Catégorie'
