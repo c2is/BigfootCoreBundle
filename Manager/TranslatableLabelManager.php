@@ -3,10 +3,28 @@
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Translation\Interval;
 
 class TranslatableLabelManager
 {
+    /** @var string */
+    protected $cacheDir;
+
+    /** @var \Symfony\Component\Filesystem\Filesystem */
+    protected $filesystem;
+
+    /**
+     * @param string $cacheDir
+     * @param Filesystem $filesystem
+     */
+    public function __construct($cacheDir, $filesystem)
+    {
+        $this->cacheDir = $cacheDir;
+        $this->filesystem = $filesystem;
+    }
+
     /**
      * @param TranslatableLabel $label
      * @return string
@@ -56,5 +74,18 @@ class TranslatableLabelManager
         }
 
         return $standardRules;
+    }
+
+    public function clearTranslationCache()
+    {
+        $fs = $this->filesystem;
+        $finder = new Finder();
+        try {
+            $fs->remove($finder->in(sprintf('%s/../*/translations/', $this->cacheDir))->name('catalogue.*.php'));
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

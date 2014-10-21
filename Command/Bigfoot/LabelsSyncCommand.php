@@ -7,6 +7,7 @@ use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository;
+use Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Helper\ProgressHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -144,5 +145,9 @@ EOT
             }
         }
         $em->flush();
+
+        /** @var TranslatableLabelManager $labelManager */
+        $labelManager = $this->getContainer()->get('bigfoot_core.manager.translatable_label');
+        $labelManager->clearTranslationCache();
     }
 }

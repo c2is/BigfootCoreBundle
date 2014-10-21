@@ -56,11 +56,11 @@ abstract class AbstractTranslatableLabelType extends AbstractType
         $standardRules = array();
         $labelManager->getPluralForms($message, $standardRules, $explicitRules);
 
-        for ($i = 0; $i < count($standardRules); $i++) {
+        for ($i = 0; $i < max(2, count($standardRules)); $i++) {
             $form->add(self::PLURAL_FIELD_PREFIX.$i, $labelManager->getValueFieldType($label), array(
                 'required' => false,
                 'label' => sprintf('bigfoot_core.translatable_label.plural.standard_%s', $i),
-                'data' => $standardRules[$i],
+                'data' => isset($standardRules[$i]) ? $standardRules[$i] : '',
                 'mapped' => false,
                 'attr' => array(
                     'data-locale' => $locale,

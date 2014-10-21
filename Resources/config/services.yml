@@ -265,3 +265,6 @@ services:
     # Labels
     bigfoot_core.manager.translatable_label:
         class: Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager
+        arguments:
+            - %kernel.cache_dir%
+            - @filesystem
