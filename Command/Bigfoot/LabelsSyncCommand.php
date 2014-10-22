@@ -67,6 +67,7 @@ EOT
             $files[] = $target;
         }
 
+        $i = 0;
         $processedLabels = array();
         foreach ($files as $file) {
             $fileName = pathinfo($file, PATHINFO_FILENAME);
@@ -128,13 +129,18 @@ EOT
                 }
 
                 $em->persist($label);
-                $em->flush();
+                if (0 == $i % 100) {
+                    $em->flush();
+                    $em->clear();
+                }
                 $processedLabels[] = $name.'-'.$domain;
 
                 $progress->advance();
+                $i++;
             }
             $progress->finish();
         }
+        $em->flush();
 
         $labels = $repo->findAll();
         /** @var TranslatableLabel $label */
