@@ -45,6 +45,8 @@ class TranslatableLabelRepository extends EntityRepository
         $results = $this
             ->createQueryBuilder('e')
             ->select('SUBSTRING_INDEX(SUBSTRING_INDEX(e.name, \'.\', 2), \'.\', -2) as category')
+            ->andWhere('LOCATE(\' \', e.name) = 0')
+            ->andWhere('LOCATE(\'.\', e.name) > 0')
             ->distinct()
             ->orderBy('category')
             ->getQuery()
