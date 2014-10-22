@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Command\Bigfoot;
 
+use Bigfoot\Bundle\ContextBundle\Service\ContextService;
 use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
@@ -58,7 +59,10 @@ EOT
         $transRepo = new TranslationRepository($em, $this->getContainer()->get('annotation_reader'));
         $defaultLocale = $this->getContainer()->getParameter('locale');
         /** @var ProgressHelper $progress */
-        $progress       = $this->getHelperSet()->get('progress');
+        $progress = $this->getHelperSet()->get('progress');
+        /** @var ContextService $context */
+        $context = $this->getContainer()->get('bigfoot_context');
+        $locales = array_keys($context->getValues('language'));
 
         $files = array();
         if(is_dir($target)) {
@@ -113,18 +117,23 @@ EOT
                 }
 
                 if (isset($translation['value']) && ($overwrite || !$label->getId())) {
-                    if (is_array($translation['value'])) {
-                        foreach ($translation['value'] as $locale => $value) {
-                            if ($locale == $defaultLocale) {
-                                $label->setValue($value);
-                            } elseif ($label->getId()) {
-                                $transRepo->translate($label, 'value', $locale, $value);
-                            } else {
-                                $label->addTranslation(new TranslatableLabelTranslation($locale, 'value', $value));
-                            }
+                    if (!is_array($translation['value'])) {
+                        $translation['value'] = array($defaultLocale => $translation['value']);
+                    }
+
+                    foreach ($locales as $locale) {
+                        $value = '';
+                        if (isset($translation['value'][$locale])) {
+                            $value = $translation['value'][$locale];
                         }
-                    } else {
-                        $label->setValue($translation['value']);
+
+                        if ($locale == $defaultLocale) {
+                            $label->setValue($value);
+                        } elseif ($label->getId()) {
+                            $transRepo->translate($label, 'value', $locale, $value);
+                        } else {
+                            $label->addTranslation(new TranslatableLabelTranslation($locale, 'value', $value));
+                        }
                     }
                 }
 

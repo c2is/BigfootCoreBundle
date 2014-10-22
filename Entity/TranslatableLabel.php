@@ -310,6 +310,9 @@ class TranslatableLabel
         return substr($this->getName(), 0, strpos($this->getName(), '.', strpos($this->getName(), '.') + 1));
     }
 
+    /**
+     * @return string
+     */
     public function getLocale()
     {
         return $this->locale;

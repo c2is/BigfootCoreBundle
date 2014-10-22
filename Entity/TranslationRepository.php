@@ -42,7 +42,7 @@ class TranslationRepository extends EntityRepository
             if($translation) {
                 $translation->setContent($fieldData);
             } else {
-                if($fieldData != null) {
+                if($fieldData !== null) {
                     $entity->addTranslation(new $entityTranslationClass($locale, $field, $fieldData));
                 }
             }
