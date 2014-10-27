@@ -320,9 +320,12 @@ class TranslatableLabel
 
     /**
      * @param $locale
+     * @return $this
      */
     public function setTranslatableLocale($locale)
     {
         $this->locale = $locale;
+
+        return $this;
     }
 }
