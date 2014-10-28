@@ -73,11 +73,8 @@ class FilterManager
     }
 
     /**
-     * Get filter in session
-     *
-     * @param  string $entity
-     *
-     * @return miuxed
+     * @param $entity
+     * @return mixed|null
      */
     public function getSessionFilter($entity)
     {
@@ -85,7 +82,9 @@ class FilterManager
     }
 
     /**
-     * @param Request $request
+     * @param string $entityName
+     * @param array $globalFilters
+     * @return bool
      */
     public function registerFilters($entityName, $globalFilters)
     {
@@ -103,7 +102,7 @@ class FilterManager
 
         foreach ($filters as $key => $filter) {
             if (isset($datas[$filter['name']]) && $datas[$filter['name']] !== null) {
-                $data    = $datas[$filter['name']];
+                $data = $datas[$filter['name']];
 
                 switch ($filter['type']) {
                     case 'entity':
@@ -143,8 +142,8 @@ class FilterManager
                         case 'repositoryMethod':
                             $em = $this->entityManager;
                             $repo = $em->getRepository($globalFilters['referer']);
+                            call_user_func(array($repo, $options['method']), $query, $data);
 
-                            $repo->addCategoryFilter($query, $data);
                             break;
                         case 'entity':
                             $data = $this->getEntity($filter, $datas[$filter['name']]);
@@ -170,24 +169,24 @@ class FilterManager
                             $where      = array();
 
                             foreach ($properties as $property) {
+                                $data = '%'.$data.'%';
                                 if (preg_match('/^.*\..*$/i', $property)) {
                                     $property = explode('.', $property);
                                     $relation = $property[0];
                                     $property = $property[1];
 
                                     if ($alias = $this->hasJoin('e.'.$relation)) {
-                                        $where[] = $alias.'.'.$property.' LIKE \'%'.$data.'%\'';
+                                        $where[] = array('property' => $alias.'.'.$property, 'value' => $data);
                                     } else {
                                         $this->addJoin('e.'.$relation, '_r'.$key);
-
-                                        $where[] = '_r'.$key.'.'.$property.' LIKE \'%'.$data.'%\'';
+                                        $where[] = array('property' => '_r'.$key.'.'.$property, 'value' => $data);
                                     }
                                 } else {
-                                    $where[] = 'e.'.$property.' LIKE \'%'.$data.'%\'';
+                                    $where[] = array('property' => 'e.'.$property, 'value' => $data);
                                 }
                             }
 
-                            $this->addWhere(implode(' OR ', $where), null, 'LITERAL');
+                            $this->addWhere($where, null, 'OR_LIKE');
                             break;
                     }
                 }
@@ -200,16 +199,12 @@ class FilterManager
     /**
      * Hydrate query
      *
-     * @param  Query $query
+     * @param  QueryBuilder $query
      *
-     * @return Query
+     * @return QueryBuilder
      */
     private function hydrateQuery($query)
     {
-        // var_dump($this->joins);
-        // var_dump($this->wheres);
-        // die();
-
         foreach ($this->joins as $join) {
             $query
                 ->innerjoin($join['relation'].' '.$join['alias'], $join['on']);
@@ -219,32 +214,40 @@ class FilterManager
             if ($where['type'] == null) {
                 $query
                     ->andWhere($where['alias'].'.'.$where['property'].' = :v'.$this->index)
-                    ->setParameter('v'.$this->index, $where['value']);
-
-                $this->index++;
+                    ->setParameter('v'.$this->index, $where['value'])
+                ;
             } else {
                 switch ($where['type']) {
                     case 'LIKE':
                         $query
-                            ->andWhere($where['alias'].'.'.$where['property'].' LIKE \'%'.$where['value'].'%\'');
+                            ->andWhere($where['alias'].'.'.$where['property'].' LIKE :v'.$this->index)
+                            ->setParameter('v'.$this->index, '%'.$where['value'].'%')
+                        ;
                         break;
-                    case 'LITERAL':
-                        $query
-                            ->andWhere($where['property']);
+                    case 'OR_LIKE':
+                        $expr = $query->expr()->orX();
+                        foreach ($where['property'] as $property) {
+                            $expr->add($query->expr()->like($property['property'], ':v'.$this->index));
+                            $query->setParameter('v'.$this->index, $property['value']);
+                            $this->index++;
+                        }
+                        $query->andWhere($expr);
+
                         break;
                 }
             }
+
+            $this->index++;
         }
 
         return $query;
     }
 
     /**
-     * Generate filters
-     *
-     * @param  array $datas
-     *
-     * @return FormInterface
+     * @param array $datas
+     * @param string $key
+     * @return bool|\Symfony\Component\Form\Form|FormInterface
+     * @throws \Exception
      */
     public function generateFilters($datas, $key)
     {
@@ -442,6 +445,7 @@ class FilterManager
      *
      * @param string $where
      * @param string $value
+     * @param string $type
      * @param string $alias
      *
      * @return FilterManager
