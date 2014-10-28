@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Bigfoot\Bundle\CoreBundle\Manager\FilterManager;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -95,7 +96,7 @@ abstract class CrudController extends BaseController
     /**
      * Get filter manager
      *
-     * @return Bigfoot\Bundle\CoreBundle\Manager\FilterManager
+     * @return FilterManager
      */
     protected function getFilterManager()
     {
@@ -355,11 +356,6 @@ abstract class CrudController extends BaseController
      */
     private function getQuery()
     {
-        $count = $this
-            ->getEntityManager()
-            ->createQuery('SELECT COUNT(e) FROM ' . $this->getEntityClass() . ' e')
-            ->getSingleScalarResult();
-
         $entityClass = ltrim($this->getEntityClass(), '\\');
         $entityName  = $this->getEntityName();
 
@@ -377,6 +373,12 @@ abstract class CrudController extends BaseController
         $queryBuilder = $this->getFilterManager()->filterQuery($queryBuilder, strtolower($entityName), $this->getGlobalFilters());
 
         $this->postQuery($queryBuilder);
+
+        $countQueryBuilder = clone($queryBuilder);
+        $count = $countQueryBuilder
+            ->select('COUNT(e)')
+            ->getQuery()
+            ->getSingleScalarResult();
 
         $query = $queryBuilder
             ->getQuery()
@@ -397,15 +399,23 @@ abstract class CrudController extends BaseController
     protected function doIndex()
     {
         $request = $this->getRequest();
+        $filterManager = $this->getFilterManager();
 
         if ($request->isMethod('POST')) {
-            $this->getFilterManager()->registerFilters($this->getEntityName(), $this->getGlobalFilters());
+            $filterManager->registerFilters($this->getEntityName(), $this->getGlobalFilters());
             return $this->redirect($this->generateUrl($this->getControllerIndex()));
         }
 
         $result = $this->getQuery();
+        try {
+            $items = $this->getPagination($result, $this->getElementsPerPage());
+        } catch (\Exception $e) {
+            $items = array();
+            $filterManager->clearFilters($this->getEntityName());
+            $this->getSession()->getFlashBag()->add('error', 'bigfoot.core.crud.index.error');
+        }
 
-        return $this->renderIndex($result);
+        return $this->renderIndex($items);
     }
 
     /**
@@ -581,7 +591,7 @@ abstract class CrudController extends BaseController
     /**
      * Render index
      */
-    protected function renderIndex($query)
+    protected function renderIndex($items)
     {
         $fields = array();
         foreach ($this->getFields() as $key => $field) {
@@ -600,7 +610,7 @@ abstract class CrudController extends BaseController
         return $this->render(
             $this->getIndexTemplate(),
             array(
-                'list_items'    => $this->getPagination($query, $this->getElementsPerPage()),
+                'list_items'    => $items,
                 'list_title'    => $this->getEntityLabelPlural(),
                 'list_fields'   => $fields,
                 'actions'       => $this->getActions(),

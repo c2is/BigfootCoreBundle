@@ -8,6 +8,7 @@ use Knp\Component\Pager\Paginator;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -156,7 +157,7 @@ class BaseController extends Controller
     /**
      * Get Session
      *
-     * @return SecurityContext
+     * @return Session
      */
     protected function getSession()
     {

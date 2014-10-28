@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -121,9 +122,11 @@ class FilterManager
     /**
      * Filter query
      *
-     * @param  Query $query
+     * @param QueryBuilder $query
+     * @param string $entityName
+     * @param array $globalFilters
      *
-     * @return Query
+     * @return QueryBuilder
      */
     public function filterQuery($query, $entityName, $globalFilters)
     {
@@ -454,5 +457,14 @@ class FilterManager
         $this->wheres[]  = $add;
 
         return $this;
+    }
+
+    /**
+     * @param $entityName
+     * @return mixed
+     */
+    public function clearFilters($entityName)
+    {
+        return $this->session->remove('bigfoot.crud.index.filters.'.strtolower($entityName));
     }
 }
