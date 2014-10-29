@@ -27,6 +27,7 @@ services:
         arguments:
             - @stof_doctrine_extensions.listener.translatable
             - %locale%
+            - %bigfoot_core.languages.back%
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onEarlyKernelRequest, priority: 50 }
             - { name: kernel.event_listener, event: kernel.request, method: onLateKernelRequest , priority: -50 }

@@ -24,11 +24,13 @@ class KernelListener
     /**
      * @param TranslatableListener $translationListener
      * @param string $defaultLocale
+     * @param array $allowedLocales
      */
-    public function __construct(TranslatableListener $translationListener, $defaultLocale)
+    public function __construct(TranslatableListener $translationListener, $defaultLocale, $allowedLocales)
     {
         $this->translationListener = $translationListener;
         $this->defaultLocale       = $defaultLocale;
+        $this->allowedLocales      = $allowedLocales;
     }
 
     /**
@@ -42,9 +44,9 @@ class KernelListener
 
         $request = $event->getRequest();
 
-        if ($locale = $request->getSession()->get('_locale', false)) {
+        if (($locale = $request->getSession()->get('_locale', false)) && in_array($locale, $this->allowedLocales)) {
             $request->setLocale($locale);
-        } elseif ($locale = $request->getPreferredLanguage()) {
+        } elseif (($locale = $request->getPreferredLanguage()) && in_array($locale, $this->allowedLocales)) {
             $request->setLocale($locale);
         } else {
             $request->setLocale($this->defaultLocale);
