@@ -7,18 +7,37 @@ use Doctrine\ORM\EntityRepository;
 use Gedmo\Translatable\TranslatableListener;
 use Doctrine\Common\Annotations\Reader;
 
-class TranslationRepository extends EntityRepository
+/**
+ * Class TranslationRepository
+ * @package Bigfoot\Bundle\CoreBundle\Entity
+ */
+class TranslationRepository
 {
+    /** @var \Doctrine\ORM\EntityManager */
     protected $em;
 
-    private $listener;
+    /** @var \Doctrine\Common\Annotations\Reader */
+    protected $reader;
 
-    public function __construct(EntityManager $em, Reader $reader)
+    /** @var \Gedmo\Translatable\TranslatableListener */
+    protected $listener;
+
+    /**
+     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\Common\Annotations\Reader $reader
+     */
+    public function __construct($em, $reader)
     {
         $this->reader = $reader;
         $this->em     = $em;
     }
 
+    /**
+     * @param object $entity
+     * @param string $field
+     * @param string $locale
+     * @param mixed $fieldData
+     */
     public function translate($entity, $field, $locale, $fieldData)
     {
         $listener                          = $this->getTranslatableListener();
@@ -27,7 +46,7 @@ class TranslationRepository extends EntityRepository
         $reflectionClass                   = new \ReflectionClass($entityClass);
         $entityTranslationClass            = $this->reader->getClassAnnotation($reflectionClass, 'Gedmo\\Mapping\\Annotation\\TranslationEntity')->class;
 
-        if(!$persistDefaultLocaleTransInEntity && $locale === $listener->getDefaultLocale()) {
+        if (!$persistDefaultLocaleTransInEntity && $locale === $listener->getDefaultLocale()) {
             $trans = new $entityTranslationClass($locale, $field, $fieldData);
 
             $listener->setTranslationInDefaultLocale(spl_object_hash($entity), $field, $trans);
@@ -39,10 +58,10 @@ class TranslationRepository extends EntityRepository
                 'object' => $entity,
             ));
 
-            if($translation) {
+            if ($translation) {
                 $translation->setContent($fieldData);
             } else {
-                if($fieldData !== null) {
+                if ($fieldData !== null) {
                     $entity->addTranslation(new $entityTranslationClass($locale, $field, $fieldData));
                 }
             }
@@ -54,7 +73,7 @@ class TranslationRepository extends EntityRepository
      * Get the currently used TranslatableListener
      *
      * @throws \Gedmo\Exception\RuntimeException - if listener is not found
-     * @return TranslatableListener
+     * @return \Gedmo\Translatable\TranslatableListener
      */
     private function getTranslatableListener()
     {
@@ -75,6 +94,7 @@ class TranslationRepository extends EntityRepository
                 throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
             }
         }
+
         return $this->listener;
     }
 }

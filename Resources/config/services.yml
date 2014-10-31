@@ -13,6 +13,7 @@ parameters:
     bigfoot.crud.formatter.loader.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\Loader"
     bigfoot.crud.formatter.date.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\DateFormatter"
     bigfoot.crud.formatter.trans.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\TranslationFormatter"
+    bigfoot.core.translation.repository.class: "Bigfoot\\Bundle\\CoreBundle\\Entity\\TranslationRepository"
 services:
     # Core controller listener ; used to set page title, breadcrumbs..
     kernel.listener.bigfoot_controller_listener:
@@ -269,3 +270,10 @@ services:
         arguments:
             - %kernel.cache_dir%
             - @filesystem
+
+    #Translations
+    bigfoot_core.translation.repository:
+        class: %bigfoot.core.translation.repository.class%
+        arguments:
+            - @doctrine.orm.entity_manager
+            - annotation_reader
