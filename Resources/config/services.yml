@@ -271,9 +271,9 @@ services:
             - %kernel.cache_dir%
             - @filesystem
 
-    #Translations
+    # Translations
     bigfoot_core.translation.repository:
         class: %bigfoot.core.translation.repository.class%
         arguments:
             - @doctrine.orm.entity_manager
-            - annotation_reader
+            - @annotation_reader
