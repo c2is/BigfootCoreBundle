@@ -79,7 +79,6 @@ class TranslationRepository
         }
     }
 
-
     /**
      * Get the currently used TranslatableListener
      *
