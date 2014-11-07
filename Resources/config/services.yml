@@ -277,3 +277,4 @@ services:
         arguments:
             - @doctrine.orm.entity_manager
             - @annotation_reader
+            - @property_accessor

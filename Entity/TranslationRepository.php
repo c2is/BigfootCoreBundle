@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Gedmo\Translatable\TranslatableListener;
 use Doctrine\Common\Annotations\Reader;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Class TranslationRepository
@@ -22,14 +23,19 @@ class TranslationRepository
     /** @var \Gedmo\Translatable\TranslatableListener */
     protected $listener;
 
+    /** @var PropertyAccessor */
+    protected $propertyAccessor;
+
     /**
      * @param \Doctrine\ORM\EntityManager $em
      * @param \Doctrine\Common\Annotations\Reader $reader
+     * @param PropertyAccessor $propertyAccessor
      */
-    public function __construct($em, $reader)
+    public function __construct($em, $reader, $propertyAccessor)
     {
-        $this->reader = $reader;
-        $this->em     = $em;
+        $this->reader           = $reader;
+        $this->em               = $em;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
@@ -40,6 +46,7 @@ class TranslationRepository
      */
     public function translate($entity, $field, $locale, $fieldData)
     {
+        $em                                = $this->em;
         $listener                          = $this->getTranslatableListener();
         $persistDefaultLocaleTransInEntity = $listener->getPersistDefaultLocaleTranslation();
         $entityClass                       = get_class($entity);
@@ -52,11 +59,18 @@ class TranslationRepository
             $listener->setTranslationInDefaultLocale(spl_object_hash($entity), $field, $trans);
         } else {
             $translationClassRepository = $this->em->getRepository($entityTranslationClass);
-            $translation = $translationClassRepository->findOneBy(array(
-                'locale' => $locale,
-                'field'  => $field,
-                'object' => $entity,
-            ));
+            $meta = $em->getClassMetadata(get_class($entity));
+            $identifier = $meta->getSingleIdentifierFieldName();
+
+            if ($this->propertyAccessor->getValue($entity->getId(), $identifier)) {
+                $translation = $translationClassRepository->findOneBy(array(
+                    'locale' => $locale,
+                    'field'  => $field,
+                    'object' => $entity,
+                ));
+            } else {
+                $translation = null;
+            }
 
             if ($translation) {
                 $translation->setContent($fieldData);
