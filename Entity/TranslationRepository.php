@@ -59,25 +59,22 @@ class TranslationRepository
             $listener->setTranslationInDefaultLocale(spl_object_hash($entity), $field, $trans);
         } else {
             $translationClassRepository = $this->em->getRepository($entityTranslationClass);
-            $meta = $em->getClassMetadata(get_class($entity));
-            $identifier = $meta->getSingleIdentifierFieldName();
+            $meta        = $em->getClassMetadata(get_class($entity));
+            $identifier  = $meta->getSingleIdentifierFieldName();
+            $translation = null;
 
-            if ($this->propertyAccessor->getValue($entity->getId(), $identifier)) {
+            if ($entity && $this->propertyAccessor->getValue($entity, $identifier)) {
                 $translation = $translationClassRepository->findOneBy(array(
                     'locale' => $locale,
                     'field'  => $field,
                     'object' => $entity,
                 ));
-            } else {
-                $translation = null;
             }
 
             if ($translation) {
                 $translation->setContent($fieldData);
-            } else {
-                if ($fieldData !== null) {
-                    $entity->addTranslation(new $entityTranslationClass($locale, $field, $fieldData));
-                }
+            } elseif ($fieldData !== null) {
+                $entity->addTranslation(new $entityTranslationClass($locale, $field, $fieldData));
             }
         }
     }
