@@ -47,13 +47,17 @@ class TranslationRepository
     public function translate($entity, $field, $locale, $fieldData)
     {
         $em                                = $this->em;
+        $meta                              = $em->getClassMetadata(get_class($entity));
         $listener                          = $this->getTranslatableListener();
         $persistDefaultLocaleTransInEntity = $listener->getPersistDefaultLocaleTranslation();
         $entityClass                       = get_class($entity);
         $reflectionClass                   = new \ReflectionClass($entityClass);
         $entityTranslationClass            = $this->reader->getClassAnnotation($reflectionClass, 'Gedmo\\Mapping\\Annotation\\TranslationEntity')->class;
 
-        if (!$persistDefaultLocaleTransInEntity && $locale === $listener->getDefaultLocale()) {
+        if ($locale === $listener->getTranslatableLocale($entity, $meta)) {
+            $meta->getReflectionProperty($field)->setValue($entity, $fieldData);
+            $em->persist($entity);
+        } elseif (!$persistDefaultLocaleTransInEntity && $locale === $listener->getDefaultLocale()) {
             $trans = new $entityTranslationClass($locale, $field, $fieldData);
 
             $listener->setTranslationInDefaultLocale(spl_object_hash($entity), $field, $trans);
