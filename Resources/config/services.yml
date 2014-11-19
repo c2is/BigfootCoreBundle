@@ -123,6 +123,11 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\BigfootRichtextType
         tags:
             - { name: form.type, alias: bigfoot_richtext }
+    # Route type
+    form.type.bigfoot_route:
+        class: Bigfoot\Bundle\CoreBundle\Form\RouteType
+        tags:
+            - { name: form.type, alias: bigfoot_bundle_corebundle_routetype }
     # Collection item type - to set as parent for entity types used in collections
     bigfoot.form.type.collection_item:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\CollectionItemType

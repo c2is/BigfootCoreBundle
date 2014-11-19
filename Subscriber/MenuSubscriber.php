@@ -154,6 +154,17 @@ class MenuSubscriber implements EventSubscriberInterface
                 )
             )
             ->addChildFor(
+                'settings',
+                'settings_route',
+                array(
+                    'label'  => 'Route',
+                    'route'  => 'bigfoot_route',
+                    'linkAttributes' => array(
+                        'icon'  => 'wrench',
+                    )
+                )
+            )
+            ->addChildFor(
                 'content',
                 'content_translations',
                 array(
