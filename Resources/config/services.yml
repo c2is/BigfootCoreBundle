@@ -283,3 +283,11 @@ services:
             - @doctrine.orm.entity_manager
             - @annotation_reader
             - @property_accessor
+
+    # Chain Router
+    bigfoot_core.cmf_routing.router:
+        class: Symfony\Cmf\Component\Routing\ChainRouter
+        arguments:
+            - @logger
+        calls:
+            - [setContext, ['@router.request_context']]

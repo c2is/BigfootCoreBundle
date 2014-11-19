@@ -39,5 +39,13 @@ class BigfootCoreExtension extends Extension
         $container->setParameter('bigfoot_core.mailer.from', $config['mailer']['from']);
         $container->setParameter('bigfoot_core.languages.back', $config['languages']['back']);
         $container->setParameter('bigfoot_core.languages.front', $config['languages']['front']);
+
+        if (isset($config['routing']['replace_symfony_router'])) {
+            $container->setParameter('bigfoot_core.routing.replace_symfony_router', $config['routing']['replace_symfony_router']);
+        }
+
+        if (isset($config['routing']['routers_by_id'])) {
+            $container->setParameter('bigfoot_core.routing.routers_by_id', $config['routing']['routers_by_id']);
+        }
     }
 }
