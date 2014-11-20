@@ -47,3 +47,17 @@ Another with these values :
   value: number of columns use by your widget
   widget_id: Record ID of your widget in widget_backoffice table
   user_id: (Optionnal) If defined, this parameter will be used only for this user
+
+How to overload Symfony Router
+---------------
+
+Add these following lines to your front config:
+
+```yml
+bigfoot_core:
+    routing:
+        replace_symfony_router: true
+        routers_by_id:
+            router.default :     300
+            bigfoot_core.router: 400
+```

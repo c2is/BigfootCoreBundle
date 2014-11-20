@@ -56,13 +56,6 @@ class Route
      */
     private $action;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="locale", type="string", length=255)
-     */
-    private $locale;
-
     const TYPE_DIRECT    = 1;
     const TYPE_REDIRECT  = 2;
     const TYPE_CANONICAL = 3;
@@ -109,24 +102,6 @@ class Route
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param string $locale
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this->locale;
     }
 
     /**

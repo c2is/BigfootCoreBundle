@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -40,12 +41,20 @@ class BigfootCoreExtension extends Extension
         $container->setParameter('bigfoot_core.languages.back', $config['languages']['back']);
         $container->setParameter('bigfoot_core.languages.front', $config['languages']['front']);
 
+        $router = $container->getDefinition('bigfoot_core.cmf_routing.router');
+
         if (isset($config['routing']['replace_symfony_router'])) {
             $container->setParameter('bigfoot_core.routing.replace_symfony_router', $config['routing']['replace_symfony_router']);
         }
 
         if (isset($config['routing']['routers_by_id'])) {
             $container->setParameter('bigfoot_core.routing.routers_by_id', $config['routing']['routers_by_id']);
+        }
+
+        if (isset($config['routing']['replace_symfony_router']) && true === $config['routing']['replace_symfony_router'] && isset($config['routing']['routers_by_id'])) {
+            foreach ($config['routing']['routers_by_id'] as $id => $priority) {
+                $router->addMethodCall('add', array(new Reference($id), trim($priority)));
+            }
         }
     }
 }
