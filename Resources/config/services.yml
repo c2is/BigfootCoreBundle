@@ -295,8 +295,11 @@ services:
     # Bigfoot Router
     bigfoot_core.router:
         class: Bigfoot\Bundle\CoreBundle\Entity\RouteRepository
-        arguments: ['BigfootCoreBundle:Route']
+        arguments:
+            - 'BigfootCoreBundle:Route'
         factory_service: doctrine.orm.entity_manager
         factory_method: getRepository
         tags:
             - { name: router, priority: 200 }
+        calls:
+            - [setRequest, ['@?request=']]

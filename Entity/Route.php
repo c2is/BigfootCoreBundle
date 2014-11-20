@@ -38,14 +38,21 @@ class Route
     /**
      * @var string
      *
-     * @ORM\Column(name="object_class", type="string", length=255)
+     * @ORM\Column(name="object_class", type="string", length=255, nullable=true)
      */
     private $objectClass;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="variable_name", type="string", length=255, nullable=true)
+     */
+    private $variableName;
+
+    /**
      * @var integer
      *
-     * @ORM\Column(name="foreign_key", type="integer")
+     * @ORM\Column(name="foreign_key", type="integer", nullable=true)
      */
     private $foreignKey;
 
@@ -59,6 +66,15 @@ class Route
     const TYPE_DIRECT    = 1;
     const TYPE_REDIRECT  = 2;
     const TYPE_CANONICAL = 3;
+
+    public static function getAllRouteType()
+    {
+        return array(
+            self::TYPE_DIRECT    => 'Direct',
+            self::TYPE_REDIRECT  => 'Redirect',
+            self::TYPE_CANONICAL => 'Canonical',
+        );
+    }
 
     /**
      * @param string $action
@@ -156,5 +172,23 @@ class Route
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @param string $variableName
+     */
+    public function setVariableName($variableName)
+    {
+        $this->variableName = $variableName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVariableName()
+    {
+        return $this->variableName;
     }
 }

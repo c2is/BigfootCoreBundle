@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Form;
 
+use Bigfoot\Bundle\CoreBundle\Entity\Route;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -18,18 +19,24 @@ class RouteType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $arrayType = Route::getAllRouteType();
+
         $builder
             ->add('url', 'text', array(
                 'required' => true
             ))
-            ->add('type', 'text', array(
+            ->add('type', 'choice', array(
+                'choices'  => $arrayType,
                 'required' => true
             ))
             ->add('objectClass', 'text', array(
-                'required' => true
+                'required' => false
+            ))
+            ->add('variableName', 'text', array(
+                'required' => false
             ))
             ->add('foreignKey', 'text', array(
-                'required' => true
+                'required' => false
             ))
             ->add('action', 'text', array(
                 'required' => true
