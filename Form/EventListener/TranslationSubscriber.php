@@ -4,14 +4,13 @@ namespace Bigfoot\Bundle\CoreBundle\Form\EventListener;
 
 use Doctrine\Common\Annotations\Reader;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
+use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as BigfootTranslationRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-
-use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as  BigfootTranslationRepository;
 
 /**
  * Class TranslationSubscriber
@@ -29,19 +28,23 @@ class TranslationSubscriber implements EventSubscriberInterface
     protected $defaultLocale;
     /** @var string */
     protected $currentLocale;
+    /** @var BigfootTranslationRepository */
+    protected $translationRepository;
 
     /**
-     * @param array             $localeList
-     * @param RegistryInterface $doctrine
-     * @param Reader            $annotationReader
-     * @param string            $defaultLocale
+     * @param array                        $localeList
+     * @param RegistryInterface            $doctrine
+     * @param Reader                       $annotationReader
+     * @param BigfootTranslationRepository $translationRepository
+     * @param string                       $defaultLocale
      */
-    public function __construct($localeList, RegistryInterface $doctrine, Reader $annotationReader, $defaultLocale)
+    public function __construct($localeList, RegistryInterface $doctrine, Reader $annotationReader, BigfootTranslationRepository $translationRepository, $defaultLocale)
     {
-        $this->localeList       = $localeList;
-        $this->doctrine         = $doctrine;
-        $this->annotationReader = $annotationReader;
-        $this->defaultLocale    = $defaultLocale;
+        $this->localeList            = $localeList;
+        $this->doctrine              = $doctrine;
+        $this->annotationReader      = $annotationReader;
+        $this->translationRepository = $translationRepository;
+        $this->defaultLocale         = $defaultLocale;
     }
 
     /**
@@ -126,9 +129,10 @@ class TranslationSubscriber implements EventSubscriberInterface
      */
     public function postSubmit(FormEvent $event)
     {
-        $form       = $event->getForm();
-        $parentForm = $form->getParent();
-        $parentData = $parentForm->getData();
+        $form             = $event->getForm();
+        $parentForm       = $form->getParent();
+        $parentData       = $parentForm->getData();
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         if ($parentData) {
             $entityClass        = get_class($parentData);
@@ -141,7 +145,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $gedmoAnnotations = $this->annotationReader->getClassAnnotation($reflectionClass, 'Gedmo\\Mapping\\Annotation\\TranslationEntity');
 
             if($gedmoAnnotations !== null && $gedmoAnnotations->class != '') {
-                $repository = new BigfootTranslationRepository($em, $this->annotationReader);
+                $repository = $this->translationRepository;
             } else {
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
             }
@@ -158,8 +162,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                         }
                         if ($field != 'slug' || $fieldData) {
                             if($repository instanceof BigfootTranslationRepository && $this->currentLocale == $locale) {
-                                $getMethod = sprintf('get%s', ucfirst($field));
-                                $fieldData = $parentData->$getMethod();
+                                $fieldData = $propertyAccessor->getValue($parentData, $field);
                             }
                             $repository->translate($parentData, $field, $locale, $fieldData);
                         }
