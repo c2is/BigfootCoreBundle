@@ -1,18 +1,18 @@
 parameters:
-    bigfoot.theme.bundle:         "BigfootCoreBundle"
-    theme.class:                  "Bigfoot\\Bundle\\CoreBundle\\Theme\\Theme"
-    theme.section.toolbar:        "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\ToolbarSection"
-    theme.section.header:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\HeaderSection"
-    theme.section.sidebar:        "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\SidebarSection"
-    theme.section.page_header:    "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageHeaderSection"
-    theme.section.page_content:   "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageContentSection"
-    theme.section.footer:         "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\FooterSection"
-    kernel_listener.class:        "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
-    translatable_type.class:      "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
-    sortable_type.class:          "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
-    bigfoot.crud.formatter.loader.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\Loader"
-    bigfoot.crud.formatter.date.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\DateFormatter"
-    bigfoot.crud.formatter.trans.class: "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\TranslationFormatter"
+    bigfoot.theme.bundle:                      "BigfootCoreBundle"
+    theme.class:                               "Bigfoot\\Bundle\\CoreBundle\\Theme\\Theme"
+    theme.section.toolbar:                     "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\ToolbarSection"
+    theme.section.header:                      "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\HeaderSection"
+    theme.section.sidebar:                     "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\SidebarSection"
+    theme.section.page_header:                 "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageHeaderSection"
+    theme.section.page_content:                "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\PageContentSection"
+    theme.section.footer:                      "Bigfoot\\Bundle\\CoreBundle\\Theme\\Section\\FooterSection"
+    kernel_listener.class:                     "Bigfoot\\Bundle\\CoreBundle\\Listener\\KernelListener"
+    translatable_type.class:                   "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\TranslatedEntityType"
+    sortable_type.class:                       "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\SortableEntityType"
+    bigfoot.crud.formatter.loader.class:       "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\Loader"
+    bigfoot.crud.formatter.date.class:         "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\DateFormatter"
+    bigfoot.crud.formatter.trans.class:        "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\TranslationFormatter"
     bigfoot.core.translation.repository.class: "Bigfoot\\Bundle\\CoreBundle\\Entity\\TranslationRepository"
 services:
     # Core controller listener ; used to set page title, breadcrumbs..
@@ -40,6 +40,7 @@ services:
             - %bigfoot_core.languages.front%
             - @doctrine
             - @annotation_reader
+            - @bigfoot_core.translation.repository
             - %locale%
 
     # Services dedicated to the BackOffice theme
