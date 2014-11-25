@@ -5,7 +5,7 @@ namespace Bigfoot\Bundle\CoreBundle\Menu;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Doctrine\ORM\EntityManager;
 
@@ -28,7 +28,7 @@ class Builder
     protected $security;
 
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 
@@ -42,10 +42,10 @@ class Builder
      *
      * @param EntityManager            $entityManager
      * @param SecurityContextInterface $security
-     * @param EventDispatcher          $eventDispatcher
+     * @param EventDispatcherInterface          $eventDispatcher
      * @param MenuManager              $menuManager
      */
-    public function __construct(EntityManager $entityManager, SecurityContextInterface $security, EventDispatcher $eventDispatcher, MenuManager $menuManager)
+    public function __construct(EntityManager $entityManager, SecurityContextInterface $security, EventDispatcherInterface $eventDispatcher, MenuManager $menuManager)
     {
         $this->entityManager   = $entityManager;
         $this->security        = $security;
