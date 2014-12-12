@@ -8,7 +8,7 @@ use Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation;
 /**
  * @ORM\Entity
  * @ORM\Table(name="bigfoot_translatable_label_translations",
- *     uniqueConstraints={@ORM\UniqueConstraint(name="lookup_unique_idx", columns={
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="lookup_unique_idx_translation", columns={
  *         "locale", "object_id", "field"
  *     })}
  * )
