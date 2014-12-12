@@ -14,7 +14,7 @@
         "php":                               ">=5.4",
         "symfony/framework-bundle":          "~2.5",
         "knplabs/knp-menu-bundle":           "2.0.*@dev",
-        "knplabs/knp-paginator-bundle":      "~2.3",
+        "knplabs/knp-paginator-bundle":      "~2.4.1",
         "friendsofsymfony/jsrouting-bundle": "~1.1",
         "liip/imagine-bundle":               "~0.6",
         "symfony-cmf/routing":               "dev-master"

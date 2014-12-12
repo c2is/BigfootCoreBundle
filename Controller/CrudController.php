@@ -407,6 +407,7 @@ abstract class CrudController extends BaseController
         }
 
         $result = $this->getQuery();
+
         try {
             $items = $this->getPagination($result, $this->getElementsPerPage());
         } catch (\Exception $e) {

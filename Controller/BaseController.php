@@ -93,6 +93,7 @@ class BaseController extends Controller
     {
         /** @var Paginator $paginator */
         $paginator = $this->get('knp_paginator');
+
         return $paginator->paginate(
             $query,
             $this->getRequest()->query->get('page', 1),
