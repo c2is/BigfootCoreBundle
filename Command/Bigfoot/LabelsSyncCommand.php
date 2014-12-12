@@ -56,7 +56,7 @@ EOT
         $em = $this->getContainer()->get('doctrine')->getManager();
         /** @var TranslatableLabelRepository $repo */
         $repo = $em->getRepository('BigfootCoreBundle:TranslatableLabel');
-        $transRepo = new TranslationRepository($em, $this->getContainer()->get('annotation_reader'));
+        $transRepo = $this->getContainer()->get('bigfoot_core.translation.repository');
         $defaultLocale = $this->getContainer()->getParameter('locale');
         /** @var ProgressHelper $progress */
         $progress = $this->getHelperSet()->get('progress');
