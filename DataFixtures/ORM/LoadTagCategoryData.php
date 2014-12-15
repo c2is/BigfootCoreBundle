@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\DataFixtures\ORM;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TagCategory;
+use Bigfoot\Bundle\CoreBundle\Entity\Translation\TagCategoryTranslation;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -24,8 +25,7 @@ class LoadTagCategoryData implements FixtureInterface
             ->setName('Default category')
             ->setSlug('default');
 
-        $repository = $manager->getRepository('Gedmo\Translatable\Entity\Translation');
-        $repository->translate($defaultCategory, 'name', 'fr', 'Catégorie par défaut');
+        $defaultCategory->addTranslation(new TagCategoryTranslation('fr', 'name', 'Catégorie par défaut'));
 
         $manager->persist($defaultCategory);
 

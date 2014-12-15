@@ -2,12 +2,15 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Entity;
 
+use Bigfoot\Bundle\CoreBundle\Entity\Translation\TagCategoryTranslation;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * TagCategory
  *
+ * @Gedmo\TranslationEntity(class="Bigfoot\Bundle\CoreBundle\Entity\Translation\TagCategoryTranslation")
  * @ORM\Table(name="bigfoot_tag_category")
  * @ORM\Entity(repositoryClass="Bigfoot\Bundle\CoreBundle\Entity\TagCategoryRepository")
  */
@@ -42,6 +45,20 @@ class TagCategory
      * @Gedmo\Locale
      */
     private $locale;
+
+    /**
+     * @ORM\OneToMany(
+     *   targetEntity="Bigfoot\Bundle\CoreBundle\Entity\Translation\TagCategoryTranslation",
+     *   mappedBy="object",
+     *   cascade={"persist", "remove"}
+     * )
+     */
+    private $translations;
+
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+    }
 
     /**
      * @return string
@@ -113,5 +130,24 @@ class TagCategory
     public function setTranslatableLocale($locale)
     {
         $this->locale = $locale;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param TagCategoryTranslation $t
+     */
+    public function addTranslation(TagCategoryTranslation $t)
+    {
+        if (!$this->translations->contains($t)) {
+            $this->translations[] = $t;
+            $t->setObject($this);
+        }
     }
 }
