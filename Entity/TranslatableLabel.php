@@ -9,6 +9,7 @@ use Symfony\Component\Translation\MessageSelector;
 
 /**
  * Class TranslatableLabel
+ *
  * @Gedmo\TranslationEntity(class="Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation")
  * @ORM\Entity(repositoryClass="Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository")
  * @ORM\Table(name="bigfoot_translatable_label", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name", columns={"name", "domain"})})
