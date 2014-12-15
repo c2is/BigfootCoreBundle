@@ -64,9 +64,9 @@ class BaseController extends Controller
      *
      * @return boolean
      */
-    protected function isGranted($role)
+    protected function isGranted($attributes, $object = null)
     {
-        return $this->getSecurity()->isGranted($role);
+        return $this->container->get('security.authorization_checker')->isGranted($attributes, $object);
     }
 
     /**

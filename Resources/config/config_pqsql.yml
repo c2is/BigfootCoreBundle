@@ -11,5 +11,5 @@ doctrine:
                 radians: Bigfoot\Bundle\CoreBundle\ORM\Radians
             string_functions:
                 regexp:          Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\Regexp
-                substring_index: Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\SubstringIndex
+                substring_index: Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\PgSQL\SubstringIndex
                 greatest:        Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\Greatest

@@ -2,13 +2,16 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Entity;
 
+use Bigfoot\Bundle\CoreBundle\Entity\Translation\WidgetTranslation;
 use Bigfoot\Bundle\CoreBundle\WidgetInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Widget
  *
+ * @Gedmo\TranslationEntity(class="Bigfoot\Bundle\CoreBundle\Entity\Translation\WidgetTranslation")
  * @ORM\Table(name="widget_backoffice")
  * @ORM\Entity
  */
@@ -49,6 +52,21 @@ class Widget
     private $locale;
 
     /**
+     * @ORM\OneToMany(
+     *   targetEntity="Bigfoot\Bundle\CoreBundle\Entity\Translation\WidgetTranslation",
+     *   mappedBy="object",
+     *   cascade={"persist", "remove"}
+     * )
+     */
+    private $translations;
+
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+        $this->parameters   = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -79,14 +97,6 @@ class Widget
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->parameters = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -151,5 +161,24 @@ class Widget
     public function setTranslatableLocale($locale)
     {
         $this->locale = $locale;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param WidgetTranslation $t
+     */
+    public function addTranslation(WidgetTranslation $t)
+    {
+        if (!$this->translations->contains($t)) {
+            $this->translations[] = $t;
+            $t->setObject($this);
+        }
     }
 }
