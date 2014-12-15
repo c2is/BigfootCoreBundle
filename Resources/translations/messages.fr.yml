@@ -73,7 +73,6 @@ bigfoot_core:
     menu:
         label:
             settings: "Paramètres globaux"
-        label:
             translations: "Traductions"
 
     settings:
