@@ -52,7 +52,7 @@ class TranslationRepository
         $persistDefaultLocaleTransInEntity = $listener->getPersistDefaultLocaleTranslation();
         $entityClass                       = get_class($entity);
         $reflectionClass                   = new \ReflectionClass($entityClass);
-        $entityTranslationClass            = $this->reader->getClassAnnotation($reflectionClass, 'Gedmo\\Mapping\\Annotation\\TranslationEntity')->class;
+        $entityTranslationClass            = $this->isPersonnalTranslationRecursive($reflectionClass)->class;
 
         if ($locale === $listener->getTranslatableLocale($entity, $meta)) {
             $meta->getReflectionProperty($field)->setValue($entity, $fieldData);
@@ -110,5 +110,23 @@ class TranslationRepository
         }
 
         return $this->listener;
+    }
+
+    /**
+     * @param \ReflectionClass $class
+     * @return bool|null|object
+     */
+    public function isPersonnalTranslationRecursive(\ReflectionClass $class)
+    {
+        $annotationReader = $this->reader;
+        if ($nodeableAnnotation = $annotationReader->getClassAnnotation($class, 'Gedmo\\Mapping\\Annotation\\TranslationEntity')) {
+            return $nodeableAnnotation;
+        }
+
+        if ($parentClass = $class->getParentClass()) {
+            return $this->isPersonnalTranslationRecursive($parentClass);
+        }
+
+        return false;
     }
 }

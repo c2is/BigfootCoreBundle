@@ -142,7 +142,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $locales            = $this->localeList;
 
             $reflectionClass  = new \ReflectionClass($entityClass);
-            $gedmoAnnotations = $this->annotationReader->getClassAnnotation($reflectionClass, 'Gedmo\\Mapping\\Annotation\\TranslationEntity');
+            $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
 
             if($gedmoAnnotations !== null && $gedmoAnnotations->class != '') {
                 $repository = $this->translationRepository;
@@ -216,5 +216,23 @@ class TranslationSubscriber implements EventSubscriberInterface
         }
 
         return $translatableFields;
+    }
+
+    /**
+     * @param \ReflectionClass $class
+     * @return bool|null|object
+     */
+    public function isPersonnalTranslationRecursive(\ReflectionClass $class)
+    {
+        $annotationReader = $this->annotationReader;
+        if ($nodeableAnnotation = $annotationReader->getClassAnnotation($class, 'Gedmo\\Mapping\\Annotation\\TranslationEntity')) {
+            return $nodeableAnnotation;
+        }
+
+        if ($parentClass = $class->getParentClass()) {
+            return $this->isPersonnalTranslationRecursive($parentClass);
+        }
+
+        return false;
     }
 }
