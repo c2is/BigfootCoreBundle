@@ -104,6 +104,7 @@ services:
     bigfoot_core.crud.formatter.loader:
         class: %bigfoot.crud.formatter.loader.class%
     bigfoot_core.crud.formatter.date:
+        arguments: [ %bigfoot_core.date_format% ]
         class: %bigfoot.crud.formatter.date.class%
         tags:
             - { name: bigfoot.crud.formatter, alias: date }

@@ -6,9 +6,10 @@ interface FormatterInterface
 {
     /**
      * @param $value
+     * @param $options
      * @return string
      */
-    public function format($value);
+    public function format($value, $options = null);
 
     /**
      * @return string
