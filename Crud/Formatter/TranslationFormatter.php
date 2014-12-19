@@ -23,9 +23,10 @@ class TranslationFormatter implements FormatterInterface
 
     /**
      * @param $value
+     * @param $options
      * @return string
      */
-    public function format($value)
+    public function format($value, $options = null)
     {
         return $this->translator->trans($value);
     }

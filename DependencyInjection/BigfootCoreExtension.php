@@ -40,6 +40,7 @@ class BigfootCoreExtension extends Extension
         $container->setParameter('bigfoot_core.mailer.from', $config['mailer']['from']);
         $container->setParameter('bigfoot_core.languages.back', $config['languages']['back']);
         $container->setParameter('bigfoot_core.languages.front', $config['languages']['front']);
+        $container->setParameter('bigfoot_core.date_format', $config['date_format']);
 
         $router = $container->getDefinition('bigfoot_core.cmf_routing.router');
 
