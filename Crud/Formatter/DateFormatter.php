@@ -21,16 +21,16 @@ class DateFormatter implements FormatterInterface
 
     /**
      * @param $value
-     * @param $options
+     * @param array $options
      * @return string
      */
-    public function format($value, $options = null)
+    public function format($value, array $options = array())
     {
         if (!$value instanceof \DateTime) {
             return $value;
         }
 
-        if (is_array($options) && array_key_exists('format', $options)) {
+        if (array_key_exists('format', $options)) {
             return $value->format($options['format']);
         }
 
