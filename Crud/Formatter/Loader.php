@@ -26,11 +26,17 @@ class Loader
      */
     public function applyFormatters($value, $formattersToCall)
     {
-        foreach ($formattersToCall as $formatterToCall) {
+        foreach ($formattersToCall as $key => $options) {
+            if (is_array($options)) {
+                $formatterToCall = $key;
+            } else {
+                $formatterToCall = $options;
+                $options = null;
+            }
             /** @var FormatterInterface $formatter */
             foreach ($this->formatters as $formatterName => $formatter) {
                 if ($formatterName == $formatterToCall) {
-                    $value = $formatter->format($value);
+                    $value = $formatter->format($value, $options);
                     break;
                 }
             }
