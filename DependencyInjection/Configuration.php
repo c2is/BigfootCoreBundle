@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('theme')->defaultNull()->end()
+                ->scalarNode('date_format')->defaultValue("d/m/Y")->end()
                 ->arrayNode('mailer')
                     ->children()
                         ->scalarNode('from')->end()
