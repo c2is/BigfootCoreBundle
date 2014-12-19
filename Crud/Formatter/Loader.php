@@ -31,7 +31,7 @@ class Loader
                 $formatterToCall = $key;
             } else {
                 $formatterToCall = $options;
-                $options = null;
+                $options = array();
             }
             /** @var FormatterInterface $formatter */
             foreach ($this->formatters as $formatterName => $formatter) {
