@@ -14,6 +14,11 @@ class DateFormatter implements FormatterInterface
      */
     private $dateFormat;
 
+    /**
+     * Constructor
+     *
+     * @param String $dateFormat
+     */
     public function __construct($dateFormat)
     {
         $this->dateFormat = $dateFormat;
