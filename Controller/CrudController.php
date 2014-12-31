@@ -354,7 +354,7 @@ abstract class CrudController extends BaseController
      *
      * @return Query
      */
-    private function getQuery()
+    protected function getQuery()
     {
         $entityClass = ltrim($this->getEntityClass(), '\\');
         $entityName  = $this->getEntityName();
