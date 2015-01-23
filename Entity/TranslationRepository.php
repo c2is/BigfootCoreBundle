@@ -2,6 +2,8 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Entity;
 
+use Bigfoot\Bundle\CoreBundle\Exception\InvalidArgumentException;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Gedmo\Translatable\TranslatableListener;
@@ -43,6 +45,7 @@ class TranslationRepository
      * @param string $field
      * @param string $locale
      * @param mixed $fieldData
+     * @throws \Bigfoot\Bundle\CoreBundle\Exception\InvalidArgumentException
      */
     public function translate($entity, $field, $locale, $fieldData)
     {
@@ -50,7 +53,13 @@ class TranslationRepository
         $meta                              = $em->getClassMetadata(get_class($entity));
         $listener                          = $this->getTranslatableListener();
         $persistDefaultLocaleTransInEntity = $listener->getPersistDefaultLocaleTranslation();
-        $entityClass                       = get_class($entity);
+
+        if (is_object($entity)) {
+            $entityClass = ($entity instanceof Proxy) ? get_parent_class($entity) : get_class($entity);
+        } else {
+            throw new InvalidArgumentException('Argument 1 passed to TranslationRepository::translate must be an object');
+        }
+
         $reflectionClass                   = new \ReflectionClass($entityClass);
         $entityTranslationClass            = $this->isPersonnalTranslationRecursive($reflectionClass)->class;
 
