@@ -62,7 +62,7 @@ EOT
         $repo = $em->getRepository('BigfootCoreBundle:TranslatableLabel');
         /** @var ProgressHelper $progress */
         $progress = $this->getHelperSet()->get('progress');
-        $transRepo = new TranslationRepository($em, $this->getContainer()->get('annotation_reader'));
+        $transRepo = $this->getContainer()->get('bigfoot_core.translation.repository');
         /** @var ContextService $context */
         $context = $this->getContainer()->get('bigfoot_context');
         $locales = array_keys($context->getValues('language'));
