@@ -4,15 +4,13 @@ twig:
 
 doctrine:
     orm:
-        entity_managers:
-            bigfoot:
-                dql:
-                    numeric_functions:
-                        acos:    Bigfoot\Bundle\CoreBundle\ORM\Acos
-                        cos:     Bigfoot\Bundle\CoreBundle\ORM\Cos
-                        sin:     Bigfoot\Bundle\CoreBundle\ORM\Sin
-                        radians: Bigfoot\Bundle\CoreBundle\ORM\Radians
-                    string_functions:
-                        regexp:          Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\Regexp
-                        substring_index: Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\SubstringIndex
-                        greatest:        Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\Greatest
+        dql:
+            numeric_functions:
+                acos:    Bigfoot\Bundle\CoreBundle\ORM\Acos
+                cos:     Bigfoot\Bundle\CoreBundle\ORM\Cos
+                sin:     Bigfoot\Bundle\CoreBundle\ORM\Sin
+                radians: Bigfoot\Bundle\CoreBundle\ORM\Radians
+            string_functions:
+                regexp:          Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\Regexp
+                substring_index: Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\SubstringIndex
+                greatest:        Bigfoot\Bundle\CoreBundle\ORM\Doctrine\Query\MySQL\Greatest
