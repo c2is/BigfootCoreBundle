@@ -144,7 +144,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $reflectionClass  = new \ReflectionClass($entityClass);
             $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
 
-            if($gedmoAnnotations !== null && $gedmoAnnotations->class != '') {
+            if($gedmoAnnotations && is_object($gedmoAnnotations) && $gedmoAnnotations->class != '') {
                 $repository = $this->translationRepository;
             } else {
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
