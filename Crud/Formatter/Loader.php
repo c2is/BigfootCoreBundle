@@ -20,11 +20,11 @@ class Loader
     }
 
     /**
-     * @param $value
-     * @param array $formatters
+     * @param string $value
+     * @param array $formattersToCall
      * @return string
      */
-    public function applyFormatters($value, $formattersToCall)
+    public function applyFormatters($value, array $formattersToCall = array())
     {
         foreach ($formattersToCall as $key => $options) {
             if (is_array($options)) {
