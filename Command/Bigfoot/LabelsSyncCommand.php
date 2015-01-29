@@ -77,77 +77,80 @@ EOT
             $fileName = pathinfo($file, PATHINFO_FILENAME);
             $content = Yaml::parse($file);
 
-            $nbTranslations = count($content);
-            $output->writeln(sprintf(' > <comment>Importing file %s with %s translations</comment>', $fileName, $nbTranslations));
-            $progress->start($output, $nbTranslations);
+            if ($content) {
+                $nbTranslations = count($content);
+                $output->writeln(sprintf(' > <comment>Importing file %s with %s translations</comment>', $fileName, $nbTranslations));
+                $progress->start($output, $nbTranslations);
 
-            foreach ($content as $name => $translation) {
-                if (substr_count($fileName, '.') == 1) {
-                    $name = $fileName.'.'.$name;
-                }
+                foreach ($content as $name => $translation) {
+                    if (substr_count($fileName, '.') == 1) {
+                        $name = $fileName.'.'.$name;
+                    }
 
-                $domain = isset($translation['domain']) && $translation['domain'] ? $translation['domain'] : 'messages';
-                $label = $repo->findOneBy(array('name' => $name, 'domain' => $domain));
-                if (!$label) {
-                    $label = new TranslatableLabel();
-                    $label->setName($name);
-                    $label->setDomain($domain);
-                }
+                    $domain = isset($translation['domain']) && $translation['domain'] ? $translation['domain'] : 'messages';
+                    $label = $repo->findOneBy(array('name' => $name, 'domain' => $domain));
+                    if (!$label) {
+                        $label = new TranslatableLabel();
+                        $label->setName($name);
+                        $label->setDomain($domain);
+                    }
 
-                if (isset($translation['description'])) {
-                    if (is_array($translation['description'])) {
-                        foreach ($translation['description'] as $locale => $description) {
+                    if (isset($translation['description'])) {
+                        if (is_array($translation['description'])) {
+                            foreach ($translation['description'] as $locale => $description) {
+                                if ($locale == $defaultLocale) {
+                                    $label->setDescription($description);
+                                } else {
+                                    $label->addTranslation(new TranslatableLabelTranslation($locale, 'description', $description));
+                                }
+                            }
+                        } else {
+                            $label->setDescription($translation['description']);
+                        }
+                    }
+
+                    if (isset($translation['plural'])) {
+                        $label->setPlural((boolean) $translation['plural']);
+                    }
+
+                    if (isset($translation['multiline'])) {
+                        $label->setMultiline((boolean) $translation['multiline']);
+                    }
+
+                    if (isset($translation['value']) && ($overwrite || !$label->getId())) {
+                        if (!is_array($translation['value'])) {
+                            $translation['value'] = array($defaultLocale => $translation['value']);
+                        }
+
+                        foreach ($locales as $locale) {
+                            $value = '';
+                            if (isset($translation['value'][$locale])) {
+                                $value = $translation['value'][$locale];
+                            }
+
                             if ($locale == $defaultLocale) {
-                                $label->setDescription($description);
+                                $label->setValue($value);
+                            } elseif ($label->getId()) {
+                                $transRepo->translate($label, 'value', $locale, $value);
                             } else {
-                                $label->addTranslation(new TranslatableLabelTranslation($locale, 'description', $description));
+                                $label->addTranslation(new TranslatableLabelTranslation($locale, 'value', $value));
                             }
                         }
-                    } else {
-                        $label->setDescription($translation['description']);
-                    }
-                }
-
-                if (isset($translation['plural'])) {
-                    $label->setPlural((boolean) $translation['plural']);
-                }
-
-                if (isset($translation['multiline'])) {
-                    $label->setMultiline((boolean) $translation['multiline']);
-                }
-
-                if (isset($translation['value']) && ($overwrite || !$label->getId())) {
-                    if (!is_array($translation['value'])) {
-                        $translation['value'] = array($defaultLocale => $translation['value']);
                     }
 
-                    foreach ($locales as $locale) {
-                        $value = '';
-                        if (isset($translation['value'][$locale])) {
-                            $value = $translation['value'][$locale];
-                        }
-
-                        if ($locale == $defaultLocale) {
-                            $label->setValue($value);
-                        } elseif ($label->getId()) {
-                            $transRepo->translate($label, 'value', $locale, $value);
-                        } else {
-                            $label->addTranslation(new TranslatableLabelTranslation($locale, 'value', $value));
-                        }
+                    $em->persist($label);
+                    if (0 == $i % 100) {
+                        $em->flush();
+                        $em->clear();
                     }
+                    $processedLabels[] = $name.'-'.$domain;
+
+                    $progress->advance();
+                    $i++;
                 }
 
-                $em->persist($label);
-                if (0 == $i % 100) {
-                    $em->flush();
-                    $em->clear();
-                }
-                $processedLabels[] = $name.'-'.$domain;
-
-                $progress->advance();
-                $i++;
+                $progress->finish();
             }
-            $progress->finish();
         }
         $em->flush();
 
