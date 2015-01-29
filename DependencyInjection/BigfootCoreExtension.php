@@ -40,6 +40,6 @@ class BigfootCoreExtension extends Extension
         $container->setParameter('bigfoot_core.languages.back', $config['languages']['back']);
         $container->setParameter('bigfoot_core.languages.front', $config['languages']['front']);
         $container->setParameter('bigfoot_core.date_format', $config['date_format']);
-        $container->setParameter('bigfoot.secure', $config['secure'] ? 'https' : 'http');
+        $container->setParameter('bigfoot.scheme', $config['secure'] ? 'https' : 'http');
     }
 }
