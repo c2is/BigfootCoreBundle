@@ -1,5 +1,0 @@
-bigfoot_core:
-    resource: "@BigfootCoreBundle/Controller/"
-    type:     annotation
-    prefix:   /admin
-    schemes: [ %bigfoot.scheme% ]
