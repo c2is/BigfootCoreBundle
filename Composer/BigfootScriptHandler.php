@@ -47,6 +47,7 @@ class BigfootScriptHandler extends ScriptHandler
             return;
         }
 
-        static::executeCommand($event, $appDir, 'bigfoot:assets:install '.$symlink.escapeshellarg($webDir));
+        static::executeCommand($event, $appDir, 'assets:install '.$symlink.escapeshellarg($webDir));
+        static::executeCommand($event, $appDir, 'assetic:dump --env=admin_dev');
     }
 }

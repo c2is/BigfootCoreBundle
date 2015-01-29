@@ -29,10 +29,9 @@ class AssetsInstallCommand extends BaseCommand
             ))
             ->addOption('symlink', null, InputOption::VALUE_NONE, 'Symlinks the assets instead of copying it')
             ->addOption('relative', null, InputOption::VALUE_NONE, 'Make relative symlinks')
-            ->setDescription('Installs assets for the configured bigfoot theme into target/admin then runs the sf2 assets:install command.')
+            ->setDescription('Deprecated : should not be used anymore. Will be removed in bigfoot 3.1')
             ->setHelp(<<<EOT
-The <info>%command.name%</info> command runs the bigfoot:theme:install and assets:install commands, passing over the target, symlink, and relative options.
-See those commands descriptions for more information.
+Deprecated : should not be used anymore. Will be removed in bigfoot 3.1
 EOT
             )
         ;
@@ -45,18 +44,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $target   = $input->getArgument('target');
-        $symlink  = $input->getOption('symlink');
-        $relative = $input->getOption('relative');
 
-        $input = new ArrayInput(array(
-            'target'     => $target,
-            '--symlink'  => $symlink,
-            '--relative' => $relative,
-        ));
-
-        $this->runCommand('bigfoot:theme:install', $input, $output);
-        $this->runCommand('assets:install', $input, $output);
     }
 
     protected function runCommand($name, ArrayInput $input, OutputInterface $output)
