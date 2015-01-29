@@ -37,7 +37,7 @@ class FormatterExtension extends \Twig_Extension
      * @param array $formatters
      * @return string
      */
-    public function format($value, $formatters)
+    public function format($value, $formatters = array())
     {
         return $this->loader->applyFormatters($value, $formatters);
     }
