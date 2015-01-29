@@ -33,7 +33,7 @@ class FormatterExtension extends \Twig_Extension
     }
 
     /**
-     * @param string $value
+     * @param $value
      * @param array $formatters
      * @return string
      */
