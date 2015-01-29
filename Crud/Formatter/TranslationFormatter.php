@@ -22,8 +22,8 @@ class TranslationFormatter implements FormatterInterface
     }
 
     /**
-     * @param $value
-     * @param $options
+     * @param string $value
+     * @param array $options
      * @return string
      */
     public function format($value, array $options = array())
