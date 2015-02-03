@@ -84,41 +84,49 @@ class TranslationSubscriber implements EventSubscriberInterface
         $form               = $event->getForm();
         $parentForm         = $form->getParent();
         $parentData         = $parentForm->getData();
-        $entityClass        = get_class($parentData);
-        $translatableFields = $this->getTranslatableFields($entityClass);
-        $propertyAccessor   = PropertyAccess::createPropertyAccessor();
 
-        $translations = array();
-        if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
-            $translations = array();
-
-            foreach ($locales as $locale => $localeConfig) {
-                $localeValues = array();
-                $parentData->setTranslatableLocale($locale);
-                $em->refresh($parentData);
-                foreach ($translatableFields as $fieldName => $fieldType) {
-                    $localeValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
-                }
-
-                $translations[$locale] = $localeValues;
-            }
-
-            $parentData->setTranslatableLocale($this->getLocale());
-            $em->refresh($parentData);
+        if ($parentData) {
+            $entityClass = get_class($parentData);
+        } else {
+            $entityClass = $parentForm->getConfig()->getDataClass();
         }
 
-        unset($locales[$this->getLocale()]);
-        foreach ($locales as $locale => $localeConfig) {
-            foreach ($translatableFields as $fieldName => $fieldType) {
-                $data = '';
-                if (isset($translations[$locale][$fieldName])) {
-                    $data = $translations[$locale][$fieldName];
+        if ($entityClass) {
+            $translatableFields = $this->getTranslatableFields($entityClass);
+            $propertyAccessor   = PropertyAccess::createPropertyAccessor();
+
+            $translations = array();
+            if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
+                $translations = array();
+
+                foreach ($locales as $locale => $localeConfig) {
+                    $localeValues = array();
+                    $parentData->setTranslatableLocale($locale);
+                    $em->refresh($parentData);
+                    foreach ($translatableFields as $fieldName => $fieldType) {
+                        $localeValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
+                    }
+
+                    $translations[$locale] = $localeValues;
                 }
 
-                if ($parentForm->has($fieldName)) {
-                    $fieldType = $parentForm->get($fieldName)->getConfig()->getType()->getInnerType();
-                    $fieldAttr = $parentForm->get($fieldName)->getConfig()->getOption('attr');
-                    $form->add(sprintf('%s-%s', $fieldName, $locale), $fieldType, array('data' => $data, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $fieldName, 'data-locale' => $locale))));
+                $parentData->setTranslatableLocale($this->getLocale());
+                $em->refresh($parentData);
+            }
+
+            unset($locales[$this->getLocale()]);
+            foreach ($locales as $locale => $localeConfig) {
+                foreach ($translatableFields as $fieldName => $fieldType) {
+                    $data = '';
+                    if (isset($translations[$locale][$fieldName])) {
+                        $data = $translations[$locale][$fieldName];
+                    }
+
+                    if ($parentForm->has($fieldName)) {
+                        $fieldType = $parentForm->get($fieldName)->getConfig()->getType()->getInnerType();
+                        $fieldAttr = $parentForm->get($fieldName)->getConfig()->getOption('attr');
+                        $form->add(sprintf('%s-%s', $fieldName, $locale), $fieldType, array('data' => $data, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $fieldName, 'data-locale' => $locale))));
+                    }
                 }
             }
         }
