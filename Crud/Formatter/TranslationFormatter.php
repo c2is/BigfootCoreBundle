@@ -10,7 +10,7 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class TranslationFormatter implements FormatterInterface
 {
-    /** @var \Symfony\Component\Translation\Translator */
+    /** @var \Symfony\Component\Translation\TranslatorInterface */
     private $translator;
 
     /**
