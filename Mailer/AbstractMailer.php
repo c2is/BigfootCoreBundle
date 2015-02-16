@@ -3,7 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Mailer;
 
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Doctrine\ORM\EntityManager;
 
 abstract class AbstractMailer
@@ -44,7 +44,7 @@ abstract class AbstractMailer
         return $this->templating;
     }
 
-    public function setTranslator(Translator $translator)
+    public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
