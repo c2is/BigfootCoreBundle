@@ -33,6 +33,16 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onEarlyKernelRequest, priority: 50 }
             - { name: kernel.event_listener, event: kernel.request, method: onLateKernelRequest , priority: -50 }
 
+    bigfoot_core.doctrine_listener:
+        class: Bigfoot\Bundle\CoreBundle\Listener\DoctrineListener
+        tags:
+            - { name: doctrine.event_listener, event: preFlush }
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: postRemove }
+        calls:
+            - [ setContainer,[ @service_container ] ]
+
     # Kernel Listener
     bigfoot_core.translatable_subscriber:
         class: Bigfoot\Bundle\CoreBundle\Form\EventListener\TranslationSubscriber
@@ -135,6 +145,12 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\CollectionItemType
         tags:
             - { name: form.type, alias: bigfoot_collection_item }
+    # File type
+    bigfoot.form.type.file:
+        class: Bigfoot\Bundle\CoreBundle\Form\Type\FileType
+        tags:
+            - { name: form.type, alias: bigfoot_file }
+
     # Allows translations to be stored in database
     bigfoot.translation.database_loader:
         class: Bigfoot\Bundle\CoreBundle\Translation\DatabaseLoader
@@ -168,6 +184,12 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Twig\Crud\FormatterExtension
         arguments:
             - @bigfoot_core.crud.formatter.loader
+        tags:
+            - { name: twig.extension }
+    bigfoot_core.twig.file_extension:
+        class: Bigfoot\Bundle\CoreBundle\Twig\FileExtension
+        arguments:
+            - @bigfoot_core.manager.file_manager
         tags:
             - { name: twig.extension }
 
@@ -305,3 +327,11 @@ services:
             - { name: router, priority: 200 }
         calls:
             - [setRequest, ['@?request=']]
+
+    # FileUploadManager
+    bigfoot_core.manager.file_manager:
+        class: Bigfoot\Bundle\CoreBundle\Manager\FileManager
+        arguments:
+            - @doctrine.orm.entity_manager
+        calls:
+            - [ setContainer,[ @service_container ] ]

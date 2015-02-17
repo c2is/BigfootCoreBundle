@@ -6,6 +6,9 @@ bigfoot_core:
             delete:
                 label: "Suppression"
                 confirm: "Êtes-vous sûr ? Le %entity% sera supprimé de manière permanente."
+            delete_file:
+                label: "Supprimer le fichier"
+                confirm: "Êtes-vous sûr ? Le fichier %file% sera supprimé de manière permanente."
             new:
                 label: "Création"
             duplicate:
@@ -14,6 +17,10 @@ bigfoot_core:
             confirm: "L'entité a été supprimée."
             errors:
                 not_found: "L'entité %entity% n'a pas pu être trouvée"
+        delete_file:
+            confirm: "Le fichier a été supprimé."
+            errors:
+                not_found: "La propriété %property% n'existe pas sur la class %class%"
         edit:
             title: "Edition de %entity%"
             errors:
@@ -71,6 +78,8 @@ bigfoot_core:
             confirm: "Le %entity% a été mis à jour."
         delete:
             confirm: "Le %entity% a été supprimé."
+        delete_file:
+            confirm: "Le fichier a été supprimé."
         duplicate:
             confirm: "Le %entity% a été dupliqué."
 

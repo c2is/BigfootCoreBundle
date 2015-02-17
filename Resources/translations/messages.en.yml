@@ -6,6 +6,9 @@ bigfoot_core:
             delete:
                 label: "Delete"
                 confirm: "Are you sure ? The %entity% will be permanently deleted."
+            delete_file:
+                label: "Delete file"
+                confirm: "Are you sure ? The file %file% will be permanently deleted."
             new:
                 label: "Create"
             duplicate:
@@ -14,6 +17,10 @@ bigfoot_core:
             confirm: "The entity has beed deleted."
             errors:
                 not_found: "Unable to find %entity% entity"
+        delete_file:
+            confirm: "The file has beed deleted."
+            errors:
+                not_found: "Property %property% does not exist on %class%"
         edit:
             title: "Editing %entity%"
             errors:
@@ -71,6 +78,8 @@ bigfoot_core:
             confirm: "The %entity% has been updated."
         delete:
             confirm: "The %entity% has been deleted."
+        delete_file:
+            confirm: "The file has been deleted."
         duplicate:
             confirm: "The %entity% has been duplicated."
 

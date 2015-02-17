@@ -562,6 +562,56 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * Helper deleting a file through file system.
+     *
+     * Redirects to the entity form.
+     *
+     * @param Request $request
+     * @param $id
+     * @param $property
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If $property does not exist on entity's class.
+     * @throws \Exception If $property setter does not exists on class
+     */
+    protected function doDeleteFile(Request $request, $id, $property)
+    {
+        $entity = $this->getRepository($this->getEntity())->find($id);
+
+        if (!$entity) {
+            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete.errors.not_found', array('%entity%', $this->getEntity())));
+        }
+
+        $reflClass = new \ReflectionClass(get_class($entity));
+        if (!$reflClass->hasProperty($property)) {
+            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete_file.errors.not_found', array('%property%' => $property, '%class' => get_class($entity))));
+        }
+
+        $setFileFunction = 'set'.ucfirst($property);
+        if (!method_exists($entity, $setFileFunction)) {
+            throw new \Exception('The method '.$setFileFunction.' does not exist on '.get_class($entity).' class');
+        }
+
+        $fileManager = $this->container->get('bigfoot_core.manager.file_manager');
+        $fileManager->initialize($entity, $property);
+        $file = $fileManager->getFileAbsolutePath();
+        if ($file && file_exists($file)) {
+            unlink($file);
+            $entity->$setFileFunction(null);
+            $this->persistAndFlush($entity);
+        }
+
+        if (!$request->isXmlHttpRequest()) {
+            $this->addSuccessFlash('bigfoot_core.flash.delete_file.confirm');
+
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
+        } else {
+            return $this->renderAjax(true, $this->getTranslator()->trans('bigfoot_core.delete_file.confirm'));
+        }
+    }
+
+    /**
      * Helper duplicate an entity through Doctrine.
      *
      * Redirects to the index action.
