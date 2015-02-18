@@ -96,7 +96,7 @@ class FileManager extends ContainerAware
                     }
                 }
 
-                $this->entity->$setRelatedPropertyFunction(sha1(uniqid(mt_rand(), true)).'_'.str_replace(' ', '-', $this->entity->$getPropertyFunction()->getClientOriginalName()));
+                $this->entity->$setRelatedPropertyFunction(uniqid().'_'.self::sanityzeName($this->entity->$getPropertyFunction()->getClientOriginalName()));
             }
         } else {
             throw new \Exception("Methods '".$getPropertyFunction."' and '".$setRelatedPropertyFunction."' and '".$getRelatedPropertyFunction."' should be defined on '".get_class($this->entity)."' class");
@@ -180,5 +180,25 @@ class FileManager extends ContainerAware
         } else {
             throw new \Exception("Methods '".$getRelatedPropertyFunction." should be defined on '".get_class($this->entity)."' class");
         }
+    }
+
+    static public function sanityzeName($text)
+    {
+      // replace non letter or digits by -
+      $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
+
+      // trim
+      $text = trim($text, '-');
+
+      // transliterate
+      $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+      // lowercase
+      $text = strtolower($text);
+
+      // remove unwanted characters
+      $text = preg_replace('~[^-\w]+~', '', $text);
+
+      return $text;
     }
 }
