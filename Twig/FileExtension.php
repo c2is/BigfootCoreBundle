@@ -52,6 +52,6 @@ class FileExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'bigfoot_crud_formatter';
+        return 'bigfoot_file_filter';
     }
 }
