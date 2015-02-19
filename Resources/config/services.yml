@@ -39,7 +39,6 @@ services:
             - { name: doctrine.event_listener, event: preFlush }
             - { name: doctrine.event_listener, event: postPersist }
             - { name: doctrine.event_listener, event: postUpdate }
-            - { name: doctrine.event_listener, event: postRemove }
         calls:
             - [ setContainer,[ @service_container ] ]
 
