@@ -78,14 +78,6 @@ class DoctrineListener extends ContainerAware
         }
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postRemove(LifecycleEventArgs $args)
-    {
-        die('ok');
-    }
-
     private function getBigfootFileFields($entity)
     {
         $reader            = new AnnotationReader();
