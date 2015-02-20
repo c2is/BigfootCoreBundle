@@ -596,7 +596,7 @@ abstract class CrudController extends BaseController
         $fileManager = $this->getFileManager();
         $file = $fileManager->getFileAbsolutePath($entity, $property);
         if ($file && file_exists($file)) {
-            unlink($file);
+            $fileManager->deleteFile($entity, $property);
             $entity->$setFileFunction(null);
             $this->persistAndFlush($entity);
         }
