@@ -27,8 +27,6 @@ class FileType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        var_dump($options);
-        var_dump($builder->getForm());die;
         if (!isset($options['filePathProperty']) || !$options['filePathProperty']) {
             throw new \Exception('BigfootFileType needs the options filePathProperty to be defined');
         }

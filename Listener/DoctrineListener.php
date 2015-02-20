@@ -73,6 +73,19 @@ class DoctrineListener
     /**
      * @param LifecycleEventArgs $args
      */
+    public function postRemove(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+
+        $bigfootFileFields = $this->getBigfootFileFields($entity);
+        foreach ($bigfootFileFields as $bigfootFileField) {
+            $this->fileManager->deleteFile($entity, $bigfootFileField['filePathProperty']);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
     private function upload(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();

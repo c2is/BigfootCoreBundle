@@ -125,6 +125,23 @@ class FileManager extends ContainerAware
     }
 
     /**
+     * Delete file
+     * @param  Entity $entity
+     * @param  string $pathProperty
+     * @return boolean
+     */
+    public function deleteFile($entity, $pathProperty)
+    {
+        $file = $this->getFileAbsolutePath($entity, $pathProperty);
+
+        if ($file && file_exists($file) && !is_dir($file)) {
+            return unlink($file);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Escape text in order to get proper file names
      * @param  string $text
      * @return string
