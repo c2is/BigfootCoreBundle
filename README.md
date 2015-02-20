@@ -61,3 +61,70 @@ bigfoot_core:
             router.default :     300
             bigfoot_core.router: 400
 ```
+
+### BigfootFile annotation :
+BigfootFile uses symfony's file upload system with its 2 properties for one file.
+
+**@Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File** : apply this annotation on the property that represents the form field. Use its *filePathProperty
+filePathProperty* option (required) to connect the other property.
+
+Exemple :
+
+``` php
+<?php
+namespace Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot;
+
+/**
+ * @ORM\Table(name="items")
+ */
+class Item
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ORM\Column(name="path", type="string", length=255, nullable=true)
+     */
+    private $path
+
+    /**
+     * @Assert\File(maxSize="6000000")
+     * @Bigfoot\File(filePathProperty="path")
+     */
+    public $file;
+
+}
+```
+
+### Use it in your Form :
+
+``` php
+class ItemType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->add('file', 'bigfoot_file', array(
+            'required'         => false,
+            'label'            => 'Your file',
+            'filePathProperty' => 'path',
+            'deleteRoute'      => 'entity_delete_file'
+        ));
+    }
+}
+```
+
+If you don't define any deleteRoute, the deleteLink won't appear
+
+### Get the file in front :
+
+The second parameter defines whether or not the filter returns an absolute path

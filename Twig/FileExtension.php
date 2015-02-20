@@ -36,14 +36,12 @@ class FileExtension extends \Twig_Extension
      * @param strign $field
      * @return string
      */
-    public function bigfootFile($entity, $field, $absolute = false)
+    public function bigfootFile($entity, $filePathField, $absolute = false)
     {
-        $this->fileManager->initialize($entity, $field);
-
         if ($absolute === true) {
-            return $this->fileManager->getFileAbsolutePath();
+            return $this->fileManager->getFileAbsolutePath($entity, $filePathField);
         } else {
-            return $this->fileManager->getFilePath();
+            return $this->fileManager->getFilePath($entity, $filePathField);
         }
     }
 

@@ -39,8 +39,9 @@ services:
             - { name: doctrine.event_listener, event: preFlush }
             - { name: doctrine.event_listener, event: postPersist }
             - { name: doctrine.event_listener, event: postUpdate }
-        calls:
-            - [ setContainer,[ @service_container ] ]
+            - { name: doctrine.event_listener, event: postRemove }
+        arguments:
+            - @bigfoot_core.manager.file_manager
 
     # Kernel Listener
     bigfoot_core.translatable_subscriber:
@@ -330,7 +331,5 @@ services:
     # FileUploadManager
     bigfoot_core.manager.file_manager:
         class: Bigfoot\Bundle\CoreBundle\Manager\FileManager
-        arguments:
-            - @doctrine.orm.entity_manager
         calls:
             - [ setContainer,[ @service_container ] ]

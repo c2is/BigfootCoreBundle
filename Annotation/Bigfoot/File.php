@@ -11,23 +11,23 @@ use Doctrine\Common\Annotations\Annotation;
 class File
 {
     /** @var string */
-    private $relatedProperty;
+    private $filePathProperty;
 
     /**
      * @param array $options
      */
     public function __construct($options)
     {
-        if (isset($options['relatedProperty'])) {
-            $this->relatedProperty = $options['relatedProperty'];
+        if (isset($options['filePathProperty'])) {
+            $this->filePathProperty = $options['filePathProperty'];
         } else {
-            throw new \Exception('BigfootFileAnnotation : relatedProperty is a mandatory field');
+            throw new \Exception('BigfootFileAnnotation : filePathProperty is a mandatory field');
         }
     }
 
-    public function getRelatedProperty()
+    public function getFilePathProperty()
     {
-        return $this->relatedProperty;
+        return $this->filePathProperty;
     }
 
 
