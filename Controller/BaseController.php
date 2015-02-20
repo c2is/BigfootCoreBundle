@@ -239,6 +239,14 @@ class BaseController extends Controller
     }
 
     /**
+     * Get the file manager
+     */
+    protected function getFileManager()
+    {
+        return $this->get('bigfoot_core.manager.file_manager');
+    }
+
+    /**
      * Get the context repository
      * @return ContextRepository
      */

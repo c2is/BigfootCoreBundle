@@ -55,7 +55,8 @@ How to use bigfoot_file form type
 ### BigfootFile annotation :
 BigfootFile uses symfony's file upload system with its 2 properties for one file.
 
-**@Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File** : apply this annotation on the property that represents the form field. Use its *relatedProperty* option (required) to connect the other property.
+**@Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File** : apply this annotation on the property that represents the form field. Use its *filePathProperty
+filePathProperty* option (required) to connect the other property.
 
 Exemple :
 ``` php
@@ -87,10 +88,10 @@ class Item
 
     /**
      * @Assert\File(maxSize="6000000")
-     * @Bigfoot\File(relatedProperty="path")
+     * @Bigfoot\File(filePathProperty="path")
      */
     public $file;
-    
+
 }
 ```
 
@@ -101,10 +102,10 @@ class ItemType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('file', 'bigfoot_file', array(
-            'required'        => false,
-            'label'           => 'Your file',
-            'relatedProperty' => 'path',
-            'deleteRoute'     => 'entity_delete_file'
+            'required'         => false,
+            'label'            => 'Your file',
+            'filePathProperty' => 'path',
+            'deleteRoute'      => 'entity_delete_file'
         ));
     }
 }
@@ -117,4 +118,4 @@ Use the bigfoot_file Twig filter
 ```html+django
 {{ myentity|bigfoot_file('file', false) }}
 ```
-The second parameter defines whether or not the filter returns an absolute path 
+The second parameter defines whether or not the filter returns an absolute path

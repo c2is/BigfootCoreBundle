@@ -3,7 +3,6 @@
 namespace Bigfoot\Bundle\CoreBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -15,8 +14,16 @@ use Doctrine\ORM\EntityManager;
  * Class FileUploadListener
  * @package Bigfoot\Bundle\CoreBundle\Listener
  */
-class DoctrineListener extends ContainerAware
+class DoctrineListener
 {
+    /** @var Bigfoot\Bundle\CoreBundle\Manager\FileManager  */
+    private $fileManager;
+
+    public function __construct(FileManager $fileManager)
+    {
+        $this->fileManager = $fileManager;
+    }
+
     /**
      * @param PreFlushEventArgs $args
      */
@@ -42,9 +49,7 @@ class DoctrineListener extends ContainerAware
         foreach ($entities as $entity) {
             $bigfootFileFields = $this->getBigfootFileFields($entity);
             foreach ($bigfootFileFields as $bigfootFileField) {
-                $fileManager = $this->container->get('bigfoot_core.manager.file_manager');
-                $fileManager->initialize($entity, $bigfootFileField['relatedProperty'], $bigfootFileField['property']);
-                $fileManager->preUpload();
+                $this->fileManager->preUpload($entity, $bigfootFileField['filePathProperty'], $bigfootFileField['fileFieldProperty']);
             }
         }
     }
@@ -56,6 +61,7 @@ class DoctrineListener extends ContainerAware
     {
         $this->upload($args);
     }
+
     /**
      * @param LifecycleEventArgs $args
      */
@@ -72,9 +78,7 @@ class DoctrineListener extends ContainerAware
         $entity = $args->getEntity();
         $bigfootFileFields = $this->getBigfootFileFields($entity);
         foreach ($bigfootFileFields as $bigfootFileField) {
-            $fileManager = $this->container->get('bigfoot_core.manager.file_manager');
-            $fileManager->initialize($entity, $bigfootFileField['relatedProperty'], $bigfootFileField['property']);
-            $fileManager->upload();
+            $this->fileManager->upload($entity, $bigfootFileField['filePathProperty'], $bigfootFileField['fileFieldProperty']);
         }
     }
 
@@ -90,8 +94,8 @@ class DoctrineListener extends ContainerAware
             foreach ($classAnnotations as $annot) {
                 if ($annot instanceof \Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File) {
                     $bigfootFileFields[] = array(
-                        'property' => $property->getName(),
-                        'relatedProperty' => $annot->getRelatedProperty()
+                        'fileFieldProperty' => $property->getName(),
+                        'filePathProperty' => $annot->getFilePathProperty()
                     );
                 }
             }
