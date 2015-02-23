@@ -593,11 +593,10 @@ abstract class CrudController extends BaseController
             throw new \Exception('The method '.$setFileFunction.' does not exist on '.get_class($entity).' class');
         }
 
-        $fileManager = $this->container->get('bigfoot_core.manager.file_manager');
-        $fileManager->initialize($entity, $property);
-        $file = $fileManager->getFileAbsolutePath();
+        $fileManager = $this->getFileManager();
+        $file = $fileManager->getFileAbsolutePath($entity, $property);
         if ($file && file_exists($file)) {
-            unlink($file);
+            $fileManager->deleteFile($entity, $property);
             $entity->$setFileFunction(null);
             $this->persistAndFlush($entity);
         }

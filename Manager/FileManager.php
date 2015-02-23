@@ -18,88 +18,30 @@ use Doctrine\ORM\EntityManager;
 class FileManager extends ContainerAware
 {
     /**
-     * @var EntityManager
+     * File preUpload : delete old file if already exists and sets file name into $entity->$pathProperty
+     * @throws \Exception If $pathProperty or $fileFieldProperty getter and setter don't exist on class
      */
-    private $entityManager;
-
-    private $entity;
-
-    /**
-     * Property's name from the entity that correspond to the uploadedFile
-     * @var string
-     */
-    private $property;
-
-    /**
-     * Property's name from the entity that stores the actual filename
-     * @var string
-     */
-    private $relatedProperty;
-
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager $entityManager
-     */
-    public function __construct(EntityManager $entityManager)
+    public function preUpload($entity, $pathProperty, $fileFieldProperty)
     {
-        $this->entityManager = $entityManager;
-    }
+        $setFileFieldFunction = 'get'.ucfirst($fileFieldProperty);
+        $setPathFunction = 'set'.ucfirst($pathProperty);
+        $getPathFunction = 'get'.ucfirst($pathProperty);
 
-    /**
-     * [initialize description]
-     * @param  mixed $entity
-     * @param  string $relatedPropertyName
-     * @param  string $propertyName
-     */
-    public function initialize($entity, $relatedPropertyName, $propertyName = null)
-    {
-        $this->setEntity($entity);
-        $this->setProperty($propertyName);
-        $this->setRelatedProperty($relatedPropertyName);
-    }
+        if (method_exists($entity, $setFileFieldFunction) &&
+            method_exists($entity, $getPathFunction) &&
+            method_exists($entity, $setPathFunction )) {
+            if (null !== $entity->$setFileFieldFunction()) {
 
-    public function setEntity($entity)
-    {
-        $this->entity = $entity;
-    }
-
-    public function setProperty($property)
-    {
-        $this->property = $property;
-    }
-
-    public function setRelatedProperty($relatedProperty)
-    {
-        $this->relatedProperty = $relatedProperty;
-    }
-
-    /**
-     * File preUpload : delete old file if already exists and sets file name into $entity->$relatedProperty
-     * @throws \Exception If $property getter and setter do'nt exist on class
-     */
-    public function preUpload()
-    {
-        $getPropertyFunction = 'get'.ucfirst($this->property);
-        $setRelatedPropertyFunction = 'set'.ucfirst($this->relatedProperty);
-        $getRelatedPropertyFunction = 'get'.ucfirst($this->relatedProperty);
-
-        if (method_exists($this->entity, $getPropertyFunction) &&
-            method_exists($this->entity, $getRelatedPropertyFunction) &&
-            method_exists($this->entity, $setRelatedPropertyFunction )) {
-            if (null !== $this->entity->$getPropertyFunction()) {
-
-                if ($file = $this->getFileAbsolutePath()) {
+                if ($file = $this->getFileAbsolutePath($entity, $pathProperty)) {
                     if (file_exists($file)) {
                         unlink($file);
                     }
                 }
 
-                $this->entity->$setRelatedPropertyFunction(uniqid().'_'.self::sanityzeName($this->entity->$getPropertyFunction()->getClientOriginalName()));
+                $entity->$setPathFunction(uniqid().'_'.$this->sanityzeName($entity->$setFileFieldFunction()->getClientOriginalName()));
             }
         } else {
-            throw new \Exception("Methods '".$getPropertyFunction."' and '".$setRelatedPropertyFunction."' and '".$getRelatedPropertyFunction."' should be defined on '".get_class($this->entity)."' class");
+            throw new \Exception("Methods '".$setFileFieldFunction."' and '".$setPathFunction."' and '".$getPathFunction."' should be defined on '".get_class($entity)."' class");
         }
     }
 
@@ -107,24 +49,24 @@ class FileManager extends ContainerAware
      * Manage file's upload (create directory and move temporary file to entity's upload directory)
      * @throws \Exception If $property getter and setter do'nt exist on class
      */
-    public function upload()
+    public function upload($entity, $pathProperty, $fileFieldProperty)
     {
-        $getPropertyFunction = 'get'.ucfirst($this->property);
-        $getRelatedPropertyFunction = 'get'.ucfirst($this->relatedProperty);
+        $setFileFieldFunction = 'get'.ucfirst($fileFieldProperty);
+        $getPathFunction = 'get'.ucfirst($pathProperty);
 
-        if (method_exists($this->entity, $getPropertyFunction) && method_exists($this->entity, $getRelatedPropertyFunction)) {
-            if (null === $this->entity->$getPropertyFunction()) {
+        if (method_exists($entity, $setFileFieldFunction) && method_exists($entity, $getPathFunction)) {
+            if (null === $entity->$setFileFieldFunction()) {
                 return;
             }
 
-            if (!is_dir($this->getUploadDir())) {
-                mkdir($this->getUploadDir(), 0777);
+            if (!is_dir($this->getUploadDir($entity))) {
+                mkdir($this->getUploadDir($entity), 0777);
             }
 
-            $this->entity->$getPropertyFunction()->move($this->getUploadDir(), $this->entity->$getRelatedPropertyFunction());
+            $entity->$setFileFieldFunction()->move($this->getUploadDir($entity), $entity->$getPathFunction());
 
         } else {
-            throw new \Exception("Methods '".$getPropertyFunction."' and '".$getRelatedPropertyFunction."' should be defined on '".get_class($this->entity)."' class");
+            throw new \Exception("Methods '".$setFileFieldFunction."' and '".$getPathFunction."' should be defined on '".get_class($entity)."' class");
         }
     }
 
@@ -133,17 +75,17 @@ class FileManager extends ContainerAware
      * @return string file path
      * @throws \Exception If $property getter does not exists on class
      */
-    public function getFileAbsolutePath()
+    public function getFileAbsolutePath($entity, $pathProperty)
     {
-        $getRelatedPropertyFunction = 'get'.ucfirst($this->relatedProperty);
-        if (method_exists($this->entity, $getRelatedPropertyFunction)) {
-            if (!$this->entity->$getRelatedPropertyFunction()) {
+        $getPathFunction = 'get'.ucfirst($pathProperty);
+        if (method_exists($entity, $getPathFunction)) {
+            if (!$entity->$getPathFunction()) {
                 return null;
             } else {
-                return $this->getUploadDir() . $this->entity->$getRelatedPropertyFunction();
+                return $this->getUploadDir($entity) . $entity->$getPathFunction();
            }
        } else {
-            throw new \Exception("Methods '".$getRelatedPropertyFunction." should be defined on '".get_class($this->entity)."' class");
+            throw new \Exception("Methods '".$getPathFunction." should be defined on '".get_class($entity)."' class");
         }
     }
 
@@ -151,11 +93,11 @@ class FileManager extends ContainerAware
      * Get the upload directory
      * @return string absolute directory path
      */
-    private function getUploadDir()
+    private function getUploadDir($entity)
     {
         $webDir    = $this->container->get('kernel')->getRootDir() . '/../web/';
         $uploadDir = $this->container->getParameter('bigfoot.core.upload_dir');
-        $reflClass = new \ReflectionClass(get_class($this->entity));
+        $reflClass = new \ReflectionClass(get_class($entity));
         $entityDir = strtolower($reflClass->getShortName()) . '/';
         return $webDir . $uploadDir . $entityDir;
     }
@@ -165,24 +107,46 @@ class FileManager extends ContainerAware
      * @return string file path
      * @throws \Exception If $property getter does not exists on class
      */
-    public function getFilePath()
+    public function getFilePath($entity, $pathProperty)
     {
-        $getRelatedPropertyFunction = 'get'.ucfirst($this->relatedProperty);
-        if (method_exists($this->entity, $getRelatedPropertyFunction)) {
-            if (!$this->entity->$getRelatedPropertyFunction()) {
+        $getPathFunction = 'get'.ucfirst($pathProperty);
+        if (method_exists($entity, $getPathFunction)) {
+            if (!$entity->$getPathFunction()) {
                 return null;
             } else {
                 $uploadDir = $this->container->getParameter('bigfoot.core.upload_dir');
-                $reflClass = new \ReflectionClass(get_class($this->entity));
+                $reflClass = new \ReflectionClass(get_class($entity));
                 $entityDir = strtolower($reflClass->getShortName()) . '/';
-                return '/'.$uploadDir . $entityDir . $this->entity->$getRelatedPropertyFunction();
+                return '/'.$uploadDir . $entityDir . $entity->$getPathFunction();
             }
         } else {
-            throw new \Exception("Methods '".$getRelatedPropertyFunction." should be defined on '".get_class($this->entity)."' class");
+            throw new \Exception("Methods '".$getPathFunction." should be defined on '".get_class($entity)."' class");
         }
     }
 
-    static public function sanityzeName($text)
+    /**
+     * Delete file
+     * @param  Entity $entity
+     * @param  string $pathProperty
+     * @return boolean
+     */
+    public function deleteFile($entity, $pathProperty)
+    {
+        $file = $this->getFileAbsolutePath($entity, $pathProperty);
+
+        if ($file && file_exists($file) && !is_dir($file)) {
+            return unlink($file);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Escape text in order to get proper file names
+     * @param  string $text
+     * @return string
+     */
+    public function sanityzeName($text)
     {
       // replace non letter or digits by -
       $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
