@@ -2,6 +2,16 @@ twig:
     globals:
         bigfoot_version: '3.0'
 
+bigfoot_core:
+    languages:
+        back:
+            fr:
+                value: 'fr'
+                date_format: 'dd/MM/yyyy'
+            en:
+                value: 'en'
+                date_format: 'MM/dd/yyyy'
+
 doctrine:
     orm:
         dql:

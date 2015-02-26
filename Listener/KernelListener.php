@@ -30,7 +30,7 @@ class KernelListener
     {
         $this->translationListener = $translationListener;
         $this->defaultLocale       = $defaultLocale;
-        $this->allowedLocales      = $allowedLocales;
+        $this->allowedLocales      = array_keys($allowedLocales);
     }
 
     /**
