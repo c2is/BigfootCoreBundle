@@ -38,7 +38,7 @@ class FileManager extends ContainerAware
                     }
                 }
 
-                $entity->$setPathFunction(uniqid().'_'.$this->sanityzeName($entity->$setFileFieldFunction()->getClientOriginalName()));
+                $entity->$setPathFunction(uniqid().'_'.$this->sanitizeName($entity->$setFileFieldFunction()->getClientOriginalName()));
             }
         } else {
             throw new \Exception("Methods '".$setFileFieldFunction."' and '".$setPathFunction."' and '".$getPathFunction."' should be defined on '".get_class($entity)."' class");
@@ -146,7 +146,7 @@ class FileManager extends ContainerAware
      * @param  string $text
      * @return string
      */
-    public function sanityzeName($text)
+    public function sanitizeName($text)
     {
       // replace non letter or digits by -
       $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
