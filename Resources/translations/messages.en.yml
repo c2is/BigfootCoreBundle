@@ -108,3 +108,5 @@ bigfoot_core:
                 label: 'Label'
             category:
                 title: 'Category'
+bigfoot_process:
+    todo: "task to complete|tasks to complete"
