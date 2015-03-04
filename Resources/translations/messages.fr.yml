@@ -108,3 +108,5 @@ bigfoot_core:
                 label: 'Libellé'
             category:
                 title: 'Catégorie'
+bigfoot_process:
+    todo: "tâche à accomplir|tâches à accomplir"
