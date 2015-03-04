@@ -65,10 +65,9 @@ bigfoot_core:
 ### BigfootFile annotation :
 BigfootFile uses symfony's file upload system with its 2 properties for one file.
 
-**@Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File** : apply this annotation on the property that represents the form field. Use its *filePathProperty
-filePathProperty* option (required) to connect the other property.
+**@Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File** : apply this annotation on the property that represents the form field. Use its *filePathProperty* option (required) to connect the other property.
 
-Doon't forget to create an "updated" field, and to update before flushing with a PreFlush listener. Otherwise the ffile won't update if you don't change anything else in the form.
+Don't forget to create an "updated" field, and to update it before flushing with a PreFlush listener. Otherwise the file won't update if you don't change anything else in the form.
 
 Exemple :
 
