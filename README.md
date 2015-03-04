@@ -68,6 +68,8 @@ BigfootFile uses symfony's file upload system with its 2 properties for one file
 **@Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot\File** : apply this annotation on the property that represents the form field. Use its *filePathProperty
 filePathProperty* option (required) to connect the other property.
 
+Doon't forget to create an "updated" field, and to update before flushing with a PreFlush listener. Otherwise the ffile won't update if you don't change anything else in the form.
+
 Exemple :
 
 ``` php
@@ -79,6 +81,7 @@ use Bigfoot\Bundle\CoreBundle\Annotation\Bigfoot;
 
 /**
  * @ORM\Table(name="items")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Item
 {
@@ -102,6 +105,21 @@ class Item
      * @Bigfoot\File(filePathProperty="path")
      */
     public $file;
+
+    /**
+     * @var string
+     * @ORM\Column(name="updated", type="datetime", nullable=true)
+     */
+    private $updated;
+
+    /**
+     * @ORM\PreFlush()
+     */
+    public function refreshUpdated() {
+        if ($this->menuFile) {
+            $this->updated = new \DateTime("now");
+        }
+    }
 
 }
 ```
