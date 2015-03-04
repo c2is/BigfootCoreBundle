@@ -4,7 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\Common\EventArgs;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Bigfoot\Bundle\CoreBundle\Manager\FileManager;
 
@@ -25,19 +25,21 @@ class DoctrineListener
     }
 
     /**
-     * @param PreFlushEventArgs $args
+     * @param EventArgs $args
      */
-    public function preFlush(PreFlushEventArgs $args)
+    public function onFlush(EventArgs $args)
     {
         $this->preUpload($args);
     }
 
     /**
-     * @param PreFlushEventArgs $args
+     * @param EventArgs $args
      */
-    private function preUpload(PreFlushEventArgs $args)
+    private function preUpload(EventArgs $args)
     {
+        $em = $args->getEntityManager();
         $uow = $args->getEntityManager()->getUnitOfWork();
+
         $entities = array();
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
             $entities[] = $entity;
@@ -50,6 +52,8 @@ class DoctrineListener
             $bigfootFileFields = $this->getBigfootFileFields($entity);
             foreach ($bigfootFileFields as $bigfootFileField) {
                 $this->fileManager->preUpload($entity, $bigfootFileField['filePathProperty'], $bigfootFileField['fileFieldProperty']);
+                $meta = $em->getClassMetadata(get_class($entity));
+                $uow->recomputeSingleEntityChangeSet($meta, $entity);
             }
         }
     }
