@@ -28,6 +28,7 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Listener\KernelListener
         arguments:
             - @stof_doctrine_extensions.listener.translatable
+            - @kernel
             - %locale%
             - %bigfoot_core.languages.back%
         tags:
