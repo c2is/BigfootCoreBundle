@@ -18,19 +18,24 @@ class KernelListener
     /** @var \Gedmo\Translatable\TranslatableListener */
     protected $translationListener;
 
+    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface */
+    protected $kernel;
+
     /** @var string */
     protected $defaultLocale;
 
     /**
      * @param TranslatableListener $translationListener
+     * @param \Symfony\Component\HttpKernel\HttpKernelInterface $kernel
      * @param string $defaultLocale
      * @param array $allowedLocales
      */
-    public function __construct(TranslatableListener $translationListener, $defaultLocale, $allowedLocales)
+    public function __construct(TranslatableListener $translationListener, HttpKernelInterface $kernel, $defaultLocale, $allowedLocales)
     {
         $this->translationListener = $translationListener;
-        $this->defaultLocale       = $defaultLocale;
-        $this->allowedLocales      = array_keys($allowedLocales);
+        $this->kernel = $kernel;
+        $this->defaultLocale = $defaultLocale;
+        $this->allowedLocales = array_keys($allowedLocales);
     }
 
     /**
@@ -38,7 +43,7 @@ class KernelListener
      */
     public function onEarlyKernelRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or 'admin' != $this->kernel->getEnvironment()) {
             return;
         }
 
