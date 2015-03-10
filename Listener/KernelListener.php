@@ -3,10 +3,9 @@
 namespace Bigfoot\Bundle\CoreBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Security\Core\SecurityContextInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Gedmo\Translatable\TranslatableListener;
 
 /**
@@ -18,7 +17,7 @@ class KernelListener
     /** @var \Gedmo\Translatable\TranslatableListener */
     protected $translationListener;
 
-    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface */
+    /** @var Kernel */
     protected $kernel;
 
     /** @var string */
@@ -26,11 +25,11 @@ class KernelListener
 
     /**
      * @param TranslatableListener $translationListener
-     * @param \Symfony\Component\HttpKernel\HttpKernelInterface $kernel
+     * @param Kernel $kernel
      * @param string $defaultLocale
      * @param array $allowedLocales
      */
-    public function __construct(TranslatableListener $translationListener, HttpKernelInterface $kernel, $defaultLocale, $allowedLocales)
+    public function __construct(TranslatableListener $translationListener, Kernel $kernel, $defaultLocale, $allowedLocales)
     {
         $this->translationListener = $translationListener;
         $this->kernel = $kernel;
@@ -43,23 +42,22 @@ class KernelListener
      */
     public function onEarlyKernelRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or 'admin' != $this->kernel->getEnvironment()) {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or !in_array($this->kernel->getEnvironment(), array('admin', 'admin_dev'))) {
             return;
         }
 
         $request = $event->getRequest();
+        $locale = $this->defaultLocale;
 
-        if (($locale = $request->getSession()->get('_locale', false)) && in_array($locale, $this->allowedLocales)) {
-            $request->setLocale($locale);
-        } elseif (($locale = $request->getPreferredLanguage()) && in_array($locale, $this->allowedLocales)) {
-            $request->setLocale($locale);
+        if (($guessedLocale = $request->getSession()->get('_locale', false)) && in_array($guessedLocale, $this->allowedLocales)) {
+            $locale = $guessedLocale;
+        } elseif (($guessedLocale = $request->getPreferredLanguage()) && in_array($guessedLocale, $this->allowedLocales)) {
+            $locale = $guessedLocale;
         } else {
             $request->setLocale($this->defaultLocale);
         }
-    }
 
-    public function onLateKernelRequest(GetResponseEvent $event)
-    {
-        $this->translationListener->setTranslatableLocale($event->getRequest()->getLocale());
+        $request->setLocale($locale);
+        $this->translationListener->setTranslatableLocale($locale);
     }
 }
