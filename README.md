@@ -144,4 +144,10 @@ If you don't define any deleteRoute, the deleteLink won't appear
 
 ### Get the file in front :
 
-The second parameter defines whether or not the filter returns an absolute path
+The second parameter(default false) defines whether or not the filter returns an absolute path
+
+```php
+
+{{ item|bigfoot_file('path', false) }}
+
+```
