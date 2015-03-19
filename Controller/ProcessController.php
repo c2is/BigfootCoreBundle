@@ -39,7 +39,7 @@ class ProcessController extends BaseController
 
         /** @var Process $process */
         foreach ($processes as $process) {
-            $result[] = $process->getToken();
+            $result[$process->getToken()] = $process->getStatus();
         }
 
         return new JsonResponse($result);
