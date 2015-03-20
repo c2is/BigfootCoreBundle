@@ -322,3 +322,7 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Manager\FileManager
         calls:
             - [ setContainer,[ @service_container ] ]
+
+    bigfoot_core.translation.convert:
+        class: Bigfoot\Bundle\CoreBundle\Translation\Convert
+        arguments: [ @kernel ]
