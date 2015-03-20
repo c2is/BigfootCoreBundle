@@ -149,7 +149,7 @@ class FileManager extends ContainerAware
     public function sanitizeName($text)
     {
       // replace non letter or digits by -
-      $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
+      $text = preg_replace('~[^\\pL\d.]+~u', '-', $text);
 
       // trim
       $text = trim($text, '-');
@@ -161,7 +161,7 @@ class FileManager extends ContainerAware
       $text = strtolower($text);
 
       // remove unwanted characters
-      $text = preg_replace('~[^-\w]+~', '', $text);
+      $text = preg_replace('~[^-\w.]+~', '', $text);
 
       return $text;
     }
