@@ -1,3 +1,6 @@
+parameters:
+    bigfoot.dashboard_controller: Bigfoot\Bundle\CoreBundle\Controller\DashboardController
+
 twig:
     globals:
         bigfoot_version: '3.0'

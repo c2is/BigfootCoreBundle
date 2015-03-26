@@ -177,7 +177,7 @@ services:
             - { name: form.type, alias: bigfoot_bundle_corebundle_quicklinktype }
     # DoshBoardController
     bigfoot.dashboard:
-        class: Bigfoot\Bundle\CoreBundle\Controller\DashboardController
+        class: %bigfoot.dashboard_controller%
         calls:
             - [setContainer, ["@service_container"]]
         tags:
