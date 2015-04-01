@@ -1,6 +1,6 @@
 {% twig_js name="localeTabs" %}
 <div class="locale-tabs">
     {% for locale, config in locales %}
-        <a href="#"{% if locale == currentLocale %} class="active"{% endif %} data-locale="{{ locale }}"><img src="{{ config.flag }}" title="{{ config.label }}" /></a>
+        <a href="#"{% if locale == currentLocale %} class="active"{% endif %} data-locale="{{ locale }}"><img src="{{ config.flag }}" title="{{ config.label }}" width="16" height="11" /></a>
     {% endfor %}
 </div>
