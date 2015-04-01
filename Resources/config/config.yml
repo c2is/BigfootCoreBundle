@@ -1,3 +1,6 @@
+imports:
+    - { resource: "@BigfootContextBundle/Resources/config/config.yml" }
+
 twig:
     globals:
         bigfoot_version: '3.0'

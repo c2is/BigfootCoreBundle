@@ -44,11 +44,7 @@ class TranslatedEntityType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('translatedEntity', 'hidden' );
-
-        $translationSubscriber = $this->translationSubscriber;
-        $translationSubscriber->setLocale($this->request->getLocale());
-
-        $builder->addEventSubscriber($translationSubscriber);
+        $builder->addEventSubscriber($this->translationSubscriber);
     }
 
     /**
