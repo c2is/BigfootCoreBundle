@@ -19,12 +19,12 @@ class BigfootDatepickerType extends AbstractType
     protected $format;
 
     /**
-     * @param array $localesConfiguration
      * @param ContextService $context
      */
-    public function __construct(array $localesConfiguration, ContextService $context)
+    public function __construct(ContextService $context)
     {
-        $this->format = $localesConfiguration[$context->get('language')]['date_format'];
+        $config = $context->get('language_back', true);
+        $this->format = $config['parameters']['date_format'];
     }
 
     /**

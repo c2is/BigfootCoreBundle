@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Form\EventListener;
 
+use Bigfoot\Bundle\ContextBundle\Service\ContextService;
 use Doctrine\Common\Annotations\Reader;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as BigfootTranslationRepository;
@@ -14,6 +15,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Class TranslationSubscriber
+ *
  * @package Bigfoot\Bundle\CoreBundle\Form\EventListener
  */
 class TranslationSubscriber implements EventSubscriberInterface
@@ -37,18 +39,27 @@ class TranslationSubscriber implements EventSubscriberInterface
      * @param Reader                       $annotationReader
      * @param BigfootTranslationRepository $translationRepository
      * @param string                       $defaultLocale
+     * @param ContextService               $context
      */
-    public function __construct($localeList, RegistryInterface $doctrine, Reader $annotationReader, BigfootTranslationRepository $translationRepository, $defaultLocale)
-    {
+    public function __construct(
+        $localeList,
+        RegistryInterface $doctrine,
+        Reader $annotationReader,
+        BigfootTranslationRepository $translationRepository,
+        $defaultLocale,
+        ContextService $context
+    ) {
         $this->localeList            = $localeList;
         $this->doctrine              = $doctrine;
         $this->annotationReader      = $annotationReader;
         $this->translationRepository = $translationRepository;
         $this->defaultLocale         = $defaultLocale;
+        $this->currentLocale         = $context->getDefaultFrontLocale();
     }
 
     /**
      * @param string $locale
+     *
      * @return $this
      */
     public function setLocale($locale)
@@ -79,11 +90,11 @@ class TranslationSubscriber implements EventSubscriberInterface
      */
     public function preSetData(FormEvent $event)
     {
-        $em                 = $this->doctrine->getManager();
-        $locales            = $this->localeList;
-        $form               = $event->getForm();
-        $parentForm         = $form->getParent();
-        $parentData         = $parentForm->getData();
+        $em         = $this->doctrine->getManager();
+        $locales    = $this->localeList;
+        $form       = $event->getForm();
+        $parentForm = $form->getParent();
+        $parentData = $parentForm->getData();
 
         if ($parentData) {
             $entityClass = get_class($parentData);
@@ -94,8 +105,8 @@ class TranslationSubscriber implements EventSubscriberInterface
         if ($entityClass) {
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
+            $translations       = array();
 
-            $translations = array();
             if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
                 $translations = array();
 
@@ -103,6 +114,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                     $localeValues = array();
                     $parentData->setTranslatableLocale($locale);
                     $em->refresh($parentData);
+
                     foreach ($translatableFields as $fieldName => $fieldType) {
                         $localeValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
                     }
@@ -118,6 +130,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             foreach ($locales as $locale => $localeConfig) {
                 foreach ($translatableFields as $fieldName => $fieldType) {
                     $data = '';
+
                     if (isset($translations[$locale][$fieldName])) {
                         $data = $translations[$locale][$fieldName];
                     }
@@ -125,7 +138,18 @@ class TranslationSubscriber implements EventSubscriberInterface
                     if ($parentForm->has($fieldName)) {
                         $fieldType = $parentForm->get($fieldName)->getConfig()->getType()->getInnerType();
                         $fieldAttr = $parentForm->get($fieldName)->getConfig()->getOption('attr');
-                        $form->add(sprintf('%s-%s', $fieldName, $locale), $fieldType, array('data' => $data, 'required' => false, 'attr' => array_merge($fieldAttr, array('data-field-name' => $fieldName, 'data-locale' => $locale))));
+                        $form->add(
+                            sprintf('%s-%s', $fieldName, $locale),
+                            $fieldType,
+                            array(
+                                'data'     => $data,
+                                'required' => false,
+                                'attr'     => array_merge(
+                                    $fieldAttr,
+                                    array('data-field-name' => $fieldName, 'data-locale' => $locale)
+                                )
+                            )
+                        );
                     }
                 }
             }
@@ -152,7 +176,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $reflectionClass  = new \ReflectionClass($entityClass);
             $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
 
-            if($gedmoAnnotations && is_object($gedmoAnnotations) && $gedmoAnnotations->class != '') {
+            if ($gedmoAnnotations && is_object($gedmoAnnotations) && $gedmoAnnotations->class != '') {
                 $repository = $this->translationRepository;
             } else {
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
@@ -163,15 +187,18 @@ class TranslationSubscriber implements EventSubscriberInterface
                     if ($parentForm->has($field)) {
                         $fieldData       = '';
                         $localeFieldName = sprintf('%s-%s', $field, $locale);
+
                         if (isset($data[$localeFieldName])) {
                             $fieldData = $data[$localeFieldName];
                         } elseif (isset($data[$field])) {
                             $fieldData = $data[$field];
                         }
+
                         if ($field != 'slug' || $fieldData) {
-                            if($repository instanceof BigfootTranslationRepository && $this->currentLocale == $locale) {
+                            if ($repository instanceof BigfootTranslationRepository && $this->currentLocale == $locale) {
                                 $fieldData = $propertyAccessor->getValue($parentData, $field);
                             }
+
                             $repository->translate($parentData, $field, $locale, $fieldData);
                         }
                     }
@@ -185,15 +212,19 @@ class TranslationSubscriber implements EventSubscriberInterface
      * for which a Gedmo\Translatable annotation is set
      *
      * @param string $className
+     *
      * @return array
      */
     private function getTranslatableFields($className)
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass    = new \ReflectionClass($className);
         $translatableFields = array();
 
         do {
-            $translatableFields = array_merge($translatableFields, $this->getTranslatableFieldsFromClass($reflectionClass));
+            $translatableFields = array_merge(
+                $translatableFields,
+                $this->getTranslatableFieldsFromClass($reflectionClass)
+            );
         } while ($reflectionClass = $reflectionClass->getParentClass());
 
         return $translatableFields;
@@ -206,6 +237,7 @@ class TranslationSubscriber implements EventSubscriberInterface
      * If the given class name is not an entity, returns an empty array
      *
      * @param \ReflectionClass $reflectionClass
+     *
      * @return array
      */
     private function getTranslatableFieldsFromClass(\ReflectionClass $reflectionClass)
@@ -215,9 +247,16 @@ class TranslationSubscriber implements EventSubscriberInterface
         if ($this->annotationReader->getClassAnnotation($reflectionClass, 'Doctrine\\ORM\\Mapping\\Entity')) {
             $reflectionProperties = $reflectionClass->getProperties();
             foreach ($reflectionProperties as $reflectionProperty) {
-                $propertyAnnotation = $this->annotationReader->getPropertyAnnotation($reflectionProperty, 'Gedmo\Mapping\Annotation\Translatable');
+                $propertyAnnotation = $this->annotationReader->getPropertyAnnotation(
+                    $reflectionProperty,
+                    'Gedmo\Mapping\Annotation\Translatable'
+                );
+
                 if ($propertyAnnotation) {
-                    $mappingAnnotation = $this->annotationReader->getPropertyAnnotation($reflectionProperty, 'Doctrine\ORM\Mapping\Column');
+                    $mappingAnnotation                                  = $this->annotationReader->getPropertyAnnotation(
+                        $reflectionProperty,
+                        'Doctrine\ORM\Mapping\Column'
+                    );
                     $translatableFields[$reflectionProperty->getName()] = $mappingAnnotation->type;
                 }
             }
@@ -228,13 +267,18 @@ class TranslationSubscriber implements EventSubscriberInterface
 
     /**
      * @param \ReflectionClass $class
+     *
      * @return bool|null|object
      */
     public function isPersonnalTranslationRecursive(\ReflectionClass $class)
     {
         $annotationReader = $this->annotationReader;
-        if ($nodeableAnnotation = $annotationReader->getClassAnnotation($class, 'Gedmo\\Mapping\\Annotation\\TranslationEntity')) {
-            return $nodeableAnnotation;
+        if ($translationAnnotation = $annotationReader->getClassAnnotation(
+            $class,
+            'Gedmo\\Mapping\\Annotation\\TranslationEntity'
+        )
+        ) {
+            return $translationAnnotation;
         }
 
         if ($parentClass = $class->getParentClass()) {
