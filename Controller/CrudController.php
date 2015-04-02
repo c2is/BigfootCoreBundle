@@ -377,6 +377,7 @@ abstract class CrudController extends BaseController
         $countQueryBuilder = clone($queryBuilder);
         $count = $countQueryBuilder
             ->select('COUNT(e)')
+            ->resetDQLPart('orderBy')
             ->getQuery()
             ->getSingleScalarResult();
 
