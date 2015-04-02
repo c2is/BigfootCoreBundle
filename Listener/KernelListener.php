@@ -79,6 +79,13 @@ class KernelListener
         }
 
         $request->setLocale($locale);
+    }
+    
+    /**
+     * @param GetResponseEvent $event
+     */
+    public function onLateKernelRequest(GetResponseEvent $event)
+    {
         $this->translationListener->setTranslatableLocale($this->defaultFrontLocale);
     }
 }
