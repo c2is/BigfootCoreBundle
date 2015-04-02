@@ -86,6 +86,13 @@ class KernelListener
      */
     public function onLateKernelRequest(GetResponseEvent $event)
     {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or ! in_array(
+                $this->kernel->getEnvironment(), array('admin', 'admin_dev')
+            )
+        ) {
+            return;
+        }
+
         $this->translationListener->setTranslatableLocale($this->defaultFrontLocale);
     }
 }
