@@ -126,7 +126,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                 $em->refresh($parentData);
             }
 
-            unset($locales[$this->getLocale()]);
+            unset($locales[$this->defaultLocale]);
             foreach ($locales as $locale => $localeConfig) {
                 foreach ($translatableFields as $fieldName => $fieldType) {
                     $data = '';
