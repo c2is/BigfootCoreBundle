@@ -4,6 +4,7 @@ imports:
 twig:
     globals:
         bigfoot_version: '2.2'
+        defaultLocale: %locale%
 
 bigfoot_core:
     languages:
