@@ -67,7 +67,11 @@ class Builder
             ->createRoot(
                 'home',
                 array(
-                    'label' => 'Home'
+                    'label' => 'Home',
+                    'route' => 'admin_home',
+                    'linkAttributes' => array(
+                        'icon' => 'home',
+                    )
                 ),
                 array(
                     'children-attributes' => array(
