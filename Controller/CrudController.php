@@ -746,7 +746,7 @@ abstract class CrudController extends BaseController
                     'heading'     => 'bigfoot_core.flash.header.title.success',
                     'message'     => $message,
                     'actions'     => $actions,
-                    'transParams' => array('%entity%' => $this->getEntityName()),
+                    'transParams' => array('%entity%' => $this->getEntityLabel()),
                 )
             )
         );
