@@ -22,7 +22,8 @@ use Bigfoot\Bundle\UserBundle\Entity\User;
  * Crud controller.
  *
  * Helper class facilitating the generation of crud controllers.
- * Uses the getName() method to generate route names. Your controller must implement a route named after the controller's name.
+ * Uses the getName() method to generate route names. Your controller must implement a route named after the
+ * controller's name.
  *
  * Routes used by this helper are calculated from its name (self::getName()) suffixed with the action's name.
  * Actions used are :
@@ -30,7 +31,9 @@ use Bigfoot\Bundle\UserBundle\Entity\User;
  * new  : name_new
  * edit : name_edit
  *
- * This helper only works for CRUDing entities situated in the Entity directory for which a Type class exists in the Form directory and is named after the entity's name suffixed with Type (eg: for the entity Bigfoot/Bundle/CoreBundle/Entity/Tag and form type Bigfoot/Bundle/CoreBundle/Form/TagType)
+ * This helper only works for CRUDing entities situated in the Entity directory for which a Type class exists in the
+ * Form directory and is named after the entity's name suffixed with Type (eg: for the entity
+ * Bigfoot/Bundle/CoreBundle/Entity/Tag and form type Bigfoot/Bundle/CoreBundle/Form/TagType)
  */
 abstract class CrudController extends BaseController
 {
@@ -47,7 +50,8 @@ abstract class CrudController extends BaseController
     /**
      * Used to generate route names.
      * The helper method of this class will use routes named after this name.
-     * This means if you extend this class and use its helper methods, if getName() returns 'my_controller', you must implement a route named 'my_controller'.
+     * This means if you extend this class and use its helper methods, if getName() returns 'my_controller', you must
+     * implement a route named 'my_controller'.
      *
      * @return string
      */
@@ -80,7 +84,10 @@ abstract class CrudController extends BaseController
      */
     public function getControllerTitle()
     {
-        return $this->getTranslator()->trans('bigfoot_core.crud.controller.default_title', array('%entity%' => $this->getEntityLabelPlural()));
+        return $this->getTranslator()->trans(
+            'bigfoot_core.crud.controller.default_title',
+            array('%entity%' => $this->getEntityLabelPlural())
+        );
     }
 
     /**
@@ -148,7 +155,7 @@ abstract class CrudController extends BaseController
     protected function getBundleName()
     {
         if (!$this->bundleName) {
-            $names = $this->getBundleAndEntityName();
+            $names            = $this->getBundleAndEntityName();
             $this->bundleName = $names['bundle'];
         }
 
@@ -161,9 +168,10 @@ abstract class CrudController extends BaseController
     protected function getEntityName()
     {
         if (!$this->entityName) {
-            $names = $this->getBundleAndEntityName();
+            $names            = $this->getBundleAndEntityName();
             $this->entityName = $names['entity'];
         }
+
         return $this->entityName;
     }
 
@@ -194,7 +202,10 @@ abstract class CrudController extends BaseController
             return $this->getTranslator()->trans($key, array('%entity%' => $this->getEntityLabel()));
         }
 
-        return $this->getTranslator()->trans('bigfoot_core.crud.edit.title', array('%entity%' => $this->getEntityLabel()));
+        return $this->getTranslator()->trans(
+            'bigfoot_core.crud.edit.title',
+            array('%entity%' => $this->getEntityLabel())
+        );
     }
 
     /**
@@ -236,7 +247,12 @@ abstract class CrudController extends BaseController
         try {
             list($bundleName, $entityName) = explode(':', $this->getEntity());
         } catch (\Exception $e) {
-            throw new \InvalidArgumentException(sprintf('Return format of method getEntity() is invalid. Expected a string of format BundleName:EntityName, got %s', $this->getEntity()));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Return format of method getEntity() is invalid. Expected a string of format BundleName:EntityName, got %s',
+                    $this->getEntity()
+                )
+            );
         }
 
         return array('bundle' => $bundleName, 'entity' => $entityName);
@@ -270,7 +286,10 @@ abstract class CrudController extends BaseController
      */
     protected function getAddLabel()
     {
-        return $this->getTranslator()->trans('bigfoot_core.crud.new.title', array('%entity%' => $this->getEntityName()));
+        return $this->getTranslator()->trans(
+            'bigfoot_core.crud.new.title',
+            array('%entity%' => $this->getEntityName())
+        );
     }
 
     /**
@@ -314,13 +333,16 @@ abstract class CrudController extends BaseController
 
         if (method_exists($this, 'deleteAction')) {
             $actions['delete'] = array(
-                'label' => 'bigfoot_core.crud.actions.delete.label',
-                'route' => $this->getRouteNameForAction('delete'),
-                'icon'  => 'trash',
-                'color' => 'red',
-                'class' => 'confirm-action',
+                'label'      => 'bigfoot_core.crud.actions.delete.label',
+                'route'      => $this->getRouteNameForAction('delete'),
+                'icon'       => 'trash',
+                'color'      => 'red',
+                'class'      => 'confirm-action',
                 'attributes' => array(
-                    'data-confirm-message' => $this->getTranslator()->trans('bigfoot_core.crud.actions.delete.confirm', array('%entity%' => $this->getEntityLabel())),
+                    'data-confirm-message' => $this->getTranslator()->trans(
+                        'bigfoot_core.crud.actions.delete.confirm',
+                        array('%entity%' => $this->getEntityLabel())
+                    ),
                 )
             );
         }
@@ -370,12 +392,16 @@ abstract class CrudController extends BaseController
             }
         }
 
-        $queryBuilder = $this->getFilterManager()->filterQuery($queryBuilder, strtolower($entityName), $this->getGlobalFilters());
+        $queryBuilder = $this->getFilterManager()->filterQuery(
+            $queryBuilder,
+            strtolower($entityName),
+            $this->getGlobalFilters()
+        );
 
         $this->postQuery($queryBuilder);
 
         $countQueryBuilder = clone($queryBuilder);
-        $count = $countQueryBuilder
+        $count             = $countQueryBuilder
             ->select('COUNT(e)')
             ->resetDQLPart('orderBy')
             ->getQuery()
@@ -399,11 +425,12 @@ abstract class CrudController extends BaseController
      */
     protected function doIndex()
     {
-        $request = $this->getRequest();
+        $request       = $this->getRequest();
         $filterManager = $this->getFilterManager();
 
         if ($request->isMethod('POST')) {
             $filterManager->registerFilters($this->getEntityName(), $this->getGlobalFilters());
+
             return $this->redirect($this->generateUrl($this->getControllerIndex()));
         }
 
@@ -442,7 +469,10 @@ abstract class CrudController extends BaseController
         $entityClass = $this->getEntityClass();
         $entity      = new $entityClass();
         $form        = $this->createForm($this->getFormType(), $entity);
-        $action      = $this->generateUrl($this->getRouteNameForAction('new'), array('layout' => $request->get('layout', null)));
+        $action      = $this->generateUrl(
+            $this->getRouteNameForAction('new'),
+            array('layout' => $request->get('layout', null))
+        );
 
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
@@ -470,7 +500,11 @@ abstract class CrudController extends BaseController
             }
 
             if ($request->isXmlHttpRequest()) {
-                return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
+                return $this->renderAjax(
+                    false,
+                    'Error during process!',
+                    $this->renderForm($form, $action, $entity)->getContent()
+                );
             }
 
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('new')));
@@ -493,11 +527,19 @@ abstract class CrudController extends BaseController
         $entity = $this->getFormEntity($id);
 
         if (!$entity) {
-            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.edit.errors.not_found', array('%entity%', $this->getEntity())));
+            throw new NotFoundHttpException(
+                $this->getTranslator()->trans(
+                    'bigfoot_core.crud.edit.errors.not_found',
+                    array('%entity%', $this->getEntity())
+                )
+            );
         }
 
         $form   = $this->createForm($this->getFormType(), $entity);
-        $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId(), 'layout' => $request->get('layout', null)));
+        $action = $this->generateUrl(
+            $this->getRouteNameForAction('edit'),
+            array('id' => $entity->getId(), 'layout' => $request->get('layout', null))
+        );
 
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
@@ -523,10 +565,16 @@ abstract class CrudController extends BaseController
             }
 
             if ($request->isXmlHttpRequest()) {
-                return $this->renderAjax(false, 'Error during process!', $this->renderForm($form, $action, $entity)->getContent());
+                return $this->renderAjax(
+                    false,
+                    'Error during process!',
+                    $this->renderForm($form, $action, $entity)->getContent()
+                );
             }
 
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId())));
+            return $this->redirect(
+                $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()))
+            );
         }
 
         return $this->renderForm($form, $action, $entity, 'edit');
@@ -538,7 +586,7 @@ abstract class CrudController extends BaseController
      * Redirects to the index action.
      *
      * @param Request $request
-     * @param $id
+     * @param         $id
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
@@ -548,7 +596,12 @@ abstract class CrudController extends BaseController
         $entity = $this->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete.errors.not_found', array('%entity%', $this->getEntity())));
+            throw new NotFoundHttpException(
+                $this->getTranslator()->trans(
+                    'bigfoot_core.crud.delete.errors.not_found',
+                    array('%entity%', $this->getEntity())
+                )
+            );
         }
 
         $this->removeAndFlush($entity);
@@ -568,12 +621,13 @@ abstract class CrudController extends BaseController
      * Redirects to the entity form.
      *
      * @param Request $request
-     * @param $id
-     * @param $property
+     * @param         $id
+     * @param         $property
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If $property does not exist on entity's class.
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If $property does not exist on entity's
+     *                                                                       class.
      * @throws \Exception If $property setter does not exists on class
      */
     protected function doDeleteFile(Request $request, $id, $property)
@@ -581,12 +635,22 @@ abstract class CrudController extends BaseController
         $entity = $this->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete.errors.not_found', array('%entity%', $this->getEntity())));
+            throw new NotFoundHttpException(
+                $this->getTranslator()->trans(
+                    'bigfoot_core.crud.delete.errors.not_found',
+                    array('%entity%', $this->getEntity())
+                )
+            );
         }
 
         $reflClass = new \ReflectionClass(get_class($entity));
         if (!$reflClass->hasProperty($property)) {
-            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete_file.errors.not_found', array('%property%' => $property, '%class' => get_class($entity))));
+            throw new NotFoundHttpException(
+                $this->getTranslator()->trans(
+                    'bigfoot_core.crud.delete_file.errors.not_found',
+                    array('%property%' => $property, '%class' => get_class($entity))
+                )
+            );
         }
 
         $setFileFunction = 'set'.ucfirst($property);
@@ -595,7 +659,7 @@ abstract class CrudController extends BaseController
         }
 
         $fileManager = $this->getFileManager();
-        $file = $fileManager->getFileAbsolutePath($entity, $property);
+        $file        = $fileManager->getFileAbsolutePath($entity, $property);
         if ($file && file_exists($file)) {
             $fileManager->deleteFile($entity, $property);
             $entity->$setFileFunction(null);
@@ -617,7 +681,7 @@ abstract class CrudController extends BaseController
      * Redirects to the index action.
      *
      * @param Request $request
-     * @param $id
+     * @param         $id
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
@@ -627,7 +691,12 @@ abstract class CrudController extends BaseController
         $entity = $this->getRepository($this->getEntity())->find($id);
 
         if (!$entity) {
-            throw new NotFoundHttpException($this->getTranslator()->trans('bigfoot_core.crud.delete.errors.not_found', array('%entity%', $this->getEntity())));
+            throw new NotFoundHttpException(
+                $this->getTranslator()->trans(
+                    'bigfoot_core.crud.delete.errors.not_found',
+                    array('%entity%', $this->getEntity())
+                )
+            );
         }
 
         // You need implemente __clone method in your entity to format object like you want
@@ -794,10 +863,15 @@ abstract class CrudController extends BaseController
 
     /**
      * @param $id
+     *
      * @return object
      */
     protected function getFormEntity($id)
     {
-        return $this->getRepository($this->getEntity())->find($id);
+        $entity = $this->getRepository($this->getEntity())->find($id);
+        $entity->setTranslatableLocale($this->container->getParameter('locale'));
+        $this->getEntityManager()->refresh($entity);
+
+        return $entity;
     }
 }
