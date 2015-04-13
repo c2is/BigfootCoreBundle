@@ -6,6 +6,7 @@ use Bigfoot\Bundle\ContextBundle\Service\ContextService;
 use Doctrine\Common\Annotations\Reader;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as BigfootTranslationRepository;
+use Gedmo\Translatable\TranslatableListener;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Form;
@@ -95,6 +96,8 @@ class TranslationSubscriber implements EventSubscriberInterface
         $form       = $event->getForm();
         $parentForm = $form->getParent();
         $parentData = $parentForm->getData();
+        $listener   = $this->getTranslatableListener();
+        $meta       = $this->doctrine->getEntityManager()->getClassMetadata(get_class($parentData));
 
         if ($parentData) {
             $entityClass = get_class($parentData);
@@ -106,6 +109,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
             $translations       = array();
+            $initialLocale      = $listener->getTranslatableLocale($parentData, $meta);
 
             if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
                 $translations = array();
@@ -122,7 +126,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                     $translations[$locale] = $localeValues;
                 }
 
-                $parentData->setTranslatableLocale($this->getLocale());
+                $parentData->setTranslatableLocale($initialLocale);
                 $em->refresh($parentData);
             }
 
@@ -286,5 +290,19 @@ class TranslationSubscriber implements EventSubscriberInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return \Gedmo\Translatable\TranslatableListener
+     */
+    protected function getTranslatableListener()
+    {
+        foreach ($this->doctrine->getEntityManager()->getEventManager()->getListeners() as $event => $listeners) {
+            foreach ($listeners as $hash => $listener) {
+                if ($listener instanceof TranslatableListener) {
+                    return $this->listener = $listener;
+                }
+            }
+        }
     }
 }
