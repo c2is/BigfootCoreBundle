@@ -25,12 +25,12 @@ class KernelListener
     /** @var string */
     protected $defaultBackLocale;
 
-    /** @var string */
-    protected $defaultFrontLocale;
+    /** @var \Bigfoot\Bundle\ContextBundle\Service\ContextService */
+    protected $context;
 
     /**
-     * @param TranslatableListener $translationListener
-     * @param Kernel $kernel
+     * @param TranslatableListener                                 $translationListener
+     * @param Kernel                                               $kernel
      * @param \Bigfoot\Bundle\ContextBundle\Service\ContextService $context
      *
      * @internal param array $allowedLocales
@@ -42,7 +42,7 @@ class KernelListener
         $this->translationListener = $translationListener;
         $this->kernel              = $kernel;
         $this->defaultBackLocale   = $contexts['language_back']['default_value'];
-        $this->defaultFrontLocale  = $context->getDefaultFrontLocale();
+        $this->context             = $context;
         $this->allowedLocales      = array_keys($context->getValues('language_back'));
     }
 
@@ -80,7 +80,7 @@ class KernelListener
 
         $request->setLocale($locale);
     }
-    
+
     /**
      * @param GetResponseEvent $event
      */
@@ -93,7 +93,7 @@ class KernelListener
         ) {
             return;
         }
-        
-        $this->translationListener->setTranslatableLocale($this->defaultFrontLocale);
+
+        $this->translationListener->setTranslatableLocale($this->context->getDefaultFrontLocale());
     }
 }
