@@ -97,7 +97,6 @@ class TranslationSubscriber implements EventSubscriberInterface
         $parentForm = $form->getParent();
         $parentData = $parentForm->getData();
         $listener   = $this->getTranslatableListener();
-        $meta       = $this->doctrine->getEntityManager()->getClassMetadata(get_class($parentData));
 
         if ($parentData) {
             $entityClass = get_class($parentData);
@@ -105,11 +104,13 @@ class TranslationSubscriber implements EventSubscriberInterface
             $entityClass = $parentForm->getConfig()->getDataClass();
         }
 
+        $meta = $this->doctrine->getManager()->getClassMetadata($entityClass);
+
         if ($entityClass) {
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
             $translations       = array();
-            $initialLocale      = $listener->getTranslatableLocale($parentData, $meta);
+            $initialLocale      = ($parentData) ? $listener->getTranslatableLocale($parentData, $meta) : $this->defaultLocale;
 
             if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
                 $translations = array();
@@ -297,7 +298,7 @@ class TranslationSubscriber implements EventSubscriberInterface
      */
     protected function getTranslatableListener()
     {
-        foreach ($this->doctrine->getEntityManager()->getEventManager()->getListeners() as $event => $listeners) {
+        foreach ($this->doctrine->getManager()->getEventManager()->getListeners() as $event => $listeners) {
             foreach ($listeners as $hash => $listener) {
                 if ($listener instanceof TranslatableListener) {
                     return $this->listener = $listener;

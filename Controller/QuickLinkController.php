@@ -76,7 +76,7 @@ class QuickLinkController extends CrudController
      */
     public function quickLinkStarAction($currentRoute)
     {
-        $em = $this->container->get('doctrine')->getEntityManager();
+        $em = $this->getEntityManager();
         $quickLink = $em->getRepository('BigfootCoreBundle:QuickLink')->findOneByLink($currentRoute);
 
         $alreadyQuickLink = false;

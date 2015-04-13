@@ -869,8 +869,10 @@ abstract class CrudController extends BaseController
     protected function getFormEntity($id)
     {
         $entity = $this->getRepository($this->getEntity())->find($id);
-        $entity->setTranslatableLocale($this->container->getParameter('locale'));
-        $this->getEntityManager()->refresh($entity);
+        if (method_exists($entity, 'setTranslatableLocale')) {
+            $entity->setTranslatableLocale($this->container->getParameter('locale'));
+            $this->getEntityManager()->refresh($entity);
+        }
 
         return $entity;
     }
