@@ -298,7 +298,7 @@ class TranslationSubscriber implements EventSubscriberInterface
      */
     protected function getTranslatableListener()
     {
-        foreach ($this->doctrine->getEntityManager()->getEventManager()->getListeners() as $event => $listeners) {
+        foreach ($this->doctrine->getManager()->getEventManager()->getListeners() as $event => $listeners) {
             foreach ($listeners as $hash => $listener) {
                 if ($listener instanceof TranslatableListener) {
                     return $this->listener = $listener;
