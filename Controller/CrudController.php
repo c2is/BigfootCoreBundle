@@ -3,20 +3,12 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\CoreBundle\Manager\FilterManager;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Expr\Comparison;
-
-use Bigfoot\Bundle\CoreBundle\Controller\AdminControllerInterface;
 use Bigfoot\Bundle\CoreBundle\Controller\BaseController;
-use Bigfoot\Bundle\CoreBundle\Event\FormEvent;
-use Bigfoot\Bundle\UserBundle\Entity\User;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Crud controller.
@@ -530,8 +522,8 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.edit.errors.not_found',
-                    array('%entity%', $this->getEntity())
-                )
+                    array('%entity%' => $this->getEntity() . ' (id: ' . $id . ')')
+            )
             );
         }
 
@@ -875,5 +867,31 @@ abstract class CrudController extends BaseController
         }
 
         return $entity;
+    }
+
+    /**
+     * @param string $env Environment, ex app, admin
+     * @param string $route
+     * @param array $parameters
+     * @param boolean $envAutoSuffix Indicate if actual env suffix (ex _dev) will be added to $env, or not
+     * @return string
+     */
+    protected function generateEnvUrl($env, $route, array $parameters = array(), $envAutoSuffix = true)
+    {
+        $requestContext = $this->get('router')->getContext();
+        $oldBaseUrl = $requestContext->getBaseUrl();
+        $baseUrl = '/' . $env;
+        if ($envAutoSuffix) {
+            $posSeparator = strpos($oldBaseUrl, '_');
+            if ($posSeparator !== false) {
+                $baseUrl .= substr($oldBaseUrl, $posSeparator, -4);
+            }
+        }
+        $baseUrl .= '.php';
+        $requestContext->setBaseUrl($baseUrl);
+        $url = $this->generateUrl($route, $parameters, UrlGeneratorInterface::ABSOLUTE_URL);
+        $requestContext->setBaseUrl($oldBaseUrl);
+
+        return $url;
     }
 }
