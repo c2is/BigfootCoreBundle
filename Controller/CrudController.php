@@ -522,8 +522,8 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.edit.errors.not_found',
-                    array('%entity%', $this->getEntity())
-                )
+                    array('%entity%' => $this->getEntity() . ' (id: ' . $id . ')')
+            )
             );
         }
 
