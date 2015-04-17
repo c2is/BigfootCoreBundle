@@ -718,6 +718,18 @@ abstract class CrudController extends BaseController
                 $fields[$key] = $field;
             }
         }
+        
+        $actions = $this->getActions();
+        $actionsUrls = array();
+        $i = 0;
+        foreach ($items as $item) {
+            foreach ($actions as $actionId => $action) {
+                if (array_key_exists($actionId, $actionsUrls) === false) {
+                    $actionsUrls[$actionId] = array();
+                }
+                $actionsUrls[$actionId][$item->getId()] = $this->getActionUrl($actionId, $action, $item);
+            }
+        }
 
         return $this->render(
             $this->getIndexTemplate(),
@@ -725,7 +737,8 @@ abstract class CrudController extends BaseController
                 'list_items'    => $items,
                 'list_title'    => $this->getEntityLabelPlural(),
                 'list_fields'   => $fields,
-                'actions'       => $this->getActions(),
+                'actions'       => $actions,
+                'actions_urls'  => $actionsUrls,
                 'globalActions' => $this->getGlobalActions(),
                 'list_filters'  => $this->generateFiltersForm() ? $this->generateFiltersForm()->createView() : null
             )
@@ -893,5 +906,17 @@ abstract class CrudController extends BaseController
         $requestContext->setBaseUrl($oldBaseUrl);
 
         return $url;
+    }
+
+    /**
+     * Get action url for an item
+     *
+     * @param string $actionId
+     * @param array $action
+     * @param stdclass $item
+     * @return string
+     */
+    protected function getActionUrl($actionId, array $action, $item) {
+        return null;
     }
 }
