@@ -92,6 +92,18 @@ class FilterType extends AbstractType
                     )
                 );
             }
+
+            if ($filter['type'] == 'date_min') {
+                $builder->add(
+                    $filter['name'],
+                    'date',
+                    array(
+                        'required' => false,
+                        'data'     => $value,
+                        'label'    => $filter['placeholder'],
+                    )
+                );
+            }
         }
     }
 
