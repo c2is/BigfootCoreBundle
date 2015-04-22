@@ -188,6 +188,9 @@ class FilterManager
 
                             $this->addWhere($where, null, 'OR_LIKE');
                             break;
+                        case 'date_min':
+                            $this->addWhere($options['property'], $data->format('Y-m-d'), 'MIN');
+                            break;
                     }
                 }
             }
@@ -233,6 +236,12 @@ class FilterManager
                         }
                         $query->andWhere($expr);
 
+                        break;
+                    case 'MIN':
+                        $query
+                            ->andWhere($where['alias'].'.'.$where['property'].' >= :v' . $this->index)
+                            ->setParameter('v' . $this->index, '%' . $where['value'] . '%')
+                        ;
                         break;
                 }
             }
@@ -331,6 +340,13 @@ class FilterManager
                         throw new \Exception("You must define an array of properties to search in for entity ".$options['entity']);
                     }
 
+                    $filters[] = $field;
+                    break;
+                case 'date_min':
+                    if (!isset($options['property'])) {
+                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                    }
+                    
                     $filters[] = $field;
                     break;
             }
