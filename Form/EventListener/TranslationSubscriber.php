@@ -111,6 +111,15 @@ class TranslationSubscriber implements EventSubscriberInterface
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
             $translations       = array();
             $initialLocale      = ($parentData) ? $listener->getTranslatableLocale($parentData, $meta) : $this->defaultLocale;
+            unset($locales[$initialLocale]);
+
+            $form->add('_entity_locale', 'hidden', array(
+                'data' => $initialLocale,
+                'mapped' => false,
+                'attr' => array(
+                    'class' => 'entity-locale',
+                ),
+            ));
 
             if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
                 $translations = array();
@@ -131,7 +140,6 @@ class TranslationSubscriber implements EventSubscriberInterface
                 $em->refresh($parentData);
             }
 
-            unset($locales[$this->defaultLocale]);
             foreach ($locales as $locale => $localeConfig) {
                 foreach ($translatableFields as $fieldName => $fieldType) {
                     $data = '';
