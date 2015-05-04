@@ -45,11 +45,8 @@ class TranslatableLabelType extends AbstractTranslatableLabelType
                             array(
                                 'label' => 'bigfoot_core.translatable_label.form.value.label',
                                 'required' => false,
-                                'attr' => array_merge(
-                                    array(
-                                        'data-locale' => $this->defaultLocale,
-                                    ),
-                                    $labelManager->getValueFieldAttributes($label)
+                                'attr' => array(
+                                    'data-locale' => $this->defaultLocale,
                                 )
                             )
                         );
