@@ -33,11 +33,11 @@ class TranslationRepository
      * @param \Doctrine\Common\Annotations\Reader $reader
      * @param PropertyAccessor $propertyAccessor
      */
-    public function __construct($em, $reader, $propertyAccessor)
+    public function __construct($em, $reader, $propertyAccessor = null)
     {
         $this->reader           = $reader;
         $this->em               = $em;
-        $this->propertyAccessor = $propertyAccessor;
+        $this->propertyAccessor = $propertyAccessor ? : new PropertyAccessor();
     }
 
     /**
@@ -77,11 +77,13 @@ class TranslationRepository
             $translation = null;
 
             if ($entity && $this->propertyAccessor->getValue($entity, $identifier)) {
-                $translation = $translationClassRepository->findOneBy(array(
-                    'locale' => $locale,
-                    'field'  => $field,
-                    'object' => $entity,
-                ));
+                $translation = $translationClassRepository->findOneBy(
+                    array(
+                        'locale' => $locale,
+                        'field'  => $field,
+                        'object' => $entity,
+                    )
+                );
             }
 
             if ($translation) {

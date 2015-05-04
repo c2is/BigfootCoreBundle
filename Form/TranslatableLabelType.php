@@ -24,52 +24,68 @@ class TranslatableLabelType extends AbstractTranslatableLabelType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-                /** @var TranslatableLabel $label */
-                $label = $event->getData();
-                $form = $event->getForm();
+            ->addEventListener(
+                FormEvents::PRE_SET_DATA,
+                function (FormEvent $event) {
+                    /** @var TranslatableLabel $label */
+                    $label = $event->getData();
+                    $form = $event->getForm();
 
-                if (!$label) {
-                    return;
+                    if (!$label) {
+                        return;
+                    }
+                    $labelManager = $this->labelManager;
+
+                    if ($label->isPlural()) {
+                        $this->managePlural($label, $label->getValue(), $form, $this->defaultLocale);
+                    } else {
+                        $form->add(
+                            'value',
+                            $labelManager->getValueFieldType($label),
+                            array(
+                                'label' => 'bigfoot_core.translatable_label.form.value.label',
+                                'required' => false,
+                                'attr' => array_merge(
+                                    array(
+                                        'data-locale' => $this->defaultLocale,
+                                    ),
+                                    $labelManager->getValueFieldAttributes($label)
+                                )
+                            )
+                        );
+                    }
+
+                    $form->add(
+                        'translations',
+                        'collection',
+                        array(
+                            'type' => 'bigfoot_bundle_corebundle_translatable_label_translationtype',
+                            'label' => false,
+                        )
+                    );
                 }
-                $labelManager = $this->labelManager;
+            )
+            ->addEventListener(
+                FormEvents::PRE_SUBMIT,
+                function (FormEvent $event) {
+                    $label = $event->getData();
+                    $form = $event->getForm();
 
-                if ($label->isPlural()) {
-                    $this->managePlural($label, $label->getValue(), $form, $this->defaultLocale);
-                } else {
-                    $form->add('value', $labelManager->getValueFieldType($label), array(
-                        'label' => 'bigfoot_core.translatable_label.form.value.label',
-                        'required' => false,
-                        'attr' => array(
-                            'data-locale' => $this->defaultLocale,
-                        ),
-                    ));
+                    if (!$label) {
+                        return;
+                    }
+
+                    // If there is no value, it means it's a plural form label
+                    if (!isset($label['value'])) {
+                        $labelValue = $this->aggregatePluralValues($label, $form);
+                        $label['value'] = $labelValue;
+                    }
+
+                    $form->add('value');
+
+                    $event->setData($label);
                 }
-
-                $form->add('translations', 'collection', array(
-                    'type' => 'bigfoot_bundle_corebundle_translatable_label_translationtype',
-                    'label' => false,
-                ));
-            })
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-                $label = $event->getData();
-                $form = $event->getForm();
-
-                if (!$label) {
-                    return;
-                }
-
-                // If there is no value, it means it's a plural form label
-                if (!isset($label['value'])) {
-                    $labelValue = $this->aggregatePluralValues($label, $form);
-                    $label['value'] = $labelValue;
-                }
-
-                $form->add('value');
-
-                $event->setData($label);
-            })
-        ;
+            );
     }
 
     /**
@@ -87,10 +103,12 @@ class TranslatableLabelType extends AbstractTranslatableLabelType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel',
-            'label' => false,
-        ));
+        $resolver->setDefaults(
+            array(
+                'data_class' => 'Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel',
+                'label' => false,
+            )
+        );
     }
 
     /**

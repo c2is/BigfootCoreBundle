@@ -31,7 +31,26 @@ class TranslatableLabelManager
      */
     public function getValueFieldType($label)
     {
+        if ($label->isRichtext()) {
+            return 'bigfoot_richtext';
+        }
+
         return $label->isMultiline() ? 'textarea' : 'text';
+    }
+
+    /**
+     * @param TranslatableLabel $label
+     * @return string
+     */
+    public function getValueFieldAttributes($label)
+    {
+        if (!$label->isRichtext()) {
+            return array();
+        }
+
+        return array(
+            'class' => 'ckeditor'
+        );
     }
 
     /**
