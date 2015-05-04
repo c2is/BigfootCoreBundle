@@ -30,7 +30,8 @@ class LabelsExtractCommand extends BaseCommand
                 new InputArgument('target', InputArgument::OPTIONAL, 'The target directory', 'app/Resources/translatable_label'),
                 new InputOption('overwrite', 'o', InputOption::VALUE_NONE, 'Whether to overwrite the translations value or not (defaults to false)'),
                 new InputOption('auto-plural', 'p', InputOption::VALUE_NONE, 'Sets plural to true if a pipe character is found in the label value'),
-                new InputOption('auto-multiline', 'm', InputOption::VALUE_NONE, 'Sets multiline to true if a new line character is found in the label value')
+                new InputOption('auto-multiline', 'm', InputOption::VALUE_NONE, 'Sets multiline to true if a new line character is found in the label value'),
+                new InputOption('auto-richtext', 'r', InputOption::VALUE_NONE, 'Sets richtext to true if HTML tags are found in the label value')
             ))
             ->setDescription('Synchronizes labels stored in files with those found in database.')
             ->setHelp(<<<EOT
@@ -128,6 +129,16 @@ EOT
             }
             if ($label->isMultiline() || ($autoMultiline && $hasNewLine)) {
                 $labelArray['multiline'] = true;
+            }
+
+            $value = $label->getValue();
+
+            if ($label->isRichtext() || ($value != strip_tags($value))) {
+                if (isset($labelArray['multiline'])) {
+                    unset($labelArray['multiline']);
+                }
+
+                $labelArray['richtext'] = true;
             }
 
             $categories[$category][$labelName] = $labelArray;
