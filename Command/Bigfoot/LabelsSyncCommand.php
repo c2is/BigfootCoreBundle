@@ -65,7 +65,7 @@ EOT
         $locales = array_keys($context->getValues('language'));
 
         $files = array();
-        if(is_dir($target)) {
+        if (is_dir($target)) {
             $files = glob($target.'/*.yml');
         } else {
             $files[] = $target;
@@ -115,6 +115,10 @@ EOT
 
                     if (isset($translation['multiline'])) {
                         $label->setMultiline((boolean) $translation['multiline']);
+                    }
+
+                    if (isset($translation['richtext'])) {
+                        $label->setRichtext((boolean) $translation['richtext']);
                     }
 
                     if (isset($translation['value']) && ($overwrite || !$label->getId())) {

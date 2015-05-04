@@ -31,6 +31,10 @@ class TranslatableLabelManager
      */
     public function getValueFieldType($label)
     {
+        if ($label->isRichtext()) {
+            return 'bigfoot_richtext';
+        }
+
         return $label->isMultiline() ? 'textarea' : 'text';
     }
 

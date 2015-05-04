@@ -21,11 +21,13 @@ class BigfootRichtextType extends AbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'attr'  => array(
-                'class' => 'ckeditor',
+        $resolver->setDefaults(
+            array(
+                'attr'  => array(
+                    'class' => 'ckeditor',
+                )
             )
-        ));
+        );
     }
 
     /**

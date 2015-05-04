@@ -71,6 +71,13 @@ class TranslatableLabel
     private $multiline = false;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="richtext", type="boolean")
+     */
+    private $richtext = false;
+
+    /**
      * @var \DateTime
      *
      * @Gedmo\Timestampable(on="create")
@@ -241,6 +248,25 @@ class TranslatableLabel
     public function isMultiline()
     {
         return $this->multiline;
+    }
+
+    /**
+     * @param boolean $richtext
+     * @return $this
+     */
+    public function setRichtext($richtext)
+    {
+        $this->richtext = $richtext;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isRichtext()
+    {
+        return $this->richtext;
     }
 
     /**
