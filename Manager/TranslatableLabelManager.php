@@ -39,21 +39,6 @@ class TranslatableLabelManager
     }
 
     /**
-     * @param TranslatableLabel $label
-     * @return string
-     */
-    public function getValueFieldAttributes($label)
-    {
-        if (!$label->isRichtext()) {
-            return array();
-        }
-
-        return array(
-            'class' => 'ckeditor'
-        );
-    }
-
-    /**
      * @param string $interval
      * @return string
      */

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Gedmo\Translatable\TranslatableListener;
 use Doctrine\Common\Annotations\Reader;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
@@ -37,7 +38,7 @@ class TranslationRepository
     {
         $this->reader           = $reader;
         $this->em               = $em;
-        $this->propertyAccessor = $propertyAccessor ? : new PropertyAccessor();
+        $this->propertyAccessor = $propertyAccessor ? : PropertyAccess::createPropertyAccessor();
     }
 
     /**
