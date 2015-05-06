@@ -42,9 +42,15 @@ class TranslatableLabelRepository extends EntityRepository
 
     public function getCategories()
     {
-        $results = $this
-            ->createQueryBuilder('e')
-            ->select('SUBSTRING_INDEX(SUBSTRING_INDEX(e.name, \'.\', 2), \'.\', -2) as category')
+        $qb = $this->createQueryBuilder('e');
+
+        if ('postgresql' == $this->_em->getConnection()->getDriver()->getDatabasePlatform()->getName()) {
+            $qb->select('CONCAT(SUBSTRING_INDEX(e.name, \'.\', 1), \'.\', SUBSTRING_INDEX(e.name, \'.\', 2)) as category');
+        } else {
+            $qb->select('SUBSTRING_INDEX(SUBSTRING_INDEX(e.name, \'.\', 2), \'.\', -2) as category');
+        }
+
+        $results = $qb
             ->andWhere('LOCATE(\' \', e.name) = 0')
             ->andWhere('LOCATE(\'.\', e.name) > 0')
             ->distinct()
@@ -52,7 +58,6 @@ class TranslatableLabelRepository extends EntityRepository
             ->getQuery()
             ->getResult()
         ;
-
         $toReturn = array();
 
         foreach ($results as $result) {
