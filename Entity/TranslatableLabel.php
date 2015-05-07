@@ -73,7 +73,7 @@ class TranslatableLabel
     /**
      * @var bool
      *
-     * @ORM\Column(name="richtext", type="boolean")
+     * @ORM\Column(name="richtext", type="boolean", nullable=true)
      */
     private $richtext = false;
 
