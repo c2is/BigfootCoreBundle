@@ -82,6 +82,21 @@ class FilterManager
     }
 
     /**
+     * @param string $entity
+     * @return bool
+     */
+    public function hasSessionFilter($entity)
+    {
+        foreach ($this->getSessionFilter($entity) as $value) {
+            if ($value !== null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $entityName
      * @param array $globalFilters
      * @return bool
