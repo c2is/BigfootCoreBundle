@@ -201,6 +201,17 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * @param int $countResults
+     * @param int $count
+     * @param bool $isSearch
+     * @return string
+     */
+    protected function getListEntityLabel($countResults, $count, $isSearch)
+    {
+        return $this->getEntityLabelPlural();
+    }
+
+    /**
      * @return object
      */
     protected function getFormType()
@@ -702,6 +713,9 @@ abstract class CrudController extends BaseController
 
     /**
      * Render index
+     *
+     * @param array $items
+     * @return Response
      */
     protected function renderIndex($items)
     {
@@ -730,12 +744,13 @@ abstract class CrudController extends BaseController
                 $actionsUrls[$actionId][$item->getId()] = $this->getActionUrl($actionId, $action, $item);
             }
         }
+        $isSearch = $this->getFilterManager()->hasSessionFilter(strtolower($this->getEntityName()));
 
         return $this->render(
             $this->getIndexTemplate(),
             array(
                 'list_items'    => $items,
-                'list_title'    => $this->getEntityLabelPlural(),
+                'list_title'    => $this->getListEntityLabel(count($items), $this->countEntities(), $isSearch),
                 'list_fields'   => $fields,
                 'actions'       => $actions,
                 'actions_urls'  => $actionsUrls,
@@ -747,6 +762,12 @@ abstract class CrudController extends BaseController
 
     /**
      * Render form
+     *
+     * @param $form
+     * @param string $action
+     * @param stdclass $entity
+     * @param string $visibility
+     * @return Response
      */
     protected function renderForm($form, $action, $entity, $visibility = null)
     {
@@ -918,5 +939,18 @@ abstract class CrudController extends BaseController
      */
     protected function getActionUrl($actionId, array $action, $item) {
         return null;
+    }
+
+    /**
+     * Count entities
+     *
+     * @return int
+     */
+    protected function countEntities()
+    {
+        $queryBuilder = $this->getRepository($this->getEntityClass())->createQueryBuilder('a');
+        $queryBuilder->select('COUNT(a)');
+
+        return $queryBuilder->getQuery()->getSingleScalarResult();
     }
 }
