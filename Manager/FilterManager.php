@@ -87,9 +87,12 @@ class FilterManager
      */
     public function hasSessionFilter($entity)
     {
-        foreach ($this->getSessionFilter($entity) as $value) {
-            if ($value !== null) {
-                return true;
+        $filters = $this->getSessionFilter($entity);
+        if (is_array($filters)) {
+            foreach ($this->getSessionFilter($entity) as $value) {
+                if ($value !== null) {
+                    return true;
+                }
             }
         }
 
