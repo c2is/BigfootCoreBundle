@@ -447,7 +447,7 @@ abstract class CrudController extends BaseController
             $this->getSession()->getFlashBag()->add('error', 'bigfoot.core.crud.index.error');
         }
 
-        return $this->renderIndex($items);
+        return $this->renderIndex($items, $result->getHint('knp_paginator.count'));
     }
 
     /**
@@ -715,9 +715,10 @@ abstract class CrudController extends BaseController
      * Render index
      *
      * @param array $items
+     * @param int $count
      * @return Response
      */
-    protected function renderIndex($items)
+    protected function renderIndex($items, $count)
     {
         $fields = array();
         foreach ($this->getFields() as $key => $field) {
@@ -735,7 +736,6 @@ abstract class CrudController extends BaseController
         
         $actions = $this->getActions();
         $actionsUrls = array();
-        $i = 0;
         foreach ($items as $item) {
             foreach ($actions as $actionId => $action) {
                 if (array_key_exists($actionId, $actionsUrls) === false) {
@@ -750,7 +750,7 @@ abstract class CrudController extends BaseController
             $this->getIndexTemplate(),
             array(
                 'list_items'    => $items,
-                'list_title'    => $this->getListEntityLabel(count($items), $this->countEntities(), $isSearch),
+                'list_title'    => $this->getListEntityLabel($count, $this->countEntities(), $isSearch),
                 'list_fields'   => $fields,
                 'actions'       => $actions,
                 'actions_urls'  => $actionsUrls,
