@@ -355,4 +355,10 @@ class TranslatableLabel
 
         return $this;
     }
+
+    public function setTranslations($translations)
+    {
+        $this->translations = $translations;
+        return $this;
+    }
 }
