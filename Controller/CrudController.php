@@ -437,6 +437,18 @@ abstract class CrudController extends BaseController
             return $this->redirect($this->generateUrl($this->getControllerIndex()));
         }
 
+        // pagination
+        $defaultSort = $this->getDefaultSort();
+        // les configs knp_paginator.default_options.sort_field_name et sort_direction_name sont intégrées dans le service knp_paginator,
+        // dans une propriété protected sans getter, donc on ne peut pas récupérer les valeurs
+        if ($this->getRequest()->query->get('sort') == null && is_array($defaultSort)) {
+            // Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber lit ses valeurs dans $_GET, donc, on les écrit là, sans passer par Request
+            $_GET['sort'] = $defaultSort['sort'];
+            $_GET['direction'] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
+            //$paginatorParams[$paginatorSortName] = $defaultSort['sort'];
+            //$paginatorParams[$paginatorDirectionName] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
+        }
+
         $result = $this->getQuery();
 
         try {
@@ -444,7 +456,7 @@ abstract class CrudController extends BaseController
         } catch (\Exception $e) {
             $items = array();
             $filterManager->clearFilters($this->getEntityName());
-            $this->getSession()->getFlashBag()->add('error', 'bigfoot.core.crud.index.error');
+            $this->getSession()->getFlashBag()->add('error', $this->get('translator')->trans('bigfoot_core.crud.index.error', array('%error%' => $e->getMessage())));
         }
 
         return $this->renderIndex($items, $result->getHint('knp_paginator.count'));
@@ -746,16 +758,27 @@ abstract class CrudController extends BaseController
         }
         $isSearch = $this->getFilterManager()->hasSessionFilter(strtolower($this->getEntityName()));
 
+        // pagination
+        $defaultSort = $this->getDefaultSort();
+        $paginatorParams = array();
+        // les configs knp_paginator.default_options.sort_field_name et sort_direction_name sont intégrées dans le service knp_paginator,
+        // dans une propriété protected sans getter, donc on ne peut pas récupérer les valeurs
+        if ($this->getRequest()->query->get('sort') == null && is_array($defaultSort)) {
+            $paginatorParams['sort'] = $defaultSort['sort'];
+            $paginatorParams['direction'] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
+        }
+
         return $this->render(
             $this->getIndexTemplate(),
             array(
-                'list_items'    => $items,
-                'list_title'    => $this->getListEntityLabel($count, $this->countEntities(), $isSearch),
-                'list_fields'   => $fields,
-                'actions'       => $actions,
-                'actions_urls'  => $actionsUrls,
-                'globalActions' => $this->getGlobalActions(),
-                'list_filters'  => $this->generateFiltersForm() ? $this->generateFiltersForm()->createView() : null
+                'list_items'       => $items,
+                'list_title'       => $this->getListEntityLabel($count, $this->countEntities(), $isSearch),
+                'list_fields'      => $fields,
+                'actions'          => $actions,
+                'actions_urls'     => $actionsUrls,
+                'globalActions'    => $this->getGlobalActions(),
+                'list_filters'     => $this->generateFiltersForm() ? $this->generateFiltersForm()->createView() : null,
+                'paginator_params' => $paginatorParams
             )
         );
     }
@@ -952,5 +975,18 @@ abstract class CrudController extends BaseController
         $queryBuilder->select('COUNT(a)');
 
         return $queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @return array
+     */
+    protected function getDefaultSort()
+    {
+        $fields = array_keys($this->getFields());
+        foreach ($fields as $field) {
+            if (in_array($field, array('title', 'name', 'label'))) {
+                return array('sort' => 'e.'  . $field);
+            }
+        }
     }
 }
