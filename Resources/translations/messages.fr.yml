@@ -1,5 +1,7 @@
 bigfoot_core:
     crud:
+        index:
+             error: 'Erreur : %error%'
         actions:
             edit:
                 label: "Edition"
