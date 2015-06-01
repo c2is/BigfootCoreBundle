@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\ORM\Query;
-use Bigfoot\Bundle\CoreBundle\Controller\BaseController;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -982,11 +981,6 @@ abstract class CrudController extends BaseController
      */
     protected function getDefaultSort()
     {
-        $fields = array_keys($this->getFields());
-        foreach ($fields as $field) {
-            if (in_array($field, array('title', 'name', 'label'))) {
-                return array('sort' => 'e.'  . $field);
-            }
-        }
+        return null;
     }
 }
