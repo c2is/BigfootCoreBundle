@@ -104,9 +104,8 @@ class TranslationSubscriber implements EventSubscriberInterface
             $entityClass = $parentForm->getConfig()->getDataClass();
         }
 
-        $meta = $this->doctrine->getManager()->getClassMetadata($entityClass);
-
         if ($entityClass) {
+            $meta = $this->doctrine->getManager()->getClassMetadata($entityClass);
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
             $translations       = array();
