@@ -983,4 +983,12 @@ abstract class CrudController extends BaseController
     {
         return null;
     }
+
+    /**
+     * @return string
+     */
+    protected function getIcon()
+    {
+        return null;
+    }
 }
