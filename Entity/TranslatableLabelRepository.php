@@ -36,8 +36,7 @@ class TranslatableLabelRepository extends EntityRepository
                 \Gedmo\Translatable\TranslatableListener::HINT_FALLBACK,
                 0
             )
-            ->getResult()
-        ;
+            ->getArrayResult();
     }
 
     public function getCategories()
