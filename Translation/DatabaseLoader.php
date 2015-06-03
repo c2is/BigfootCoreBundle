@@ -19,6 +19,7 @@ class DatabaseLoader implements LoaderInterface
 
     public function load($resource, $locale, $domain = 'messages')
     {
+        $catalogue = null;
         $catalogue = new MessageCatalogue($locale);
 
         /** @var TranslatableLabelRepository $repository */
@@ -28,7 +29,7 @@ class DatabaseLoader implements LoaderInterface
         if ($translatableLabels) {
             /** @var TranslatableLabel $translatableLabel */
             foreach ($translatableLabels as $translatableLabel) {
-                $catalogue->set($translatableLabel->getName(), $translatableLabel->getValue(), $domain);
+                $catalogue->set($translatableLabel['name'], $translatableLabel['value'], $domain);
             }
         }
 
