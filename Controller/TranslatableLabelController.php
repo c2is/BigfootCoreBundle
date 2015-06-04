@@ -7,16 +7,8 @@ use Doctrine\ORM\Query;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-
-use Bigfoot\Bundle\CoreBundle\Controller\CrudController;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * TranslatableLabel controller.
@@ -52,17 +44,24 @@ class TranslatableLabelController extends CrudController
                 'formatters' => array(
                     'trans'
                 ),
+                'width' => '200px'
             ),
-            'name',
+            'name' => array(
+                'width' => '300px'
+            ),
             'value',
             'editedAt' => array(
                 'formatters' => array(
                     'date'
                 ),
+                'width' => '120px'
             ),
         );
     }
 
+    /**
+     * @return array
+     */
     protected function getFilters()
     {
         return array(
@@ -76,7 +75,17 @@ class TranslatableLabelController extends CrudController
                 )
             ),
             array(
-                'placeholder' => 'Recherche',
+                'placeholder' => 'Identifier',
+                'name'        => 'name',
+                'type'        => 'search',
+                'options' => array(
+                    'properties' => array(
+                        'name',
+                    )
+                )
+            ),
+            array(
+                'placeholder' => 'Translation',
                 'name'        => 'search',
                 'type'        => 'search',
                 'options' => array(
@@ -93,9 +102,12 @@ class TranslatableLabelController extends CrudController
      */
     protected function getEntityLabelPlural()
     {
-        return 'bigfoot_core.controller.admin_translatable_label.entity.label_plural';
+        return 'bigfoot_core.crud.controller.admin_translatable_label.entity.label_plural';
     }
 
+    /**
+     * @return string
+     */
     protected function getFormType()
     {
         return 'bigfoot_bundle_corebundle_translatable_labeltype';
