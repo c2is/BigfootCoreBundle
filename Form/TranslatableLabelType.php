@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Form;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
+use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -34,7 +35,24 @@ class TranslatableLabelType extends AbstractTranslatableLabelType
                     if (!$label) {
                         return;
                     }
-                    $labelManager = $this->labelManager;
+
+                    $labelManager    = $this->labelManager;
+                    $existingLocales = array();
+                    $locales         = array_keys($this->context->getValues('language'));
+                    $locales         = array_combine($locales, $locales);
+
+                    unset($locales[$this->defaultLocale]);
+
+                    /** @var TranslatableLabel $translation */
+                    foreach ($label->getTranslations() as $translation) {
+                        $existingLocales[] = $translation->getLocale();
+                    }
+
+                    $missingLocales = array_diff($locales, $existingLocales);
+
+                    foreach ($missingLocales as $locale) {
+                        $label->addTranslation(new TranslatableLabelTranslation($locale, 'value', ''));
+                    }
 
                     if ($label->isPlural()) {
                         $this->managePlural($label, $label->getValue(), $form, $this->defaultLocale);
