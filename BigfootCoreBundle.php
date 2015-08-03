@@ -2,12 +2,14 @@
 
 namespace Bigfoot\Bundle\CoreBundle;
 
-use Bigfoot\Bundle\CoreBundle\DependencyInjection\Compiler\FormatterCompilerPass;
-use Bigfoot\Bundle\CoreBundle\DependencyInjection\Compiler\SetRouterPass;
 use Doctrine\DBAL\Types\Type;
 use Symfony\Cmf\Component\Routing\DependencyInjection\Compiler\RegisterRoutersPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+use Bigfoot\Bundle\CoreBundle\DependencyInjection\Compiler\FormatterCompilerPass;
+use Bigfoot\Bundle\CoreBundle\DependencyInjection\Compiler\SetRouterPass;
+use Bigfoot\Bundle\CoreBundle\DependencyInjection\Compiler\GedmoCompilerPass;
 
 /**
  * Class BigfootCoreBundle
@@ -21,5 +23,6 @@ class BigfootCoreBundle extends Bundle
 
         $container->addCompilerPass(new FormatterCompilerPass());
         $container->addCompilerPass(new SetRouterPass());
+        $container->addCompilerPass(new GedmoCompilerPass());
     }
 }
