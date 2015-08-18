@@ -86,6 +86,9 @@ class TranslatableLabelManager
         $finder = new Finder();
         try {
             $fs->remove($finder->in(sprintf('%s/../*/translations/', $this->cacheDir))->name('catalogue.*.php'));
+            if (function_exists('opcache_reset')) {
+                opcache_reset();
+            }
         } catch (\Exception $e) {
             return false;
         }
