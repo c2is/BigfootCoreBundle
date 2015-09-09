@@ -327,3 +327,9 @@ services:
     bigfoot_core.translation.convert:
         class: Bigfoot\Bundle\CoreBundle\Translation\Convert
         arguments: [ @kernel ]
+
+    # Csv
+    bigfoot_core.manager.csv:
+        class: Bigfoot\Bundle\CoreBundle\Manager\CsvManager
+        arguments:
+            - @doctrine.orm.entity_manager
