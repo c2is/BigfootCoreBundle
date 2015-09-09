@@ -5,8 +5,10 @@ namespace Bigfoot\Bundle\CoreBundle\Entity;
 use Bigfoot\Bundle\CoreBundle\Exception\InvalidArgumentException;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\EntityRepository;
 use Gedmo\Translatable\TranslatableListener;
+use Gedmo\Tool\Wrapper\EntityWrapper;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -93,6 +95,50 @@ class TranslationRepository
                 $entity->addTranslation(new $entityTranslationClass($locale, $field, $fieldData));
             }
         }
+    }
+
+    /**
+     * Loads all translations with all translatable
+     * fields from the given entity
+     *
+     * @param object $entity Must implement Translatable
+     *
+     * @return array list of translations in locale groups
+     */
+    public function findTranslations($entity)
+    {
+        $result = array();
+        $wrapped = new EntityWrapper($entity, $this->em);
+
+        if ($wrapped->hasValidIdentifier()) {
+            if (is_object($entity)) {
+                $entityClass = ($entity instanceof Proxy) ? get_parent_class($entity) : get_class($entity);
+            } else {
+                throw new InvalidArgumentException('Argument 1 passed to TranslationRepository::translate must be an object');
+            }
+
+            $reflectionClass  = new \ReflectionClass($entityClass);
+            $translationClass = $this->isPersonnalTranslationRecursive($reflectionClass)->class;
+
+            $qb = $this->em->createQueryBuilder();
+            $qb->select('trans.content, trans.field, trans.locale')
+                ->from($translationClass, 'trans')
+                ->where('trans.object = :object')
+                ->orderBy('trans.locale');
+            $q = $qb->getQuery();
+            $data = $q->execute(
+                array('object' => $entity),
+                Query::HYDRATE_ARRAY
+            );
+
+            if ($data && is_array($data) && count($data)) {
+                foreach ($data as $row) {
+                    $result[$row['locale']][$row['field']] = $row['content'];
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
