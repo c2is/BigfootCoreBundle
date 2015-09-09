@@ -117,6 +117,8 @@ class CsvManager
 
         foreach ($csvArray as $key => $element) {
             foreach ($element as $keyE => $value) {
+                $value = $this->formatValue($value);
+
                 if (strpos($keyE, 'XXX')) {
                     $finalArray[$element['id']][$keyE] = isset($finalArray[$element['id']][$keyE]) ? ($finalArray[$element['id']][$keyE] . ' ' . $separator . $value) : $value;
                 } else {
@@ -126,5 +128,14 @@ class CsvManager
         }
 
         return $finalArray;
+    }
+
+    private function formatValue($value)
+    {
+        if ($value instanceof \DateTime) {
+            return $value->format('d-m-Y');
+        }
+
+        return $value;
     }
 }
