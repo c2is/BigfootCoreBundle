@@ -151,3 +151,64 @@ The second parameter(default false) defines whether or not the filter returns an
 {{ item|bigfoot_file('path', false) }}
 
 ```
+
+### Generate a csv in Crud Index page :
+
+Add the method getCsvFields into your extended CrudController controller:
+
+``` php
+protected function getCsvFields()
+{
+    return array(
+        'name' => array(
+            'label' => 'Name'
+        ),
+        'region.name' => array(
+            'label'    => 'Region',
+        ),
+        'services.codeDetail' => array(
+            'label'    => 'Services',
+            'multiple' => true
+        )
+    );
+}
+```
+
+If you want to display a field of your entity, use:
+
+``` php
+protected function getCsvFields()
+{
+    return array(
+        'name' => array(
+            'label' => 'Name'
+        ),
+        ....
+```
+
+If you want to display a field of an external entity, use:
+
+``` php
+protected function getCsvFields()
+{
+    return array(
+        'region.name' => array(
+            'label'    => 'Region'
+        ),
+        ....
+    );
+```
+
+If you want to display a field of OneToMany relation, use:
+
+``` php
+protected function getCsvFields()
+{
+    return array(
+        'services.codeDetail' => array(
+            'label'    => 'Services',
+            'multiple' => true
+        )
+        ....
+    );
+```

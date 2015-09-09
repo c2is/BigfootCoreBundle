@@ -361,12 +361,22 @@ abstract class CrudController extends BaseController
     {
         $globalActions = array();
 
+        if ($this->generateExportCsvLink()) {
+            $csvArray             = $this->generateExportCsvLink();
+            $globalActions['csv'] = array(
+                'label'      => 'bigfoot_core.crud.actions.csv.label',
+                'route'      => $csvArray['route'],
+                'parameters' => $csvArray['parameters'],
+                'icon'       => 'icon-table',
+            );
+        }
+
         if (method_exists($this, 'newAction')) {
             $globalActions['new'] = array(
                 'label'      => 'bigfoot_core.crud.actions.new.label',
                 'route'      => $this->getRouteNameForAction('new'),
                 'parameters' => array(),
-                'icon'       => 'pencil',
+                'icon'       => 'icon-plus-sign',
             );
         }
 
@@ -989,6 +999,26 @@ abstract class CrudController extends BaseController
      */
     protected function getIcon()
     {
+        return null;
+    }
+
+    protected function getCsvFields()
+    {
+        return null;
+    }
+
+    private function generateExportCsvLink()
+    {
+        if ($this->getCsvFields()) {
+            return array(
+                'route'      => 'admin_csv_generate',
+                'parameters' => array(
+                    'entity' => base64_encode($this->getEntity()),
+                    'fields' => base64_encode(serialize($this->getCsvFields()))
+                )
+            );
+        }
+
         return null;
     }
 }
