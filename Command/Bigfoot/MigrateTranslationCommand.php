@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Command\Bigfoot;
 
 use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,7 +33,7 @@ class MigrateTranslationCommand extends BaseCommand
 
         $output->writeln('<info>Migrating translations...</info>');
 
-        foreach ($entities as $translationClass => $objectClass) {
+        foreach ($entities as $objectClass) {
             $output->writeln('');
             $output->writeln(sprintf('<info>Importing entity: %s</info>', $objectClass));
 
