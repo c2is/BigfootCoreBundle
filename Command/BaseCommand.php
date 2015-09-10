@@ -48,6 +48,8 @@ abstract class BaseCommand extends ContainerAwareCommand
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->router        = $this->getContainer()->get('router');
         $this->output        = $output;
+
+        $this->entityManager->getConnection()->getConfiguration()->setSQLLogger(null);
     }
 
     /**
