@@ -18,7 +18,7 @@
         "knplabs/knp-menu-bundle":           "2.0.*@dev",
         "knplabs/knp-paginator-bundle":      "~2.4.1",
         "friendsofsymfony/jsrouting-bundle": "~1.1",
-        "liip/imagine-bundle":               "~0.6",
+        "liip/imagine-bundle":               "1.2.*@dev",
         "symfony-cmf/routing":               "dev-master"
     },
     "autoload": {
