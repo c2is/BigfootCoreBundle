@@ -27,7 +27,15 @@ class TranslatableLabelTranslation extends AbstractPersonalTranslation
         $this->setLocale($locale);
         $this->setField($field);
         $this->setContent($value);
+        $this->emptyValue = true;
     }
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="empty_value", type="boolean", options={"default": false})
+     */
+    private $emptyValue;
 
     /**
      * @ORM\ManyToOne(targetEntity="TranslatableLabel", inversedBy="translations")
@@ -41,5 +49,23 @@ class TranslatableLabelTranslation extends AbstractPersonalTranslation
     public function __toString()
     {
         return (string) $this->content;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isEmptyValue()
+    {
+        return $this->emptyValue;
+    }
+
+    /**
+     * @param boolean $emptyValue
+     * @return self
+     */
+    public function setEmptyValue($emptyValue)
+    {
+        $this->emptyValue = $emptyValue;
+        return $this;
     }
 }

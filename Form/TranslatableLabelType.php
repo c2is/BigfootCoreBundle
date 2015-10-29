@@ -78,6 +78,7 @@ class TranslatableLabelType extends AbstractTranslatableLabelType
                             'label' => false,
                         )
                     );
+
                 }
             )
             ->addEventListener(

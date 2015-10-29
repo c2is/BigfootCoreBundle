@@ -48,6 +48,15 @@ class TranslatableLabelTranslationType extends AbstractTranslatableLabelType
                         ),
                     ));
                 }
+
+                $form->add(
+                    'emptyValue',
+                    'checkbox',
+                    array(
+                        'label' => 'bigfoot_core.translatable_label.form.empty_value.label',
+                        'required' => false
+                    )
+                );
             })
             ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
                 $label = $event->getData();
@@ -66,6 +75,19 @@ class TranslatableLabelTranslationType extends AbstractTranslatableLabelType
                 $form->add('content');
 
                 $event->setData($label);
+            })
+            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+                /** @var TranslatableLabelTranslation $label */
+                $label = $event->getData();
+                $form = $event->getForm();
+
+                if (!$label) {
+                    return;
+                }
+
+                if ($label->isEmptyValue() === true ) {
+                    $label->setContent('');
+                }
             })
         ;
     }

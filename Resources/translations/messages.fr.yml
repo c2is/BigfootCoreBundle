@@ -110,6 +110,8 @@ bigfoot_core:
         form:
             value:
                 label: 'Libellé'
+            empty_value:
+                label: "Valeur vide ? (pas de fallback)"
             category:
                 title: 'Catégorie'
 bigfoot_process:

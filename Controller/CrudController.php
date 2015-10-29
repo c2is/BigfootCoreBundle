@@ -754,7 +754,7 @@ abstract class CrudController extends BaseController
                 $fields[$key] = $field;
             }
         }
-        
+
         $actions = $this->getActions();
         $actionsUrls = array();
         foreach ($items as $item) {

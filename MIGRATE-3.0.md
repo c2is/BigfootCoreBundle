@@ -18,6 +18,7 @@ doctrine:schema:update --force
 or
 
 ```
+add the file /vendor/bigfoot/core-bundle/Bigfoot/Bundle/CoreBundle/Migrations/Version_3_0.php to your project and rename it
 doctrine:migrations:diff
 doctrine:migrations:generate
 ```
