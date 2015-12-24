@@ -27,7 +27,7 @@ class TranslatableLabelTranslation extends AbstractPersonalTranslation
         $this->setLocale($locale);
         $this->setField($field);
         $this->setContent($value);
-        $this->emptyValue = true;
+        $this->emptyValue = false;
     }
 
     /**
