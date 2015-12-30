@@ -4,8 +4,10 @@ namespace Bigfoot\Bundle\CoreBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Bigfoot\Bundle\CoreBundle\Entity\QuickLink;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * Class QuickLinkType
@@ -13,17 +15,18 @@ use Bigfoot\Bundle\CoreBundle\Entity\QuickLink;
  */
 class QuickLinkType extends AbstractType
 {
-    private $securityContext;
+    /** @var  TokenStorage */
+    private $securityTokenStorage;
     private $request;
 
-    public function __construct($request)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->request = $request;
+        $this->request = $requestStack->getCurrentRequest();
     }
 
-    public function setSecurityContext($securityContext)
+    public function setSecurityTokenStorage($securityTokenStorage)
     {
-        $this->securityContext = $securityContext;
+        $this->securityTokenStorage = $securityTokenStorage;
     }
 
     /**
@@ -32,7 +35,7 @@ class QuickLinkType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $user = $this->securityContext->getToken()->getUser();
+        $user = $this->securityTokenStorage->getToken()->getUser();
 
         $builder
             ->add('userId','hidden',array(
@@ -48,7 +51,7 @@ class QuickLinkType extends AbstractType
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Bigfoot\Bundle\CoreBundle\Entity\QuickLink'

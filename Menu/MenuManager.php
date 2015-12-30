@@ -3,7 +3,8 @@
 namespace Bigfoot\Bundle\CoreBundle\Menu;
 
 use Bigfoot\Bundle\UserBundle\Entity\Role;
-use Symfony\Component\Security\Core\SecurityContext;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 use Doctrine\ORM\EntityManager;
 use Knp\Menu\FactoryInterface;
@@ -30,7 +31,7 @@ class MenuManager
     private $repository;
 
     /**
-     * @var security
+     * @var TokenStorage
      */
     private $security;
 
@@ -52,28 +53,28 @@ class MenuManager
     /**
      * Constrcut
      *
-     * @param FactoryInterface  $factory
-     * @param EntityManager     $entityManager
-     * @param SecurityContext   $security
+     * @param FactoryInterface $factory
+     * @param EntityManager $entityManager
+     * @param TokenStorage $security
      */
-    public function __construct(FactoryInterface $factory, EntityManager $entityManager, SecurityContext $security)
+    public function __construct(FactoryInterface $factory, EntityManager $entityManager, TokenStorage $security)
     {
         $this->factory       = $factory;
         $this->entityManager = $entityManager;
         $this->security      = $security;
 
-        $this->repository    = $this->entityManager->getRepository('BigfootUserBundle:RoleMenu');
-        $this->menu          = null;
-        $this->children      = array();
-        $this->user          = $this->security->getToken()->getUser();
+        $this->repository = $this->entityManager->getRepository('BigfootUserBundle:RoleMenu');
+        $this->menu       = null;
+        $this->children   = array();
+        $this->user       = $this->security->getToken()->getUser();
     }
 
     /**
      * Create root
      *
      * @param  string $slug
-     * @param  array  $params
-     * @param  array  $options
+     * @param  array $params
+     * @param  array $options
      *
      * @return MenuManager
      */
@@ -138,8 +139,8 @@ class MenuManager
      * Add child
      *
      * @param string $slug
-     * @param array  $params
-     * @param array  $options
+     * @param array $params
+     * @param array $options
      *
      * @return MenuManager
      */
@@ -162,8 +163,8 @@ class MenuManager
      *
      * @param string $parentSlug
      * @param string $slug
-     * @param array  $params
-     * @param array  $options
+     * @param array $params
+     * @param array $options
      *
      * @return MenuManager
      */
@@ -172,7 +173,7 @@ class MenuManager
         $parent = $this->nodeExists($this->children, $parentSlug);
 
         if (!$parent) {
-            throw new \Exception("Parent node with slug ".$parentSlug." doesn't exists");
+            throw new \Exception("Parent node with slug " . $parentSlug . " doesn't exists");
         }
 
         $child           = new \stdClass;
@@ -272,8 +273,8 @@ class MenuManager
     /**
      * Create child
      *
-     * @param  stdClass  $parent
-     * @param  array  $children
+     * @param  stdClass $parent
+     * @param  array $children
      *
      * @return stClass
      */
@@ -317,7 +318,7 @@ class MenuManager
     /**
      * Is granted
      *
-     * @param  string  $slug
+     * @param  string $slug
      *
      * @return boolean
      */
@@ -330,7 +331,7 @@ class MenuManager
             return true;
         }
 
-        $granted = false;
+        $granted  = false;
         $roleMenu = $this->repository->findOneBySlug($slug);
 
         if ($roleMenu instanceof RoleMenu) {

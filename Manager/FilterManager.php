@@ -6,6 +6,7 @@ use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -54,22 +55,26 @@ class FilterManager
     /**
      * Constructor
      *
-     * @param FormFactory   $formFactory
+     * @param FormFactory $formFactory
      * @param EntityManager $entityManager
-     * @param Session       $session
-     * @param Request       $request
+     * @param Session $session
+     * @param RequestStack $requestStack
      */
-    public function __construct(FormFactory $formFactory, EntityManager $entityManager, Session $session, Request $request)
-    {
+    public function __construct(
+        FormFactory $formFactory,
+        EntityManager $entityManager,
+        Session $session,
+        RequestStack $requestStack
+    ) {
         $this->formFactory   = $formFactory;
         $this->entityManager = $entityManager;
         $this->session       = $session;
-        $this->request       = $request;
+        $this->request       = $requestStack->getCurrentRequest();
 
-        $this->joins         = array();
-        $this->wheres        = array();
+        $this->joins  = array();
+        $this->wheres = array();
 
-        $this->index         = 0;
+        $this->index = 0;
     }
 
     /**
@@ -78,7 +83,7 @@ class FilterManager
      */
     public function getSessionFilter($entity)
     {
-        return !empty($entity) ? $this->session->get('bigfoot.crud.index.filters.'.$entity, null) : null;
+        return !empty($entity) ? $this->session->get('bigfoot.crud.index.filters.' . $entity, null) : null;
     }
 
     /**
@@ -113,7 +118,7 @@ class FilterManager
         $filters = $globalFilters['fields'];
 
         if ($this->request->request->get('clear', null) != null) {
-            $this->session->set('bigfoot.crud.index.filters.'.strtolower($entityName), array());
+            $this->session->set('bigfoot.crud.index.filters.' . strtolower($entityName), array());
 
             return true;
         }
@@ -131,7 +136,7 @@ class FilterManager
             }
         }
 
-        $this->session->set('bigfoot.crud.index.filters.'.strtolower($entityName), $datas);
+        $this->session->set('bigfoot.crud.index.filters.' . strtolower($entityName), $datas);
 
         return true;
     }
@@ -147,29 +152,29 @@ class FilterManager
      */
     public function filterQuery($query, $entityName, $globalFilters)
     {
-        $datas = $this->session->get('bigfoot.crud.index.filters.'.strtolower($entityName), null);
+        $datas = $this->session->get('bigfoot.crud.index.filters.' . strtolower($entityName), null);
         if ($datas) {
             $filters = $globalFilters['fields'];
 
             foreach ($filters as $key => $filter) {
                 if (isset($datas[$filter['name']]) && $datas[$filter['name']] !== null) {
                     $options = $filter['options'];
-                    $data = $datas[$filter['name']];
+                    $data    = $datas[$filter['name']];
 
                     switch ($filter['type']) {
                         case 'repositoryMethod':
-                            $em = $this->entityManager;
+                            $em   = $this->entityManager;
                             $repo = $em->getRepository($globalFilters['referer']);
                             call_user_func(array($repo, $options['method']), $query, $data);
 
                             break;
                         case 'entity':
                             $data = $this->getEntity($filter, $datas[$filter['name']]);
-                            if ($alias = $this->hasJoin('e.'.$options['relation'])) {
-                                $this->deleteJoin('e.'.$options['relation']);
-                                $this->addJoin('e.'.$options['relation'], $alias, 'WITH _r'.$key.'.id = '.$data->getId());
+                            if ($alias = $this->hasJoin('e.' . $options['relation'])) {
+                                $this->deleteJoin('e.' . $options['relation']);
+                                $this->addJoin('e.' . $options['relation'], $alias, 'WITH _r' . $key . '.id = ' . $data->getId());
                             } else {
-                                $this->addJoin('e.'.$options['relation'], '_r'.$key, 'WITH _r'.$key.'.id = '.$data->getId());
+                                $this->addJoin('e.' . $options['relation'], '_r' . $key, 'WITH _r' . $key . '.id = ' . $data->getId());
                             }
                             break;
                         case 'choice':
@@ -187,20 +192,20 @@ class FilterManager
                             $where      = array();
 
                             foreach ($properties as $property) {
-                                $data = '%'.$data.'%';
+                                $data = '%' . $data . '%';
                                 if (preg_match('/^.*\..*$/i', $property)) {
                                     $property = explode('.', $property);
                                     $relation = $property[0];
                                     $property = $property[1];
 
-                                    if ($alias = $this->hasJoin('e.'.$relation)) {
-                                        $where[] = array('property' => $alias.'.'.$property, 'value' => $data);
+                                    if ($alias = $this->hasJoin('e.' . $relation)) {
+                                        $where[] = array('property' => $alias . '.' . $property, 'value' => $data);
                                     } else {
-                                        $this->addJoin('e.'.$relation, '_r'.$key);
-                                        $where[] = array('property' => '_r'.$key.'.'.$property, 'value' => $data);
+                                        $this->addJoin('e.' . $relation, '_r' . $key);
+                                        $where[] = array('property' => '_r' . $key . '.' . $property, 'value' => $data);
                                     }
                                 } else {
-                                    $where[] = array('property' => 'e.'.$property, 'value' => $data);
+                                    $where[] = array('property' => 'e.' . $property, 'value' => $data);
                                 }
                             }
 
@@ -228,28 +233,26 @@ class FilterManager
     {
         foreach ($this->joins as $join) {
             $query
-                ->innerjoin($join['relation'].' '.$join['alias'], $join['on']);
+                ->innerjoin($join['relation'] . ' ' . $join['alias'], $join['on']);
         }
 
         foreach ($this->wheres as $where) {
             if ($where['type'] == null) {
                 $query
-                    ->andWhere($where['alias'].'.'.$where['property'].' = :v'.$this->index)
-                    ->setParameter('v'.$this->index, $where['value'])
-                ;
+                    ->andWhere($where['alias'] . '.' . $where['property'] . ' = :v' . $this->index)
+                    ->setParameter('v' . $this->index, $where['value']);
             } else {
                 switch ($where['type']) {
                     case 'LIKE':
                         $query
-                            ->andWhere($where['alias'].'.'.$where['property'].' LIKE :v'.$this->index)
-                            ->setParameter('v'.$this->index, '%'.$where['value'].'%')
-                        ;
+                            ->andWhere($where['alias'] . '.' . $where['property'] . ' LIKE :v' . $this->index)
+                            ->setParameter('v' . $this->index, '%' . $where['value'] . '%');
                         break;
                     case 'OR_LIKE':
                         $expr = $query->expr()->orX();
                         foreach ($where['property'] as $property) {
-                            $expr->add($query->expr()->like($property['property'], ':v'.$this->index));
-                            $query->setParameter('v'.$this->index, $property['value']);
+                            $expr->add($query->expr()->like($property['property'], ':v' . $this->index));
+                            $query->setParameter('v' . $this->index, $property['value']);
                             $this->index++;
                         }
                         $query->andWhere($expr);
@@ -257,9 +260,8 @@ class FilterManager
                         break;
                     case 'MIN':
                         $query
-                            ->andWhere($where['alias'].'.'.$where['property'].' >= :v' . $this->index)
-                            ->setParameter('v' . $this->index, '%' . $where['value'] . '%')
-                        ;
+                            ->andWhere($where['alias'] . '.' . $where['property'] . ' >= :v' . $this->index)
+                            ->setParameter('v' . $this->index, '%' . $where['value'] . '%');
                         break;
                 }
             }
@@ -301,7 +303,7 @@ class FilterManager
 
                     $em = $this->entityManager;
                     /** @var TranslatableLabelRepository $repo */
-                    $repo = $em->getRepository($datas['referer']);
+                    $repo                        = $em->getRepository($datas['referer']);
                     $field['options']['choices'] = $repo->getCategories();
 
                     $filters[] = $field;
@@ -314,7 +316,7 @@ class FilterManager
                         throw new \Exception("You must define an array of choices");
                     }
                     if (!isset($options['property'])) {
-                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                        throw new \Exception("You must define the attribute to display for entity " . $options['entity']);
                     }
 
                     $filters[] = $field;
@@ -324,20 +326,20 @@ class FilterManager
                         throw new \Exception("You must define the entity namesapce (ie. AcmeDemoBundle:Acme)");
                     }
                     if (!isset($options['relation'])) {
-                        throw new \Exception("You must define the relation between the entity to mapped and ".$options['entity']);
+                        throw new \Exception("You must define the relation between the entity to mapped and " . $options['entity']);
                     }
                     if (!isset($options['property'])) {
-                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                        throw new \Exception("You must define the attribute to display for entity " . $options['entity']);
                     }
 
                     $filters[] = $field;
                     break;
                 case 'referer':
                     if (!is_string($referer) || !preg_match('/^.*:.*$/i', $referer)) {
-                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                        throw new \Exception("You must define the attribute to display for entity " . $options['entity']);
                     }
                     if (!isset($options['property'])) {
-                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                        throw new \Exception("You must define the attribute to display for entity " . $options['entity']);
                     }
 
                     $type = isset($options['type']) ? $options['type'] : 'text';
@@ -352,25 +354,28 @@ class FilterManager
                     break;
                 case 'search':
                     if (!isset($options['properties'])) {
-                        throw new \Exception("You must define an array of properties to search in for entity ".$options['entity']);
+                        throw new \Exception("You must define an array of properties to search in for entity " . $options['entity']);
                     }
                     if (!is_array($options['properties'])) {
-                        throw new \Exception("You must define an array of properties to search in for entity ".$options['entity']);
+                        throw new \Exception("You must define an array of properties to search in for entity " . $options['entity']);
                     }
 
                     $filters[] = $field;
                     break;
                 case 'date_min':
                     if (!isset($options['property'])) {
-                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                        throw new \Exception("You must define the attribute to display for entity " . $options['entity']);
                     }
-                    
+
                     $filters[] = $field;
                     break;
             }
         }
 
-        $form = $this->formFactory->create('bigfoot_core_filter_type', null, array('filters' => $filters, 'entity' => $key));
+        $form = $this->formFactory->create('bigfoot_core_filter_type', null, array(
+            'filters' => $filters,
+            'entity'  => $key
+        ));
 
         return $form;
     }
@@ -378,7 +383,7 @@ class FilterManager
     /**
      * Get Entity
      *
-     * @param  array   $filter
+     * @param  array $filter
      * @param  integer $id
      *
      * @return mixed
@@ -401,12 +406,12 @@ class FilterManager
      */
     private function getChoices($referer, $attribute)
     {
-        $final   = array();
+        $final = array();
 
         $results = $this->entityManager
             ->getRepository($referer)
             ->createQueryBuilder('e')
-            ->select('DISTINCT e.'.$attribute)
+            ->select('DISTINCT e.' . $attribute)
             ->getQuery()
             ->getArrayResult();
 
@@ -422,7 +427,7 @@ class FilterManager
     /**
      * If joins already contains the join
      *
-     * @param  string  $join
+     * @param  string $join
      *
      * @return boolean
      */
@@ -438,7 +443,7 @@ class FilterManager
     /**
      * If joins already contains the join
      *
-     * @param  string  $join
+     * @param  string $join
      *
      * @return boolean
      */
@@ -460,14 +465,14 @@ class FilterManager
     public function addJoin($join, $alias = null, $on = null)
     {
         if (empty($alias)) {
-            $alias = '_j'.$this->index;
+            $alias = '_j' . $this->index;
             $this->index++;
         }
 
-        $add                = array();
-        $add['relation']    = $join;
-        $add['alias']       = $alias;
-        $add['on']          = $on;
+        $add             = array();
+        $add['relation'] = $join;
+        $add['alias']    = $alias;
+        $add['on']       = $on;
 
         $this->joins[$join] = $add;
 
@@ -492,7 +497,7 @@ class FilterManager
         $add['type']     = $type;
         $add['alias']    = $alias;
 
-        $this->wheres[]  = $add;
+        $this->wheres[] = $add;
 
         return $this;
     }
@@ -503,6 +508,6 @@ class FilterManager
      */
     public function clearFilters($entityName)
     {
-        return $this->session->remove('bigfoot.crud.index.filters.'.strtolower($entityName));
+        return $this->session->remove('bigfoot.crud.index.filters.' . strtolower($entityName));
     }
 }

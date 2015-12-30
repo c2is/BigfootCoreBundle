@@ -27,8 +27,8 @@ class FormatterExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            'bigfoot_crud_formatter' => new \Twig_Filter_Method($this, 'format'),
-            'bigfoot_crud_formatter_raw' => new \Twig_Filter_Method($this, 'format', array('is_safe' => 'html')),
+            new \Twig_SimpleFilter('bigfoot_crud_formatter', array($this, 'format')),
+            new \Twig_SimpleFilter('bigfoot_crud_formatter_raw', array($this, 'format'), array('is_safe' => 'html')),
         );
     }
 

@@ -117,10 +117,12 @@ class TranslatableLabelController extends CrudController
      * Lists all TranslatableLabel entities.
      *
      * @Route("/", name="admin_translatable_label")
+     * @param Request $request
+     * @return array
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        return $this->doIndex();
+        return $this->doIndex($request);
     }
 
     /**

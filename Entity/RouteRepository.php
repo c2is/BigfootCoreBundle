@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
@@ -19,9 +20,9 @@ class RouteRepository extends EntityRepository implements RouterInterface
 {
     private $request;
 
-    public function setRequest($request)
+    public function setRequest(RequestStack $requestStack)
     {
-        $this->request = $request;
+        $this->request = $requestStack->getCurrentRequest();
     }
 
     public function getRouteCollection()

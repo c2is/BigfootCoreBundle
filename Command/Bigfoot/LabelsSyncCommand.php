@@ -10,7 +10,7 @@ use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository;
 use Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Console\Helper\ProgressHelper;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -58,8 +58,7 @@ EOT
         $repo = $em->getRepository('BigfootCoreBundle:TranslatableLabel');
         $transRepo = $this->getContainer()->get('bigfoot_core.translation.repository');
         $defaultLocale = $this->getContainer()->getParameter('locale');
-        /** @var ProgressHelper $progress */
-        $progress = $this->getHelperSet()->get('progress');
+
         /** @var ContextService $context */
         $context = $this->getContainer()->get('bigfoot_context');
         $locales = array_keys($context->getValues('language'));
@@ -80,7 +79,7 @@ EOT
             if ($content) {
                 $nbTranslations = count($content);
                 $output->writeln(sprintf(' > <comment>Importing file %s with %s translations</comment>', $fileName, $nbTranslations));
-                $progress->start($output, $nbTranslations);
+                $progress = new ProgressBar($output, $nbTranslations);
 
                 foreach ($content as $name => $translation) {
                     if (substr_count($fileName, '.') == 1) {
