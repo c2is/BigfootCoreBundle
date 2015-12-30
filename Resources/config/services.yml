@@ -155,6 +155,13 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\CollectionItemType
         tags:
             - { name: form.type, alias: bigfoot_collection_item }
+
+    # Sortable Collection - to set as parent for entity types used in collections
+    bigfoot.form.type.sortable_collection:
+        class: Bigfoot\Bundle\CoreBundle\Form\Type\SortableCollectionType
+        tags:
+            - { name: form.type, alias: bigfoot_sortable_collection}
+
     # File type
     bigfoot.form.type.file:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\FileType
