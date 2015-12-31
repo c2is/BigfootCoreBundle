@@ -29,7 +29,7 @@ class LabelsSyncCommand extends BaseCommand
             ->setDefinition(array(
                 new InputArgument('target', InputArgument::OPTIONAL, 'The label dictionary file or directory', 'app/Resources/translatable_label'),
                 new InputOption('overwrite', 'o', InputOption::VALUE_NONE, 'Whether to overwrite the translations value or not (defaults to false)'),
-                new InputOption('onlyAdd', 'oA', InputOption::VALUE_NONE, 'Only add new labels (default to false)')
+                new InputOption('no-delete', 'o-d', InputOption::VALUE_NONE, 'No delete not found labels')
             ))
             ->setDescription('Synchronizes labels stored in database with those found in the file.')
             ->setHelp(<<<EOT
@@ -48,7 +48,7 @@ EOT
     {
         $target    = rtrim($input->getArgument('target'), '/');
         $overwrite = $input->getOption('overwrite');
-        $onlyAdd   = $input->getOption('onlyAdd');
+        $noDelete  = $input->getOption('no-delete');
 
         if (!is_dir($target) && (!file_exists($target))) {
             throw new \InvalidArgumentException(sprintf('The target "%s" does not exist.', $input->getArgument('target')));
@@ -160,7 +160,7 @@ EOT
         }
         $em->flush();
 
-        if (!$onlyAdd) {
+        if (!$noDelete) {
             $labels = $repo->findAll();
             /** @var TranslatableLabel $label */
             foreach ($labels as $label) {
