@@ -8,8 +8,10 @@ use Knp\Component\Pager\Paginator;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Translation\Translator;
@@ -84,19 +86,20 @@ class BaseController extends Controller
     /**
      * Get Pagination
      *
-     * @param Query   $query
+     * @param Query $query
      * @param integer $elementsPerPage elements per page
      *
+     * @param $request
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
-    protected function getPagination($query, $elementsPerPage)
+    protected function getPagination($query, $elementsPerPage, Request $request)
     {
         /** @var Paginator $paginator */
         $paginator = $this->get('knp_paginator');
 
         return $paginator->paginate(
             $query,
-            $this->getRequest()->query->get('page', 1),
+            $request->query->get('page', 1),
             $elementsPerPage,
             array('distinct' => false)
         );
@@ -146,13 +149,23 @@ class BaseController extends Controller
     }
 
     /**
-     * Get Security Context
+     * Get Security Token Storage
      *
-     * @return SecurityContext
+     * @return TokenStorage
      */
-    protected function getSecurity()
+    protected function getTokenStorage()
     {
-        return $this->get('security.context');
+        return $this->get('security.token_storage');
+    }
+
+    /**
+     * Get Security Authorization Checker
+     *
+     * @return AuthorizationChecker
+     */
+    protected function getAuthorizationChecker()
+    {
+        return $this->get('security.authorization_checker');
     }
 
     /**
@@ -168,7 +181,7 @@ class BaseController extends Controller
     /**
      * Get Router
      *
-     * @return SecurityContext
+     * @return \Symfony\Component\Routing\RouterInterface
      */
     protected function getRouter()
     {
@@ -179,7 +192,7 @@ class BaseController extends Controller
     /**
      * Get Templating
      *
-     * @return SecurityContext
+     * @return \Symfony\Bundle\TwigBundle\TwigEngine
      */
     protected function getTemplating()
     {

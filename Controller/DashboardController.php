@@ -9,11 +9,13 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Doctrine\ORM\Query;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class DashboardController extends ContainerAware
+class DashboardController
 {
+    use ContainerAwareTrait;
+
     public function getBoard()
     {
         /*$user = $this->container->get('security.context')->getToken()->getUser();

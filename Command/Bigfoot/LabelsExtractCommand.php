@@ -10,7 +10,7 @@ use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository;
 use Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Console\Helper\ProgressHelper;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -61,8 +61,7 @@ EOT
         $em = $this->getContainer()->get('doctrine')->getManager();
         /** @var TranslatableLabelRepository $repo */
         $repo = $em->getRepository('BigfootCoreBundle:TranslatableLabel');
-        /** @var ProgressHelper $progress */
-        $progress = $this->getHelperSet()->get('progress');
+
         $transRepo = $this->getContainer()->get('bigfoot_core.translation.repository');
         /** @var ContextService $context */
         $context = $this->getContainer()->get('bigfoot_context');
@@ -71,7 +70,7 @@ EOT
         $categories = array();
         $labels = $repo->findAll();
         $nbLabels = count($labels);
-        $progress->start($output, $nbLabels);
+        $progress = new ProgressBar($output, $nbLabels);
         $output->writeln(sprintf(' > <info>Extracting %s translations from database</info>', $nbLabels));
 
         /** @var TranslatableLabel $label */

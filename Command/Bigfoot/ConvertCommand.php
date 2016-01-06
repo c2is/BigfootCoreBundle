@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Command\Bigfoot;
 
 use Bigfoot\Bundle\CoreBundle\Command\BaseCommand;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -78,8 +79,7 @@ class ConvertCommand extends BaseCommand
 
         // convertion
         if ($input->getOption('force')) {
-            $progress = $this->getHelper('progress');
-            $progress->start($output, count($bundles));
+            $progress = new ProgressBar($output, count($bundles));
             $this->getContainer()->get('bigfoot_core.translation.convert')->symfony2ToBigFoot($bundles, $progress);
             $progress->finish();
         // juste un message pour indiquer comment lancer la convertion
