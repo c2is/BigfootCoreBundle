@@ -462,7 +462,7 @@ abstract class CrudController extends BaseController
         $result = $this->getQuery();
 
         try {
-            $items = $this->getPagination($result, $this->getElementsPerPage());
+            $items = $this->getPagination($result, $this->getElementsPerPage(), $request);
         } catch (\Exception $e) {
             $items = array();
             $filterManager->clearFilters($this->getEntityName());
