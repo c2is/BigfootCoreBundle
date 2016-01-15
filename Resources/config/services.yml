@@ -132,6 +132,13 @@ services:
         class: %sortable_type.class%
         tags:
             - { name: form.type, alias: sortable_entity }
+
+    # Limit text
+    bigfoot.form.type.limit_text:
+        class: Bigfoot\Bundle\CoreBundle\Form\Type\BigfootLimitTextType
+        tags:
+            - { name: form.type, alias: bigfoot_limit_text }
+
     # Richtext type
     form.type.bigfoot_richtext:
         class: Bigfoot\Bundle\CoreBundle\Form\Type\BigfootRichtextType
