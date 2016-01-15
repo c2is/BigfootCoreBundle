@@ -115,7 +115,7 @@ class Item
      * @ORM\PreFlush()
      */
     public function refreshUpdated() {
-        if ($this->menuFile) {
+        if ($this->file) {
             $this->updated = new \DateTime("now");
         }
     }
