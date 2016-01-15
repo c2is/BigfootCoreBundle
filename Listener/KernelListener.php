@@ -92,6 +92,7 @@ class KernelListener
             return;
         }
 
+        $this->context->setRequest($event->getRequest());
         $this->translationListener->setTranslatableLocale($this->context->getDefaultFrontLocale());
     }
 }
