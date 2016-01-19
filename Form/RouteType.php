@@ -5,7 +5,7 @@ namespace Bigfoot\Bundle\CoreBundle\Form;
 use Bigfoot\Bundle\CoreBundle\Entity\Route;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class RouteType
@@ -47,7 +47,7 @@ class RouteType extends AbstractType
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Bigfoot\Bundle\CoreBundle\Entity\Route'

@@ -57,12 +57,10 @@ class TagCategoryController extends CrudController
      *
      * @Route("/", name="admin_tag_category")
      * @Method("GET")
-     * @param Request $request
-     * @return array
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        return $this->doIndex($request);
+        return $this->doIndex();
     }
 
     /**

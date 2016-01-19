@@ -4,7 +4,6 @@ namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\CoreBundle\Manager\FilterManager;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\ORM\Query;
@@ -434,11 +433,11 @@ abstract class CrudController extends BaseController
     /**
      * Meant to be used in a basic index action.
      *
-     * @param Request $request
      * @return array An array containing the entities.
      */
-    protected function doIndex(Request $request)
+    protected function doIndex()
     {
+        $request       = $this->getRequest();
         $filterManager = $this->getFilterManager();
 
         if ($request->isMethod('POST')) {
@@ -451,7 +450,7 @@ abstract class CrudController extends BaseController
         $defaultSort = $this->getDefaultSort();
         // les configs knp_paginator.default_options.sort_field_name et sort_direction_name sont intégrées dans le service knp_paginator,
         // dans une propriété protected sans getter, donc on ne peut pas récupérer les valeurs
-        if ($request->query->get('sort') == null && is_array($defaultSort)) {
+        if ($this->getRequest()->query->get('sort') == null && is_array($defaultSort)) {
             // Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber lit ses valeurs dans $_GET, donc, on les écrit là, sans passer par Request
             $_GET['sort'] = $defaultSort['sort'];
             $_GET['direction'] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
@@ -469,7 +468,7 @@ abstract class CrudController extends BaseController
             $this->getSession()->getFlashBag()->add('error', $this->get('translator')->trans('bigfoot_core.crud.index.error', array('%error%' => $e->getMessage())));
         }
 
-        return $this->renderIndex($items, $result->getHint('knp_paginator.count'), $request);
+        return $this->renderIndex($items, $result->getHint('knp_paginator.count'));
     }
 
     /**
@@ -528,14 +527,14 @@ abstract class CrudController extends BaseController
                 return $this->renderAjax(
                     false,
                     'Error during process!',
-                    $this->renderForm($request, $form, $action, $entity)->getContent()
+                    $this->renderForm($form, $action, $entity)->getContent()
                 );
             }
 
             return $this->redirect($this->generateUrl($this->getRouteNameForAction('new')));
         }
 
-        return $this->renderForm($request, $form, $action, $entity, 'new');
+        return $this->renderForm($form, $action, $entity, 'new');
     }
 
     /**
@@ -593,7 +592,7 @@ abstract class CrudController extends BaseController
                 return $this->renderAjax(
                     false,
                     'Error during process!',
-                    $this->renderForm($request, $form, $action, $entity)->getContent()
+                    $this->renderForm($form, $action, $entity)->getContent()
                 );
             }
 
@@ -602,7 +601,7 @@ abstract class CrudController extends BaseController
             );
         }
 
-        return $this->renderForm($request, $form, $action, $entity, 'edit');
+        return $this->renderForm($form, $action, $entity, 'edit');
     }
 
     /**
@@ -738,10 +737,9 @@ abstract class CrudController extends BaseController
      *
      * @param array $items
      * @param int $count
-     * @param Request $request
      * @return Response
      */
-    protected function renderIndex($items, $count, Request $request)
+    protected function renderIndex($items, $count)
     {
         $fields = array();
         foreach ($this->getFields() as $key => $field) {
@@ -774,7 +772,7 @@ abstract class CrudController extends BaseController
         $paginatorParams = array();
         // les configs knp_paginator.default_options.sort_field_name et sort_direction_name sont intégrées dans le service knp_paginator,
         // dans une propriété protected sans getter, donc on ne peut pas récupérer les valeurs
-        if ($request->query->get('sort') == null && is_array($defaultSort)) {
+        if ($this->getRequest()->query->get('sort') == null && is_array($defaultSort)) {
             $paginatorParams['sort'] = $defaultSort['sort'];
             $paginatorParams['direction'] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
         }
@@ -797,14 +795,13 @@ abstract class CrudController extends BaseController
     /**
      * Render form
      *
-     * @param Request $request
      * @param $form
      * @param string $action
      * @param stdclass $entity
      * @param string $visibility
      * @return Response
      */
-    protected function renderForm(Request $request, $form, $action, $entity, $visibility = null)
+    protected function renderForm($form, $action, $entity, $visibility = null)
     {
         return $this->render(
             $this->getFormTemplate(),
@@ -816,7 +813,7 @@ abstract class CrudController extends BaseController
                 'form_submit' => 'bigfoot_core.crud.submit',
                 'form_cancel' => $this->getRouteNameForAction('index'),
                 'entity'      => $entity,
-                'layout'      => $request->query->get('layout') ?: '',
+                'layout'      => $this->getRequest()->query->get('layout') ?: '',
                 'form_name'   => $this->getName(),
             )
         );

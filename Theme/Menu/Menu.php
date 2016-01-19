@@ -91,7 +91,7 @@ class Menu
         try {
             $items = array();
 
-            $authorizationChecker = $this->container->get('security.authorization_checker');
+            $securityContext = $this->container->get('security.context');
             $em = $this->container->get('doctrine')->getManager();
 
             $entities = $em->getRepository('BigfootUserBundle:BigfootRoleMenu')->findAll();
@@ -105,7 +105,7 @@ class Menu
                         $roleForItem = array_merge(array('ROLE_ADMIN'), array($entity->getRole()));
                     }
                 }
-                if ($authorizationChecker->isGranted($roleForItem)) {
+                if ($securityContext->isGranted($roleForItem)) {
                     $items[] = $item;
                 }
             }

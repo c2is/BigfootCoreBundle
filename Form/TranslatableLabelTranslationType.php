@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class TranslatableLabelTranslationType
@@ -108,7 +108,7 @@ class TranslatableLabelTranslationType extends AbstractTranslatableLabelType
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation',

@@ -3,8 +3,8 @@
 namespace Bigfoot\Bundle\CoreBundle\Menu;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Doctrine\ORM\EntityManager;
@@ -23,7 +23,7 @@ class Builder
     protected $entityManager;
 
     /**
-     * @var TokenStorage
+     * @var SecurityContextInterface
      */
     protected $security;
 
@@ -41,11 +41,11 @@ class Builder
      * Constructor
      *
      * @param EntityManager            $entityManager
-     * @param TokenStorage $security
+     * @param SecurityContextInterface $security
      * @param EventDispatcherInterface          $eventDispatcher
      * @param MenuManager              $menuManager
      */
-    public function __construct(EntityManager $entityManager, TokenStorage $security, EventDispatcherInterface $eventDispatcher, MenuManager $menuManager)
+    public function __construct(EntityManager $entityManager, SecurityContextInterface $security, EventDispatcherInterface $eventDispatcher, MenuManager $menuManager)
     {
         $this->entityManager   = $entityManager;
         $this->security        = $security;
@@ -56,9 +56,11 @@ class Builder
     /**
      * Create main menu
      *
+     * @param  Request $request
+     *
      * @return Menu
      */
-    public function createMainMenu()
+    public function createMainMenu(Request $request)
     {
         $builder = $this
             ->menuManager
@@ -121,9 +123,11 @@ class Builder
     /**
      * Create test menu
      *
+     * @param  Request $request
+     *
      * @return Menu
      */
-    public function createTestMenu()
+    public function createTestMenu(Request $request)
     {
         // $dbMenu = $this->entityManager->getRepository('BigfootNavigationBundle:Menu')->findOneByName('test');
 
