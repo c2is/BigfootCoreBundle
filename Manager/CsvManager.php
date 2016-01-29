@@ -94,16 +94,20 @@ class CsvManager
                 ->addSelect('e.' . $entitySelection);
         }
 
+        $index = 1;
+
         foreach ($externalSelections as $externalSelection) {
             $externalTempArray = explode('.', $externalSelection['field']);
             $externalEntity    = $externalTempArray[0];
             $externalField     = $externalTempArray[1];
-            $entityPrefix      = substr($externalEntity, 0, 1);
+            $entityPrefix      = substr($externalEntity, 0, 1) . $index;
             $alias             = ($externalSelection['multiple']) ? $entityPrefix . ucfirst($externalField) . 'XXX' : $entityPrefix . ucfirst($externalField);
 
             $query = $query
                 ->addSelect($entityPrefix . '.' . $externalField . ' as ' . $alias)
                 ->leftJoin('e.' . $externalEntity, $entityPrefix);
+
+            $index++;
         }
 
         $csvArray = $query->getQuery()->getResult();
