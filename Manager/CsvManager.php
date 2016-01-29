@@ -37,21 +37,24 @@ class CsvManager
      */
     public function generateCsv($entity, $fields)
     {
-        $labelArray         = array('ID');
-        $entitySelections   = array();
-        $externalSelections = array();
+        $labelArray       = array('ID');
+        $entitySelections = array();
 
         foreach ($fields as $dbField => $options) {
             $labelArray[] = $options['label'];
 
             if (strpos($dbField, '.')) {
-                $externalSelections[] = array(
+                $entitySelections[] = array(
                     'field'    => $dbField,
+                    'external' => true,
                     'multiple' => isset($options['multiple']) ? $options['multiple'] : false,
                 );
-
             } else {
-                $entitySelections[] = $dbField;
+                $entitySelections[] = array(
+                    'field'    => $dbField,
+                    'external' => false,
+                    'multiple' => false
+                );
             }
         }
 
@@ -59,7 +62,7 @@ class CsvManager
 
         fputcsv($handle, $labelArray);
 
-        $csvQueryArray = $this->buildCsvQuery($entity, $entitySelections, $externalSelections);
+        $csvQueryArray = $this->buildCsvQuery($entity, $entitySelections);
 
         foreach ($csvQueryArray as $csvElement) {
             fputcsv($handle, $csvElement);
@@ -83,27 +86,30 @@ class CsvManager
      * @param $externalSelect
      * @return mixed
      */
-    private function buildCsvQuery($entity, $entitySelections, $externalSelections)
+    private function buildCsvQuery($entity, $entitySelections)
     {
         $query = $this->entityManager->getRepository($entity)
             ->createQueryBuilder('e')
             ->select('e.id');
 
+        $index = 1;
+
         foreach ($entitySelections as $entitySelection) {
-            $query = $query
-                ->addSelect('e.' . $entitySelection);
-        }
+            if ($entitySelection['external']) {
+                $externalTempArray = explode('.', $entitySelection['field']);
+                $externalEntity    = $externalTempArray[0];
+                $externalField     = $externalTempArray[1];
+                $entityPrefix      = substr($externalEntity, 0, 1) . $index;
+                $alias             = ($entitySelection['multiple']) ? $entityPrefix . ucfirst($externalField) . 'XXX' : $entityPrefix . ucfirst($externalField);
+                $query             = $query
+                    ->addSelect($entityPrefix . '.' . $externalField . ' as ' . $alias)
+                    ->leftJoin('e.' . $externalEntity, $entityPrefix);
 
-        foreach ($externalSelections as $externalSelection) {
-            $externalTempArray = explode('.', $externalSelection['field']);
-            $externalEntity    = $externalTempArray[0];
-            $externalField     = $externalTempArray[1];
-            $entityPrefix      = substr($externalEntity, 0, 1);
-            $alias             = ($externalSelection['multiple']) ? $entityPrefix . ucfirst($externalField) . 'XXX' : $entityPrefix . ucfirst($externalField);
-
-            $query = $query
-                ->addSelect($entityPrefix . '.' . $externalField . ' as ' . $alias)
-                ->leftJoin('e.' . $externalEntity, $entityPrefix);
+                $index++;
+            } else {
+                $query = $query
+                    ->addSelect('e.' . $entitySelection['field']);
+            }
         }
 
         $csvArray = $query->getQuery()->getResult();
@@ -111,13 +117,18 @@ class CsvManager
         return $this->mergeClonedItem($csvArray);
     }
 
+    /**
+     * @param $csvArray
+     * @param string $separator
+     * @return array
+     */
     private function mergeClonedItem($csvArray, $separator = ',')
     {
         $finalArray = array();
 
         foreach ($csvArray as $key => $element) {
             foreach ($element as $keyE => $value) {
-                $value = $this->formatValue($value);
+                $value = $this->formatValue($value, $separator);
 
                 if (strpos($keyE, 'XXX')) {
                     $finalArray[$element['id']][$keyE] = isset($finalArray[$element['id']][$keyE]) ? ($finalArray[$element['id']][$keyE] . ' ' . $separator . $value) : $value;
@@ -130,10 +141,17 @@ class CsvManager
         return $finalArray;
     }
 
-    private function formatValue($value)
+    /**
+     * @param $value
+     * @param $separator
+     * @return string
+     */
+    private function formatValue($value, $separator)
     {
         if ($value instanceof \DateTime) {
             return $value->format('d-m-Y');
+        } else if (is_array($value)) {
+            return implode($separator, $value);
         }
 
         return $value;
