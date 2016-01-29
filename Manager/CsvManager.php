@@ -48,6 +48,7 @@ class CsvManager
                     'field'    => $dbField,
                     'external' => true,
                     'multiple' => isset($options['multiple']) ? $options['multiple'] : false,
+                    'unique'   => isset($options['unique']) ? $options['unique'] : false,
                 );
             } else {
                 $entitySelections[] = array(
@@ -100,7 +101,8 @@ class CsvManager
                 $externalEntity    = $externalTempArray[0];
                 $externalField     = $externalTempArray[1];
                 $entityPrefix      = substr($externalEntity, 0, 1) . $index;
-                $alias             = ($entitySelection['multiple']) ? $entityPrefix . ucfirst($externalField) . 'XXX' : $entityPrefix . ucfirst($externalField);
+                $alias             = ($entitySelection['multiple']) ? $entityPrefix . ucfirst($externalField) . (($entitySelection['unique']) ? 'YYY' : 'XXX') : $entityPrefix . ucfirst($externalField);
+
                 $query             = $query
                     ->addSelect($entityPrefix . '.' . $externalField . ' as ' . $alias)
                     ->leftJoin('e.' . $externalEntity, $entityPrefix);
@@ -132,8 +134,18 @@ class CsvManager
 
                 if (strpos($keyE, 'XXX')) {
                     $finalArray[$element['id']][$keyE] = isset($finalArray[$element['id']][$keyE]) ? ($finalArray[$element['id']][$keyE] . ' ' . $separator . $value) : $value;
+                } elseif (strpos($keyE, 'YYY')) {
+                    $finalArray[$element['id']][$keyE][] = $value;
                 } else {
                     $finalArray[$element['id']][$keyE] = $value;
+                }
+            }
+        }
+
+        foreach ($finalArray as &$element) {
+            foreach ($element as $key => &$subElement) {
+                if (is_array($subElement)) {
+                    $element[$key] = implode($separator, array_unique($subElement));
                 }
             }
         }
