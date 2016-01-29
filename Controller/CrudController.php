@@ -1007,7 +1007,7 @@ abstract class CrudController extends BaseController
         return null;
     }
 
-    private function generateExportCsvLink()
+    protected function generateExportCsvLink()
     {
         if ($this->getCsvFields()) {
             return array(
