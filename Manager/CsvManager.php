@@ -37,11 +37,11 @@ class CsvManager
      */
     public function generateCsv($entity, $fields)
     {
-        $labelArray       = array('ID');
+        $labelArray       = array('Identifiant');
         $entitySelections = array();
 
         foreach ($fields as $dbField => $options) {
-            $labelArray[] = $options['label'];
+            $labelArray[] = utf8_decode($options['label']);
 
             if (strpos($dbField, '.')) {
                 $entitySelections[] = array(
@@ -61,12 +61,12 @@ class CsvManager
 
         $handle = fopen('php://memory', 'r+');
 
-        fputcsv($handle, $labelArray);
+        fputcsv($handle, $labelArray, ';');
 
         $csvQueryArray = $this->buildCsvQuery($entity, $entitySelections);
 
         foreach ($csvQueryArray as $csvElement) {
-            fputcsv($handle, $csvElement);
+            fputcsv($handle, $csvElement, ';');
         }
 
         rewind($handle);
@@ -76,7 +76,7 @@ class CsvManager
         fclose($handle);
 
         return new Response($content, 200, array(
-            'Content-Type'        => 'application/force-download',
+            'Content-Type'        => 'application/force-download; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="export.csv"'
         ));
     }
@@ -130,7 +130,7 @@ class CsvManager
 
         foreach ($csvArray as $key => $element) {
             foreach ($element as $keyE => $value) {
-                $value = $this->formatValue($value, $separator);
+                $value = utf8_decode($this->formatValue($value, $separator));
 
                 if (strpos($keyE, 'XXX')) {
                     $finalArray[$element['id']][$keyE] = isset($finalArray[$element['id']][$keyE]) ? ($finalArray[$element['id']][$keyE] . ' ' . $separator . $value) : $value;
