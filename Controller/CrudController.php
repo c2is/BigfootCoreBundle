@@ -425,6 +425,10 @@ abstract class CrudController extends BaseController
                 Query::HINT_CUSTOM_OUTPUT_WALKER,
                 'Gedmo\Translatable\Query\TreeWalker\TranslationWalker'
             )
+            ->setHint(
+                \Gedmo\Translatable\TranslatableListener::HINT_TRANSLATABLE_LOCALE,
+                $this->getContext()->getDefaultFrontLocale()
+            )
             ->setHint('knp_paginator.count', $count);
 
         return $query;
