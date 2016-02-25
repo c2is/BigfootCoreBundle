@@ -209,6 +209,9 @@ class FilterManager
                         case 'date_min':
                             $this->addWhere($options['property'], $data->format('Y-m-d'), 'MIN');
                             break;
+                        case 'date':
+                            $this->addWhere($options['property'], $data->format('Y-m-d'));
+                            break;
                     }
                 }
             }
@@ -364,7 +367,14 @@ class FilterManager
                     if (!isset($options['property'])) {
                         throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
                     }
-                    
+
+                    $filters[] = $field;
+                    break;
+                case 'date':
+                    if (!isset($options['property'])) {
+                        throw new \Exception("You must define the attribute to display for entity ".$options['entity']);
+                    }
+
                     $filters[] = $field;
                     break;
             }
