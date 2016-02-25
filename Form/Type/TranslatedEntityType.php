@@ -8,8 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class TranslatedEntityType
@@ -28,13 +27,13 @@ class TranslatedEntityType extends AbstractType
 
     /**
      * @param TranslationSubscriber $translationSubscriber
-     * @param RequestStack $requestStack
+     * @param Request $request
      * @param $localeList
      */
-    public function __construct(TranslationSubscriber $translationSubscriber, RequestStack $requestStack, $localeList)
+    public function __construct(TranslationSubscriber $translationSubscriber, Request $request, $localeList)
     {
         $this->translationSubscriber = $translationSubscriber;
-        $this->request               = $requestStack->getCurrentRequest();
+        $this->request               = $request;
         $this->localeList            = $localeList;
     }
 
@@ -44,14 +43,14 @@ class TranslatedEntityType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('translatedEntity', 'hidden');
+        $builder->add('translatedEntity', 'hidden' );
         $builder->addEventSubscriber($this->translationSubscriber);
     }
 
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'translation_class' => null,

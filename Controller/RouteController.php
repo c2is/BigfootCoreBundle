@@ -59,12 +59,10 @@ class RouteController extends CrudController
      * Lists Route entities.
      *
      * @Route("/", name="bigfoot_route")
-     * @param Request $request
-     * @return array
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        return $this->doIndex($request);
+        return $this->doIndex();
     }
 
     /**

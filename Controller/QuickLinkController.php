@@ -110,12 +110,10 @@ class QuickLinkController extends CrudController
      *
      * @Route("/new", name="admin_quicklink_form_new")
      * @Template("BigfootCoreBundle:quicklink:popin.quicklink.html.twig")
-     * @param Request $request
-     * @return array|RedirectResponse
      */
-    public function newAction(Request $request)
+    public function newAction()
     {
-        $arrayNew = $this->doNew($request);
+        $arrayNew = $this->doNew($this->getRequest());
         $arrayNew['isAjax'] = true;
         $arrayNew['modal_title'] = 'bigfoot_core.quick_link.modal.title';
 

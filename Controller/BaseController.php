@@ -8,10 +8,8 @@ use Knp\Component\Pager\Paginator;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Translation\Translator;
@@ -86,20 +84,19 @@ class BaseController extends Controller
     /**
      * Get Pagination
      *
-     * @param Query $query
+     * @param Query   $query
      * @param integer $elementsPerPage elements per page
      *
-     * @param $request
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
-    protected function getPagination($query, $elementsPerPage, Request $request)
+    protected function getPagination($query, $elementsPerPage)
     {
         /** @var Paginator $paginator */
         $paginator = $this->get('knp_paginator');
 
         return $paginator->paginate(
             $query,
-            $request->query->get('page', 1),
+            $this->getRequest()->query->get('page', 1),
             $elementsPerPage,
             array('distinct' => false)
         );
@@ -149,23 +146,13 @@ class BaseController extends Controller
     }
 
     /**
-     * Get Security Token Storage
+     * Get Security Context
      *
-     * @return TokenStorage
+     * @return SecurityContext
      */
-    protected function getTokenStorage()
+    protected function getSecurity()
     {
-        return $this->get('security.token_storage');
-    }
-
-    /**
-     * Get Security Authorization Checker
-     *
-     * @return AuthorizationChecker
-     */
-    protected function getAuthorizationChecker()
-    {
-        return $this->get('security.authorization_checker');
+        return $this->get('security.context');
     }
 
     /**
@@ -181,7 +168,7 @@ class BaseController extends Controller
     /**
      * Get Router
      *
-     * @return \Symfony\Component\Routing\RouterInterface
+     * @return SecurityContext
      */
     protected function getRouter()
     {
@@ -192,7 +179,7 @@ class BaseController extends Controller
     /**
      * Get Templating
      *
-     * @return \Symfony\Bundle\TwigBundle\TwigEngine
+     * @return SecurityContext
      */
     protected function getTemplating()
     {

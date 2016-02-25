@@ -6,7 +6,7 @@ use Bigfoot\Bundle\CoreBundle\Form\DataTransformer\TagsToStringTransformer;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Helper type meant to facilitate the use of tags in entities.
@@ -47,7 +47,7 @@ class BigfootTagType extends AbstractType
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'attr'  => array(

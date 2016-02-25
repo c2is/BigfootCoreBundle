@@ -4,7 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Manager;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -15,10 +15,8 @@ use Doctrine\ORM\EntityManager;
 /**
  * File Manager
  */
-class FileManager
+class FileManager extends ContainerAware
 {
-    use ContainerAwareTrait;
-
     /**
      * File preUpload : delete old file if already exists and sets file name into $entity->$pathProperty
      * @throws \Exception If $pathProperty or $fileFieldProperty getter and setter don't exist on class

@@ -27,7 +27,7 @@ class FileExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-             new \Twig_SimpleFilter('bigfoot_file', array($this, 'bigfootFile')),
+            'bigfoot_file' => new \Twig_Filter_Method($this, 'bigfootFile'),
         );
     }
 

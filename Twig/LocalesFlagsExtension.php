@@ -34,7 +34,7 @@ class LocalesFlagsExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('bigfoot_locale_flags', array($this, 'localeFlags'), array('is_safe' => array('html'))),
+            'bigfoot_locale_flags' => new \Twig_Function_Method($this, 'localeFlags', array('is_safe' => array('html'))),
         );
     }
 

@@ -1,5 +1,5 @@
 <div class="modal" id="test_modal">
-    {{ form_start(form, {'method': 'post', 'action': app.request.getRequestURI}) }}
+    <form action="{{ app.request.getRequestURI }}" method="post" {{ form_enctype(form) }}>
         <div class="modal-header">
             <a class="close" data-dismiss="modal">&times;</a>
             <h3>{{ title }}</h3>
@@ -12,5 +12,5 @@
             <button class="btn pull-right btn-success" type="submit">{{ submit }}</button>
             <div class="clearfix"></div>
         </div>
-    {{ form_end(form, {'render_rest': false}) }}
+    </form>
 </div>

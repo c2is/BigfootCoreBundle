@@ -2,15 +2,16 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Translation;
 
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Console\Helper\ProgressHelper;
 
 /**
  * Gestion des convertions de traductions
  */
 class Convert
 {
+
     /** @var Kernel */
     private $kernel = null;
 
@@ -86,7 +87,7 @@ class Convert
      * Converti les fichiers de traductions "Symfony2 style" vers les fichiers "Bigfoot style"
      *
      * @param array $bundles
-     * @param ProgressBar $progress
+     * @param ProgressHelper $progress
      */
     public function symfony2ToBigFoot(array $bundles = array(), $progress = null)
     {
@@ -146,7 +147,7 @@ class Convert
                 }
             }
 
-            if ($progress instanceof ProgressBar) {
+            if ($progress instanceof ProgressHelper) {
                 $progress->advance();
             }
         }

@@ -8,7 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Bigfoot\Bundle\CoreBundle\Manager\FilterManager;
 
@@ -104,13 +104,25 @@ class FilterType extends AbstractType
                     )
                 );
             }
+
+            if ($filter['type'] == 'date') {
+                $builder->add(
+                    $filter['name'],
+                    'date',
+                    array(
+                        'required' => false,
+                        'data'     => $value,
+                        'label'    => $filter['placeholder'],
+                    )
+                );
+            }
         }
     }
 
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(
             array(
