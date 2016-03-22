@@ -226,9 +226,7 @@ abstract class CrudController extends BaseController
      */
     protected function getEntityClass()
     {
-        $namespace = $this->get('kernel')->getBundle($this->getBundleName())->getNamespace();
-
-        return sprintf('\\%s\\Entity\\%s', $namespace, $this->getEntityName());
+        return $this->getDoctrine()->getManager()->getClassMetadata($this->getEntity())->getName();
     }
 
     /**
@@ -391,12 +389,11 @@ abstract class CrudController extends BaseController
      */
     protected function getQuery()
     {
-        $entityClass = ltrim($this->getEntityClass(), '\\');
         $entityName  = $this->getEntityName();
 
         $queryBuilder = $this
             ->getContextRepository()
-            ->createContextQueryBuilder($entityClass);
+            ->createContextQueryBuilder($this->getEntityClass());
 
         foreach ($this->getFields() as $key => $field) {
             if (is_array($field) && isset($field['join'])) {
@@ -983,7 +980,7 @@ abstract class CrudController extends BaseController
      */
     protected function countEntities()
     {
-        $queryBuilder = $this->getRepository($this->getEntityClass())->createQueryBuilder('a');
+        $queryBuilder = $this->getRepository($this->getEntity())->createQueryBuilder('a');
         $queryBuilder->select('COUNT(a)');
 
         return $queryBuilder->getQuery()->getSingleScalarResult();
