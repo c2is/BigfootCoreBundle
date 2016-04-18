@@ -12,8 +12,8 @@
     ],
     "require": {
         "php":                               ">=5.4",
-        "symfony/symfony":                   "~2.7",
-        "symfony/framework-bundle":          "~2.7",
+        "symfony/symfony":                   ">=2.7",
+        "symfony/framework-bundle":          ">=2.7",
         "symfony/assetic-bundle":            "~2.5",
         "knplabs/knp-menu-bundle":           "~2.1",
         "knplabs/knp-paginator-bundle":      "~2.4.1",
