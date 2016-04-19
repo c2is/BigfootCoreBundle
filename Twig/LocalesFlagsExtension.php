@@ -23,25 +23,21 @@ class LocalesFlagsExtension extends \Twig_Extension
         $this->locales = $locales;
     }
 
-    public function initRuntime(\Twig_Environment $twig)
-    {
-        $this->twig = $twig;
-    }
-
     /**
      * @return array
      */
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('bigfoot_locale_flags', array($this, 'localeFlags'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('bigfoot_locale_flags', array($this, 'localeFlags'), array('is_safe' => array('html'), 'needs_environment' => true)),
         );
     }
 
     /**
+     * @param \Twig_Environment $env
      * @return array
      */
-    public function localeFlags()
+    public function localeFlags(\Twig_Environment $env)
     {
         $locales = array();
 
@@ -51,9 +47,9 @@ class LocalesFlagsExtension extends \Twig_Extension
             );
 
             if (isset($config['parameters']['flag'])) {
-                $locale['flag'] = $this->asset($config['parameters']['flag']);
+                $locale['flag'] = $this->asset($config['parameters']['flag'], $env);
             } else {
-                $locale['flag'] = $this->asset(sprintf('bundles/bigfootcore/img/flags/%s.gif', $key));
+                $locale['flag'] = $this->asset(sprintf('bundles/bigfootcore/img/flags/%s.gif', $key), $env);
             }
 
             $locales[$key] = $locale;
@@ -65,11 +61,12 @@ class LocalesFlagsExtension extends \Twig_Extension
     /**
      * @param $asset
      *
+     * @param \Twig_Environment $env
      * @return mixed
      */
-    protected function asset($asset)
+    protected function asset($asset, \Twig_Environment $env)
     {
-        return call_user_func($this->twig->getFunction('asset')->getCallable(), $asset);
+        return call_user_func($env->getFunction('asset')->getCallable(), $asset);
     }
 
     /**
