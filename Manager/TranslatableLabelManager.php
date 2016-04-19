@@ -3,8 +3,11 @@
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
+use Bigfoot\Bundle\CoreBundle\Form\Type\BigfootRichtextType;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Translation\Interval;
 
 class TranslatableLabelManager
@@ -32,10 +35,10 @@ class TranslatableLabelManager
     public function getValueFieldType($label)
     {
         if ($label->isRichtext()) {
-            return 'bigfoot_richtext';
+            return BigfootRichtextType::class;
         }
 
-        return $label->isMultiline() ? 'textarea' : 'text';
+        return $label->isMultiline() ? TextareaType::class : TextType::class;
     }
 
     /**

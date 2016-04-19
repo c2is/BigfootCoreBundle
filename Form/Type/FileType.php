@@ -69,6 +69,6 @@ class FileType extends AbstractType
      */
     public function getParent()
     {
-        return 'file';
+        return 'Symfony\Component\Form\Extension\Core\Type\FileType';
     }
 }

@@ -3,8 +3,12 @@
 namespace Bigfoot\Bundle\CoreBundle\Form\Type;
 
 use Bigfoot\Bundle\CoreBundle\Form\EventListener\TranslationSubscriber;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,9 +56,9 @@ class FilterType extends AbstractType
             if ($filter['type'] == 'choice' || $filter['type'] == 'repositoryMethod' || ($filter['type'] == 'referer' && $options['type'] == 'choice')) {
                 $builder->add(
                     $filter['name'],
-                    'choice',
+                    ChoiceType::class,
                     array(
-                        'choices'  => $options['choices'],
+                        'choices'  => array_flip($options['choices']),
                         'required' => false,
                         'data'     => $value,
                         'label'    => $filter['placeholder'],
@@ -69,7 +73,7 @@ class FilterType extends AbstractType
 
                 $builder->add(
                     $filter['name'],
-                    'entity',
+                    EntityType::class,
                     array(
                         'class'         => $options['class'],
                         'property'      => $options['property'],
@@ -84,7 +88,7 @@ class FilterType extends AbstractType
             if (($filter['type'] == 'referer' && $options['type'] == 'text') || $filter['type'] == 'search') {
                 $builder->add(
                     $filter['name'],
-                    'text',
+                    TextType::class,
                     array(
                         'required' => false,
                         'data'     => $value,
@@ -96,7 +100,7 @@ class FilterType extends AbstractType
             if ($filter['type'] == 'date_min') {
                 $builder->add(
                     $filter['name'],
-                    'date',
+                    DateType::class,
                     array(
                         'required' => false,
                         'data'     => $value,
@@ -108,7 +112,7 @@ class FilterType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

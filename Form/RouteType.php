@@ -4,6 +4,8 @@ namespace Bigfoot\Bundle\CoreBundle\Form;
 
 use Bigfoot\Bundle\CoreBundle\Entity\Route;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,30 +24,30 @@ class RouteType extends AbstractType
         $arrayType = Route::getAllRouteType();
 
         $builder
-            ->add('url', 'text', array(
+            ->add('url', TextType::class, array(
                 'required' => true
             ))
-            ->add('type', 'choice', array(
-                'choices'  => $arrayType,
+            ->add('type', ChoiceType::class, array(
+                'choices'  => array_flip($arrayType),
                 'required' => true
             ))
-            ->add('objectClass', 'text', array(
+            ->add('objectClass', TextType::class, array(
                 'required' => false
             ))
-            ->add('variableName', 'text', array(
+            ->add('variableName', TextType::class, array(
                 'required' => false
             ))
-            ->add('foreignKey', 'text', array(
+            ->add('foreignKey', TextType::class, array(
                 'required' => false
             ))
-            ->add('action', 'text', array(
+            ->add('action', TextType::class, array(
                 'required' => true
             ))
         ;
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

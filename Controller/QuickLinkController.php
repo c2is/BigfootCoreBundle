@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\CoreBundle\Entity\QuickLink;
+use Bigfoot\Bundle\CoreBundle\Form\QuickLinkType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -49,7 +50,7 @@ class QuickLinkController extends CrudController
 
     protected function getFormType()
     {
-        return 'bigfoot_bundle_corebundle_quicklinktype';
+        return QuickLinkType::class;
     }
 
     /**
@@ -98,7 +99,7 @@ class QuickLinkController extends CrudController
      */
     public function quickLinkFormAction()
     {
-        $form   = $this->createForm('bigfoot_bundle_corebundle_quicklinktype', new QuickLink());
+        $form   = $this->createForm(QuickLinkType::class, new QuickLink());
 
         return array(
             'formQuickLink' => $form->createView()

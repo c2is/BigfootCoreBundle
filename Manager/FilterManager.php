@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Manager;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelRepository;
+use Bigfoot\Bundle\CoreBundle\Form\Type\FilterType;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
@@ -304,7 +305,7 @@ class FilterManager
                     $em = $this->entityManager;
                     /** @var TranslatableLabelRepository $repo */
                     $repo                        = $em->getRepository($datas['referer']);
-                    $field['options']['choices'] = $repo->getCategories();
+                    $field['options']['choices'] = array_flip($repo->getCategories());
 
                     $filters[] = $field;
                     break;
@@ -347,7 +348,7 @@ class FilterManager
                     $field['options']['type'] = $type;
 
                     if ($type != 'text') {
-                        $field['options']['choices'] = $this->getChoices($referer, $options['property']);
+                        $field['options']['choices'] = array_flip($this->getChoices($referer, $options['property']));
                     }
 
                     $filters[] = $field;
@@ -372,7 +373,7 @@ class FilterManager
             }
         }
 
-        $form = $this->formFactory->create('bigfoot_core_filter_type', null, array(
+        $form = $this->formFactory->create(FilterType::class, null, array(
             'filters' => $filters,
             'entity'  => $key
         ));

@@ -3,6 +3,7 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\CoreBundle\Controller\CrudController;
+use Bigfoot\Bundle\CoreBundle\Form\RouteType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -52,7 +53,7 @@ class RouteController extends CrudController
 
     protected function getFormType()
     {
-        return 'bigfoot_bundle_corebundle_routetype';
+        return RouteType::class;
     }
 
     /**

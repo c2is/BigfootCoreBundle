@@ -3,8 +3,10 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\ContextBundle\Entity\ContextRepository;
+use Bigfoot\Bundle\CoreBundle\Exception\InvalidArgumentException;
 use Doctrine\ORM\Query;
 use Knp\Component\Pager\Paginator;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -126,6 +128,14 @@ class BaseController extends Controller
      */
     public function createForm($type, $data = null, array $options = array())
     {
+        if (!is_subclass_of($type, AbstractType::class)) {
+            throw new InvalidArgumentException(sprintf('Expected argument of type "AbstractType" or fully qualified class name of a form type, got "%s"', is_string($type) ? $type : get_class($type)));
+        }
+
+        if (!is_string($type)) {
+            $type = get_class($type);
+        }
+
         $form = parent::createForm($type, $data, $options);
 
         $this->getEventDispatcher()->dispatch(FormEvent::CREATE, new GenericEvent($form));
@@ -315,7 +325,7 @@ class BaseController extends Controller
                 $errors[$formName] = array();
             }
             $errors[$formName][] = array(
-                'field' => $form->getName(),
+                'field'   => $form->getName(),
                 'message' => $error->getMessage(),
             );
         }

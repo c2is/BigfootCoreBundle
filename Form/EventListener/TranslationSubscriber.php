@@ -4,15 +4,14 @@ namespace Bigfoot\Bundle\CoreBundle\Form\EventListener;
 
 use Bigfoot\Bundle\ContextBundle\Service\ContextService;
 use Doctrine\Common\Annotations\Reader;
-use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as BigfootTranslationRepository;
 use Gedmo\Translatable\TranslatableListener;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * Class TranslationSubscriber
@@ -112,7 +111,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $initialLocale      = ($parentData) ? $listener->getTranslatableLocale($parentData, $meta) : $this->defaultLocale;
             unset($locales[$initialLocale]);
 
-            $form->add('_entity_locale', 'hidden', array(
+            $form->add('_entity_locale', HiddenType::class, array(
                 'data' => $initialLocale,
                 'mapped' => false,
                 'attr' => array(
@@ -148,7 +147,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                     }
 
                     if ($parentForm->has($fieldName)) {
-                        $fieldType = $parentForm->get($fieldName)->getConfig()->getType()->getInnerType();
+                        $fieldType = get_class($parentForm->get($fieldName)->getConfig()->getType()->getInnerType());
                         $fieldAttr = $parentForm->get($fieldName)->getConfig()->getOption('attr');
                         $form->add(
                             sprintf('%s-%s', $fieldName, $locale),

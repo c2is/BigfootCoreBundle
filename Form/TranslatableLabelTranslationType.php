@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Form;
 
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabel;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslatableLabelTranslation;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -51,7 +52,7 @@ class TranslatableLabelTranslationType extends AbstractTranslatableLabelType
 
                 $form->add(
                     'emptyValue',
-                    'checkbox',
+                    CheckboxType::class,
                     array(
                         'label' => 'bigfoot_core.translatable_label.form.empty_value.label',
                         'required' => false
@@ -106,7 +107,7 @@ class TranslatableLabelTranslationType extends AbstractTranslatableLabelType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

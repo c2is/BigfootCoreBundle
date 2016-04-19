@@ -5,6 +5,7 @@ namespace Bigfoot\Bundle\CoreBundle\Form\Type;
 use Bigfoot\Bundle\ContextBundle\Service\ContextService;
 use Bigfoot\Bundle\CoreBundle\Form\DataTransformer\TagsToStringTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -28,7 +29,7 @@ class BigfootDatepickerType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -43,7 +44,7 @@ class BigfootDatepickerType extends AbstractType
      */
     public function getParent()
     {
-        return 'date';
+        return DateType::class;
     }
 
     /**

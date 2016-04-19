@@ -3,6 +3,8 @@
 namespace Bigfoot\Bundle\CoreBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -38,10 +40,10 @@ class QuickLinkType extends AbstractType
         $user = $this->securityTokenStorage->getToken()->getUser();
 
         $builder
-            ->add('userId','hidden',array(
+            ->add('userId',HiddenType::class,array(
                 'data' => $user->getId()
             ))
-            ->add('link','text',array(
+            ->add('link',TextType::class,array(
                 'data' => $this->request->headers->get('referer')
             ))
             ->add('labelLink')
@@ -49,7 +51,7 @@ class QuickLinkType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

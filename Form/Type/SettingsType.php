@@ -46,7 +46,7 @@ class SettingsType extends AbstractType
     /**
      * setDefaultOptions
      *
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
