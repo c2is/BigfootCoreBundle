@@ -34,12 +34,12 @@ class TranslationSubscriber implements EventSubscriberInterface
     protected $translationRepository;
 
     /**
-     * @param array                        $localeList
-     * @param RegistryInterface            $doctrine
-     * @param Reader                       $annotationReader
+     * @param array $localeList
+     * @param RegistryInterface $doctrine
+     * @param Reader $annotationReader
      * @param BigfootTranslationRepository $translationRepository
-     * @param string                       $defaultLocale
-     * @param ContextService               $context
+     * @param string $defaultLocale
+     * @param ContextService $context
      */
     public function __construct(
         $localeList,
@@ -104,7 +104,7 @@ class TranslationSubscriber implements EventSubscriberInterface
         }
 
         if ($entityClass) {
-            $meta = $this->doctrine->getManager()->getClassMetadata($entityClass);
+            $meta               = $this->doctrine->getManager()->getClassMetadata($entityClass);
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
             $translations       = array();
@@ -112,9 +112,9 @@ class TranslationSubscriber implements EventSubscriberInterface
             unset($locales[$initialLocale]);
 
             $form->add('_entity_locale', HiddenType::class, array(
-                'data' => $initialLocale,
+                'data'   => $initialLocale,
                 'mapped' => false,
-                'attr' => array(
+                'attr'   => array(
                     'class' => 'entity-locale',
                 ),
             ));
@@ -187,7 +187,11 @@ class TranslationSubscriber implements EventSubscriberInterface
             $reflectionClass  = new \ReflectionClass($entityClass);
             $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
 
-            if ($gedmoAnnotations && is_object($gedmoAnnotations) && $gedmoAnnotations->class != '') {
+            if ($gedmoAnnotations !== null &&
+                $gedmoAnnotations->class != '' &&
+                class_exists($gedmoAnnotations->class) &&
+                isset(class_parents($gedmoAnnotations->class)['Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation'])
+            ) {
                 $repository = $this->translationRepository;
             } else {
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
