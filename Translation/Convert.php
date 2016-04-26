@@ -103,7 +103,7 @@ class Convert
                 $domain = substr($pathinfo['filename'], 0, strrpos($pathinfo['filename'], '.'));
                 $lang = substr($pathinfo['filename'], strrpos($pathinfo['filename'], '.') + 1);
                 $parsedTranslations = array();
-                $translations = Yaml::parse($translationFile);
+                $translations = Yaml::parse(file_get_contents($translationFile));
 
                 // les clefs qui ont au moins 3 niveaux (par exemple foo.bar.baz) sont gérées dans un fichier foo.bar.yml
                 // les clefs qui ont moins de 3 niveaux sont gérées dans default.yml
