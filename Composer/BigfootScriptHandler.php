@@ -2,12 +2,12 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Composer;
 
-use Composer\Script\CommandEvent;
+use Composer\Script\Event;
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler;
 
 class BigfootScriptHandler extends ScriptHandler
 {
-    public static function clearCache(CommandEvent $event)
+    public static function clearCache(Event $event)
     {
         $options = self::getOptions($event);
         $appDir = $options['symfony-app-dir'];
@@ -28,7 +28,7 @@ class BigfootScriptHandler extends ScriptHandler
         static::executeCommand($event, $appDir, $cmd, $options['process-timeout']);
     }
 
-    public static function installAssets(CommandEvent $event)
+    public static function installAssets(Event $event)
     {
         $options = self::getOptions($event);
         $appDir = $options['symfony-app-dir'];
