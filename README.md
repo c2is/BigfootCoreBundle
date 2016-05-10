@@ -212,3 +212,34 @@ protected function getCsvFields()
         ....
     );
 ```
+
+### Improve the speed of your 'Edit forms' by setting a form by tab:
+
+Add the method getFormTypes into your extended CrudController controller which return an array compound of arrays of 'label' (labels of tabs) and 'form', names of the FormType services.
+
+``` php
+protected function getFormTypes()
+{
+    return array(
+        array(
+            'label' => 'Hotel', // Label of the first tab
+            'form'  => 'rc_hotel_0' // Service name of the HotelType
+        ),
+        array(
+            'label' => 'Rooms', // Label of the second tab
+            'form'  => 'rc_hotel_1' // Service name of the RoomsType
+        )
+    );
+}
+```
+
+Make sure you added an index parameter to your editAction of your controller:
+
+``` php
+public function editAction(Request $request, $id, $index = null)
+{
+    return $this->doEdit($request, $id, $index);
+}
+```
+
+That's it!
