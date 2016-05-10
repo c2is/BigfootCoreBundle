@@ -220,6 +220,14 @@ abstract class CrudController extends BaseController
     }
 
     /**
+     * @return bool
+     */
+    protected function getFormTypes()
+    {
+        return false;
+    }
+
+    /**
      * @return string
      */
     protected function getEntityClass()
@@ -542,7 +550,7 @@ abstract class CrudController extends BaseController
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no entity with id $id is found.
      */
-    protected function doEdit(Request $request, $id)
+    protected function doEdit(Request $request, $id, $index = null)
     {
         $entity = $this->getFormEntity($id);
 
@@ -554,11 +562,28 @@ abstract class CrudController extends BaseController
             )
             );
         }
+        
+        // Handle form by tab
+        if ($this->getFormTypes() && $index != null) {
+            $formTypes = $this->getFormTypes();
+            $formType  = (isset($formTypes[$index]['form'])) ? $formTypes[$index]['form'] : $this->getFormType();
+        } else {
+            $formType = $this->getFormType();
+        }
 
-        $form   = $this->createForm($this->getFormType(), $entity);
+        $form             = $this->createForm($formType, $entity);
+        $parameterActions = array(
+            'id'     => $entity->getId(),
+            'layout' => $request->get('layout', null)
+        );
+
+        if ($index != null) {
+            $parameterActions['index'] = $index;
+        }
+
         $action = $this->generateUrl(
             $this->getRouteNameForAction('edit'),
-            array('id' => $entity->getId(), 'layout' => $request->get('layout', null))
+            $parameterActions
         );
 
         if ('POST' === $request->getMethod()) {
@@ -762,6 +787,7 @@ abstract class CrudController extends BaseController
                 $actionsUrls[$actionId][$item->getId()] = $this->getActionUrl($actionId, $action, $item);
             }
         }
+        
         $isSearch = $this->getFilterManager()->hasSessionFilter(strtolower($this->getEntityName()));
 
         // pagination
@@ -784,7 +810,8 @@ abstract class CrudController extends BaseController
                 'actions_urls'     => $actionsUrls,
                 'globalActions'    => $this->getGlobalActions(),
                 'list_filters'     => $this->generateFiltersForm() ? $this->generateFiltersForm()->createView() : null,
-                'paginator_params' => $paginatorParams
+                'paginator_params' => $paginatorParams,
+                'formTypes'        => $this->getFormTypes()
             )
         );
     }
@@ -813,6 +840,8 @@ abstract class CrudController extends BaseController
                 'entity'      => $entity,
                 'layout'      => $request->query->get('layout') ?: '',
                 'form_name'   => $this->getName(),
+                'formTypes'   => $this->getFormTypes(), 
+                'routeName'   => $this->getRouteNameForAction('edit') 
             )
         );
     }
