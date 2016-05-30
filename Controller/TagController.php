@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Bigfoot\Bundle\CoreBundle\Form\TagType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -41,6 +42,14 @@ class TagController extends CrudController
             'id',
             'name',
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFormType()
+    {
+        return TagType::class;
     }
 
     protected function getEntityLabelPlural()

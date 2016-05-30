@@ -2,6 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
+use Bigfoot\Bundle\CoreBundle\Form\TagCategoryType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -40,6 +41,14 @@ class TagCategoryController extends CrudController
             'id',
             'name',
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFormType()
+    {
+        return TagCategoryType::class;
     }
 
     public function getEntityLabel()
