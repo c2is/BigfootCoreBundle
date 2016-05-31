@@ -128,12 +128,9 @@ class BaseController extends Controller
      */
     public function createForm($type, $data = null, array $options = array())
     {
-        try {
-            $typeObj = $this->get($type);
-            if (is_object($typeObj)) {
-                $type = get_class($typeObj);
-            }
-        } catch(\Exception $e) {}
+        if (is_string($type) && $this->container->has($type)) {
+            $type = get_class($this->get($type));
+        }
 
         if (!is_subclass_of($type, AbstractType::class)) {
             throw new InvalidArgumentException(sprintf('Expected argument of type "AbstractType" or fully qualified class name of a form type, got "%s"', is_string($type) ? $type : get_class($type)));
