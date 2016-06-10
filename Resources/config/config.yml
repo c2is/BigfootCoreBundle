@@ -17,6 +17,7 @@ bigfoot_core:
             en:
                 value: 'en'
                 date_format: 'MM/dd/yyyy'
+    translation: ~
 
 doctrine:
     orm:

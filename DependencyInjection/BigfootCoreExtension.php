@@ -58,5 +58,9 @@ class BigfootCoreExtension extends Extension
                 $router->addMethodCall('add', array(new Reference($id), trim($priority)));
             }
         }
+
+        if (null !== $config['translation'] && null !== $config['translation']['spreadsheet']) {
+            $container->setParameter('bigfoot_core.translation.spreadsheet', $config['translation']['spreadsheet']);
+        }
     }
 }
