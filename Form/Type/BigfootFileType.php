@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @package Bigfoot\Bundle\CoreBundle\Form\Type
  */
-class FileType extends AbstractType
+class BigfootFileType extends AbstractType
 {
 
     /**

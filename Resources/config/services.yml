@@ -163,7 +163,7 @@ services:
 
     # File type
     bigfoot.form.type.file:
-        class: Bigfoot\Bundle\CoreBundle\Form\Type\FileType
+        class: Bigfoot\Bundle\CoreBundle\Form\Type\BigfootFileType
         tags:
             - { name: form.type, alias: bigfoot_file }
 
