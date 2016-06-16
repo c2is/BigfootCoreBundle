@@ -188,6 +188,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
 
             if ($gedmoAnnotations !== null &&
+                $gedmoAnnotations !== false &&
                 $gedmoAnnotations->class != '' &&
                 class_exists($gedmoAnnotations->class) &&
                 isset(class_parents($gedmoAnnotations->class)['Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation'])
