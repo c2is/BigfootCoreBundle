@@ -194,6 +194,8 @@ class TranslationSubscriber implements EventSubscriberInterface
                 isset(class_parents($gedmoAnnotations->class)['Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation'])
             ) {
                 $repository = $this->translationRepository;
+            } elseif (!empty($gedmoAnnotations->class) && isset(class_parents($gedmoAnnotations->class)['Gedmo\Translatable\Entity\MappedSuperclass\AbstractTranslation'])) {
+                $repository = $em->getRepository($gedmoAnnotations->class);
             } else {
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
             }
