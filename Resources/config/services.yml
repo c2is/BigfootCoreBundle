@@ -347,3 +347,11 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Manager\CsvManager
         arguments:
             - '@doctrine.orm.entity_manager'
+
+    # Security
+    bigfoot_core.security.google_drive_oauth:
+            class: Bigfoot\Bundle\CoreBundle\Security\GoogleDriveOAuth
+            arguments:
+                - '%bigfoot_core.google_drive.client_email%'
+                - '%bigfoot_core.google_drive.client_real_email%'
+                - '%bigfoot_core.google_drive.private_key%'
