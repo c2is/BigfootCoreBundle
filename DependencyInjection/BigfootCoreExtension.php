@@ -59,8 +59,14 @@ class BigfootCoreExtension extends Extension
             }
         }
 
-        if (null !== $config['translation'] && null !== $config['translation']['spreadsheet']) {
+        if (isset($config['translation']) && null !== $config['translation']['spreadsheet']) {
             $container->setParameter('bigfoot_core.translation.spreadsheet', $config['translation']['spreadsheet']);
+        }
+
+        if (isset($config['google_drive'])) {
+            $container->setParameter('bigfoot_core.google_drive.client_email', $config['google_drive']['client_email']);
+            $container->setParameter('bigfoot_core.google_drive.client_real_email', $config['google_drive']['client_real_email']);
+            $container->setParameter('bigfoot_core.google_drive.private_key', $config['google_drive']['private_key']);
         }
     }
 }

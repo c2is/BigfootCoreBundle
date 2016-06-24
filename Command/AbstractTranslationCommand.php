@@ -19,7 +19,7 @@ abstract class AbstractTranslationCommand extends BaseCommand
      */
     protected function getSpreadsheetService()
     {
-        $oAuth          = $this->getContainer()->get('google_drive.oauth');
+        $oAuth          = $this->getContainer()->get('bigfoot_core.security.google_drive_oauth');
         $token          = $oAuth->authenticate();
         $serviceRequest = new DefaultServiceRequest($token);
         ServiceRequestFactory::setInstance($serviceRequest);
