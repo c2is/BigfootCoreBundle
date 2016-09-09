@@ -132,7 +132,7 @@ class BaseController extends Controller
             $type = get_class($this->get($type));
         }
 
-        if (!is_subclass_of($type, AbstractType::class)) {
+        if (!is_subclass_of($type, AbstractType::class, true)) {
             throw new InvalidArgumentException(sprintf('Expected argument of type "AbstractType" or fully qualified class name of a form type, got "%s"', is_string($type) ? $type : get_class($type)));
         }
 
