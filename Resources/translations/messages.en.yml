@@ -116,3 +116,6 @@ bigfoot_core:
                 title: 'Category'
 bigfoot_process:
     todo: "task to complete|tasks to complete"
+
+bigfoot_content:
+    new_block: "New Block"

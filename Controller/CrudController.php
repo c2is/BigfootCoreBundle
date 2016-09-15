@@ -562,7 +562,7 @@ abstract class CrudController extends BaseController
             )
             );
         }
-        
+
         // Handle form by tab
         if ($this->getFormTypes() && $index != null) {
             $formTypes = $this->getFormTypes();
@@ -787,7 +787,7 @@ abstract class CrudController extends BaseController
                 $actionsUrls[$actionId][$item->getId()] = $this->getActionUrl($actionId, $action, $item);
             }
         }
-        
+
         $isSearch = $this->getFilterManager()->hasSessionFilter(strtolower($this->getEntityName()));
 
         // pagination
@@ -840,8 +840,8 @@ abstract class CrudController extends BaseController
                 'entity'      => $entity,
                 'layout'      => $request->query->get('layout') ?: '',
                 'form_name'   => $this->getName(),
-                'formTypes'   => $this->getFormTypes(), 
-                'routeName'   => $this->getRouteNameForAction('edit') 
+                'formTypes'   => $this->getFormTypes(),
+                'routeName'   => $this->getRouteNameForAction('edit')
             )
         );
     }
