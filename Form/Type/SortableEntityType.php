@@ -35,7 +35,6 @@ class SortableEntityType extends AbstractType
             'attr'      => array(
                 'class' => 'sortable-field'
             ),
-            'data'      => 0
         ));
     }
 
