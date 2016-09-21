@@ -305,7 +305,7 @@ class FilterManager
                     $em = $this->entityManager;
                     /** @var TranslatableLabelRepository $repo */
                     $repo                        = $em->getRepository($datas['referer']);
-                    $field['options']['choices'] = array_flip($repo->getCategories());
+                    $field['options']['choices'] = array_flip($options['choicesMethod']);
 
                     $filters[] = $field;
                     break;
