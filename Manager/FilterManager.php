@@ -298,14 +298,17 @@ class FilterManager
                     if (!isset($options['method'])) {
                         throw new \Exception("You must define a repository method to call to apply the filter");
                     }
-                    if (!isset($options['choicesMethod'])) {
-                        throw new \Exception("You must define a repository method to call to generate the choices list");
+                    if (!isset($options['choicesMethod']) && !isset($options['choices'])) {
+                        throw new \Exception('You must define a repository method to call to generate the choices list ("choicesMethod") OR you must give the choice list ("choices")');
                     }
 
-                    $em = $this->entityManager;
-                    /** @var TranslatableLabelRepository $repo */
-                    $repo                        = $em->getRepository($datas['referer']);
-                    $field['options']['choices'] = array_flip($options['choicesMethod']);
+                    $em   = $this->entityManager;
+                    $repo = $em->getRepository($datas['referer']);
+                    if (isset($options['choicesMethod'])) {
+                        $field['options']['choices'] = array_flip($repo->$options['choicesMethod']());
+                    } else {
+                        $field['options']['choices'] = array_flip($options['choices']);
+                    }
 
                     $filters[] = $field;
                     break;
