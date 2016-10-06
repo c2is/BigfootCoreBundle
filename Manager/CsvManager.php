@@ -162,10 +162,14 @@ class CsvManager
     {
         if ($value instanceof \DateTime) {
             return $value->format('d-m-Y');
-        } else if (is_array($value)) {
+        } elseif (is_array($value)) {
             return implode($separator, $value);
+        } elseif (true === $value) {
+            return 'OUI';
+        } elseif (false === $value) {
+            return 'NON';
         }
 
-        return $value;
+        return trim($value, '"');
     }
 }
