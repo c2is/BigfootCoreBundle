@@ -2,7 +2,7 @@
 
 namespace Bigfoot\Bundle\CoreBundle\Composer;
 
-use Composer\Script\Event;
+use Composer\EventDispatcher\Event;
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler;
 
 class BigfootScriptHandler extends ScriptHandler
