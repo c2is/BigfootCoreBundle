@@ -404,7 +404,9 @@ abstract class CrudController extends BaseController
         foreach ($this->getFields() as $key => $field) {
             if (is_array($field) && isset($field['join'])) {
                 $queryBuilder
-                    ->leftJoin('e.'.$key, $field['join']);
+                    ->leftJoin('e.'.$key, $field['join'])
+                    ->addSelect($field['join'])
+                ;
             }
         }
 
