@@ -103,7 +103,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $entityClass = $parentForm->getConfig()->getDataClass();
         }
 
-        if ($entityClass) {
+        if ($entityClass && count($locales) > 1) {
             $meta               = $this->doctrine->getManager()->getClassMetadata($entityClass);
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
@@ -176,13 +176,13 @@ class TranslationSubscriber implements EventSubscriberInterface
         $parentForm       = $form->getParent();
         $parentData       = $parentForm->getData();
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $locales          = $this->localeList;
 
-        if ($parentData) {
+        if ($parentData && count($locales) > 1) {
             $entityClass        = get_class($parentData);
             $em                 = $this->doctrine->getManagerForClass($entityClass);
             $translatableFields = $this->getTranslatableFields($entityClass);
             $data               = $event->getData();
-            $locales            = $this->localeList;
 
             $reflectionClass  = new \ReflectionClass($entityClass);
             $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
