@@ -153,7 +153,7 @@ class Convert
 
         // écriture des fichiers
         foreach ($newTranslationFiles as $newTranslationFile => $newTranslations) {
-            $fileName = 'app' . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'translatable_label' . DIRECTORY_SEPARATOR . $newTranslationFile;
+            $fileName = '/var/www/symfony/app' . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'translatable_label' . DIRECTORY_SEPARATOR . $newTranslationFile;
             file_put_contents($fileName, Yaml::dump($newTranslations, 3));
         }
     }

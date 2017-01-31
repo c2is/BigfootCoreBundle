@@ -34,8 +34,9 @@ class BigfootDatepickerType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'widget' => 'single_text',
-            'format' => $this->format,
+            'widget'     => 'single_text',
+            'format'     => $this->format,
+            'inDateTime' => false,
         ));
     }
 
