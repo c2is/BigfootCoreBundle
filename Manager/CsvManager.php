@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Csv manager
@@ -22,12 +23,16 @@ class CsvManager
      */
     private $entityManager;
 
+    /** @var TranslatorInterface  */
+    private $translator;
+
     /**
      * @param EntityManager $entityManager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, TranslatorInterface $translator)
     {
         $this->entityManager = $entityManager;
+        $this->translator    = $translator;
     }
 
     /**
@@ -63,7 +68,7 @@ class CsvManager
 
         fputcsv($handle, $labelArray, ';');
 
-        $csvQueryArray = $this->buildCsvQuery($entity, $entitySelections);
+        $csvQueryArray = $this->buildCsvQuery($entity, $entitySelections, $fields);
 
         foreach ($csvQueryArray as $csvElement) {
             fputcsv($handle, $csvElement, ';');
@@ -87,7 +92,7 @@ class CsvManager
      * @param $externalSelect
      * @return mixed
      */
-    private function buildCsvQuery($entity, $entitySelections)
+    private function buildCsvQuery($entity, $entitySelections, $fields)
     {
         $query = $this->entityManager->getRepository($entity)
             ->createQueryBuilder('e')
@@ -103,7 +108,7 @@ class CsvManager
                 $entityPrefix      = substr($externalEntity, 0, 1) . $index;
                 $alias             = ($entitySelection['multiple']) ? $entityPrefix . ucfirst($externalField) . (($entitySelection['unique']) ? 'YYY' : 'XXX') : $entityPrefix . ucfirst($externalField);
 
-                $query             = $query
+                $query = $query
                     ->addSelect($entityPrefix . '.' . $externalField . ' as ' . $alias)
                     ->leftJoin('e.' . $externalEntity, $entityPrefix);
 
@@ -116,21 +121,25 @@ class CsvManager
 
         $csvArray = $query->getQuery()->getResult();
 
-        return $this->mergeClonedItem($csvArray);
+        return $this->mergeClonedItem($csvArray, ',', $fields);
     }
 
     /**
      * @param $csvArray
      * @param string $separator
+     * @param $fields
      * @return array
      */
-    private function mergeClonedItem($csvArray, $separator = ',')
+    private function mergeClonedItem($csvArray, $separator = ',', $fields)
     {
         $finalArray = array();
 
         foreach ($csvArray as $key => $element) {
             foreach ($element as $keyE => $value) {
                 $value = utf8_decode($this->formatValue($value, $separator));
+                if (array_key_exists($keyE, $fields) && isset($fields[$keyE]['translated']) && true == $fields[$keyE]['translated']) {
+                    $value = $this->translator->trans($value);
+                }
 
                 if (strpos($keyE, 'XXX')) {
                     $finalArray[$element['id']][$keyE] = isset($finalArray[$element['id']][$keyE]) ? ($finalArray[$element['id']][$keyE] . ' ' . $separator . $value) : $value;
@@ -149,7 +158,7 @@ class CsvManager
                 }
             }
         }
-
+        
         return $finalArray;
     }
 

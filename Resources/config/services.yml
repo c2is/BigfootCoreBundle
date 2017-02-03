@@ -361,6 +361,7 @@ services:
         class: Bigfoot\Bundle\CoreBundle\Manager\CsvManager
         arguments:
             - '@doctrine.orm.entity_manager'
+            - '@translator'
 
     # Security
     bigfoot_core.security.google_drive_oauth:
