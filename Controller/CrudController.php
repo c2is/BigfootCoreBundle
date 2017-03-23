@@ -1043,7 +1043,7 @@ abstract class CrudController extends BaseController
                 'route'      => 'admin_csv_generate',
                 'parameters' => array(
                     'entity' => base64_encode($this->getEntity()),
-                    'fields' => base64_encode(serialize($this->getCsvFields()))
+                    'fields' => str_replace('/', '+', base64_encode(serialize($this->getCsvFields())))
                 )
             );
         }

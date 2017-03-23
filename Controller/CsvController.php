@@ -26,7 +26,7 @@ class CsvController extends Controller
     public function generateAction($entity, $fields)
     {
         $entity   = base64_decode($entity);
-        $fields   = unserialize(base64_decode($fields));
+        $fields   = unserialize(base64_decode(str_replace('+', '/', $fields)));
         $csvArray = $this->get('bigfoot_core.manager.csv')->generateCsv($entity, $fields);
 
         return $csvArray;
