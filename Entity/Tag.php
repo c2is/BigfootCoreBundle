@@ -52,6 +52,7 @@ class Tag
     /**
      * @var string
      *
+     * @Gedmo\Translatable
      * @Gedmo\Slug(fields={"name"}, unique=true)
      * @ORM\Column(length=255, unique=true)
      */
