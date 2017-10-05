@@ -35,7 +35,7 @@ class BigfootDatepickerType extends AbstractType
     {
         $resolver->setDefaults(array(
             'widget'     => 'single_text',
-            'format'     => $this->format,
+            'format'     => 'dd/MM/yyyy',
             'inDateTime' => false,
         ));
     }
