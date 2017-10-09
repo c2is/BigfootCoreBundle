@@ -129,7 +129,8 @@ EOT
                         }
 
                         foreach ($locales as $locale) {
-                            $value = '';
+                            $value = null;
+
                             if (isset($translation['value'][$locale])) {
                                 $value = $translation['value'][$locale];
                             }

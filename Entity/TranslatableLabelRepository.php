@@ -34,7 +34,7 @@ class TranslatableLabelRepository extends EntityRepository
             )
             ->setHint(
                 \Gedmo\Translatable\TranslatableListener::HINT_FALLBACK,
-                0
+                1
             )
             ->getArrayResult();
     }

@@ -86,8 +86,10 @@ class TranslatableLabelTranslationType extends AbstractTranslatableLabelType
                     return;
                 }
 
-                if ($label->isEmptyValue() === true ) {
+                if (true === $label->isEmptyValue()) {
                     $label->setContent('');
+                } elseif (!$label->getContent()) {
+                    $label->setContent(null);
                 }
             })
         ;
