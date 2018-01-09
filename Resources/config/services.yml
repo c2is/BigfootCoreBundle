@@ -51,11 +51,11 @@ services:
     bigfoot_core.translatable_subscriber:
         class: Bigfoot\Bundle\CoreBundle\Form\EventListener\TranslationSubscriber
         arguments:
-            - %bigfoot_core.languages.front%
+            - '%bigfoot_core.languages.front%'
             - '@doctrine'
             - '@annotation_reader'
             - '@bigfoot_core.translation.repository'
-            - %locale%
+            - '%locale%'
             - '@bigfoot_context'
 
     # Services dedicated to the BackOffice theme
@@ -63,7 +63,7 @@ services:
         class:        "%theme.class%"
         arguments:    ['@service_container', '@bigfoot.section_toolbar', '@bigfoot.section_header', '@bigfoot.section_sidebar', '@bigfoot.section_page_header', '@bigfoot.section_page_content', '@bigfoot.section_footer']
         calls:
-            - [ setTwigNamespace, [ %bigfoot.theme.bundle% ] ]
+            - [ setTwigNamespace, [ '%bigfoot.theme.bundle%' ] ]
     bigfoot.section_toolbar:
         class:        "%theme.section.toolbar%"
         arguments:    ['@service_container']
@@ -96,34 +96,34 @@ services:
             - { name: form.type, alias: bigfoot_tag }
     # Entity translation in forms
     form.type.translatable:
-        class: %translatable_type.class%
+        class: '%translatable_type.class%'
         arguments:
             - '@bigfoot_core.translatable_subscriber'
             - '@request_stack'
-            - %bigfoot_core.languages.front%
+            - '%bigfoot_core.languages.front%'
         tags:
             - { name: form.type, alias: translatable_entity }
     # Translatable label
     form.type.translatable_label:
         class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelType
-        arguments: ['@bigfoot_context', '@doctrine.orm.entity_manager', %locale%, '@bigfoot_core.manager.translatable_label', '@translator']
+        arguments: ['@bigfoot_context', '@doctrine.orm.entity_manager', '%locale%', '@bigfoot_core.manager.translatable_label', '@translator']
         tags:
             - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_labeltype }
     form.type.translatable_label_translation:
         class: Bigfoot\Bundle\CoreBundle\Form\TranslatableLabelTranslationType
-        arguments: ['@bigfoot_context', '@doctrine.orm.entity_manager', %locale%, '@bigfoot_core.manager.translatable_label', '@translator']
+        arguments: ['@bigfoot_context', '@doctrine.orm.entity_manager', '%locale%', '@bigfoot_core.manager.translatable_label', '@translator']
         tags:
             - { name: form.type, alias: bigfoot_bundle_corebundle_translatable_label_translationtype }
     # CRUD
     bigfoot_core.crud.formatter.loader:
-        class: %bigfoot.crud.formatter.loader.class%
+        class: '%bigfoot.crud.formatter.loader.class%'
     bigfoot_core.crud.formatter.date:
-        arguments: [ %bigfoot_core.date_format% ]
-        class: %bigfoot.crud.formatter.date.class%
+        arguments: [ '%bigfoot_core.date_format%' ]
+        class: '%bigfoot.crud.formatter.date.class%'
         tags:
             - { name: bigfoot.crud.formatter, alias: date }
     bigfoot_core.crud.formatter.trans:
-        class: %bigfoot.crud.formatter.trans.class%
+        class: '%bigfoot.crud.formatter.trans.class%'
         arguments:
             - '@translator'
         tags:
@@ -131,7 +131,7 @@ services:
 
     # Sortable form type
     form.type.sortable:
-        class: %sortable_type.class%
+        class: '%sortable_type.class%'
         tags:
             - { name: form.type, alias: sortable_entity }
     # Richtext type
@@ -148,19 +148,19 @@ services:
     bigfoot.form.datepicker.type:
         arguments:
             - '@bigfoot_context'
-        class: %bigfoot.form.datepicker.type.class%
+        class: '%bigfoot.form.datepicker.type.class%'
         tags:
             - { name: form.type, alias: bigfoot_datepicker }
     # DateTimePicker type
     bigfoot.form.datetimepicker.type:
         arguments:
             - '@bigfoot_context'
-        class: %bigfoot.form.datetimepicker.type.class%
+        class: '%bigfoot.form.datetimepicker.type.class%'
         tags:
             - { name: form.type }
     # DateTimePicker type
     bigfoot.form.timepicker.type:
-        class: %bigfoot.form.timepicker.type.class%
+        class: '%bigfoot.form.timepicker.type.class%'
         tags:
             - { name: form.type }
     # Collection item type - to set as parent for entity types used in collections
@@ -197,7 +197,7 @@ services:
             - { name: form.type, alias: bigfoot_bundle_corebundle_quicklinktype }
     # DoshBoardController
     bigfoot.dashboard:
-        class: %bigfoot.dashboard.class%
+        class: '%bigfoot.dashboard.class%'
         calls:
             - [setContainer, ["@service_container"]]
         tags:
@@ -206,7 +206,7 @@ services:
     bigfoot_core.twig.locale_flags_extension:
         class: Bigfoot\Bundle\CoreBundle\Twig\LocalesFlagsExtension
         arguments:
-            - %bigfoot_core.languages.front%
+            - '%bigfoot_core.languages.front%'
         tags:
             - { name: twig.extension }
     bigfoot_core.twig.formatter_extension:
@@ -316,12 +316,12 @@ services:
     bigfoot_core.manager.translatable_label:
         class: Bigfoot\Bundle\CoreBundle\Manager\TranslatableLabelManager
         arguments:
-            - %kernel.cache_dir%
+            - '%kernel.cache_dir%'
             - '@filesystem'
 
     # Translations
     bigfoot_core.translation.repository:
-        class: %bigfoot.core.translation.repository.class%
+        class: '%bigfoot.core.translation.repository.class%'
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@annotation_reader'
