@@ -67,7 +67,7 @@ class TranslatableLabelController extends CrudController
     {
         return array(
             array(
-                'placeholder' => 'Category',
+                'placeholder' => 'Categories',
                 'name'        => 'category',
                 'type'        => 'repositoryMethod',
                 'options' => array(
@@ -76,7 +76,7 @@ class TranslatableLabelController extends CrudController
                 )
             ),
             array(
-                'placeholder' => 'Identifier',
+                'placeholder' => 'Identifiant',
                 'name'        => 'name',
                 'type'        => 'search',
                 'options' => array(
@@ -86,12 +86,22 @@ class TranslatableLabelController extends CrudController
                 )
             ),
             array(
-                'placeholder' => 'Translation',
+                'placeholder' => 'Traduction',
                 'name'        => 'search',
                 'type'        => 'search',
                 'options' => array(
                     'properties' => array(
                         'value',
+                    )
+                )
+            ),
+            array(
+                'placeholder' => 'Domaine (pour les URLs)',
+                'name'        => 'domain',
+                'type'        => 'search',
+                'options' => array(
+                    'properties' => array(
+                        'domain',
                     )
                 )
             ),
