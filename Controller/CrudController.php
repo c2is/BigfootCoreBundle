@@ -3,11 +3,12 @@
 namespace Bigfoot\Bundle\CoreBundle\Controller;
 
 use Bigfoot\Bundle\CoreBundle\Manager\FilterManager;
+use Doctrine\ORM\Query;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Doctrine\ORM\Query;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -29,6 +30,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 abstract class CrudController extends BaseController
 {
+    const POST_EDIT = 'bigfoot.post_edit';
+    const POST_NEW  = 'bigfoot.post_new';
+
     /**
      * @var string The bundle name, calculated from getEntity().
      */
@@ -78,7 +82,7 @@ abstract class CrudController extends BaseController
     {
         return $this->getTranslator()->trans(
             'bigfoot_core.crud.controller.default_title',
-            array('%entity%' => $this->getEntityLabelPlural())
+            ['%entity%' => $this->getEntityLabelPlural()]
         );
     }
 
@@ -89,7 +93,7 @@ abstract class CrudController extends BaseController
      */
     protected function getFilters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -115,10 +119,10 @@ abstract class CrudController extends BaseController
             return null;
         }
 
-        $datas = array(
+        $datas = [
             'referer' => $this->getEntity(),
-            'fields'  => $filters
-        );
+            'fields'  => $filters,
+        ];
 
         return $datas;
     }
@@ -191,19 +195,20 @@ abstract class CrudController extends BaseController
         if (!empty($visibility)) {
             $key = $visibility == 'new' ? 'bigfoot_core.crud.new.title' : 'bigfoot_core.crud.edit.title';
 
-            return $this->getTranslator()->trans($key, array('%entity%' => $this->getEntityLabel()));
+            return $this->getTranslator()->trans($key, ['%entity%' => $this->getEntityLabel()]);
         }
 
         return $this->getTranslator()->trans(
             'bigfoot_core.crud.edit.title',
-            array('%entity%' => $this->getEntityLabel())
+            ['%entity%' => $this->getEntityLabel()]
         );
     }
 
     /**
-     * @param int $countResults
-     * @param int $count
+     * @param int  $countResults
+     * @param int  $count
      * @param bool $isSearch
+     *
      * @return string
      */
     protected function getListEntityLabel($countResults, $count, $isSearch)
@@ -262,7 +267,7 @@ abstract class CrudController extends BaseController
             );
         }
 
-        return array('bundle' => $bundleName, 'entity' => $entityName);
+        return ['bundle' => $bundleName, 'entity' => $entityName];
     }
 
     /**
@@ -295,7 +300,7 @@ abstract class CrudController extends BaseController
     {
         return $this->getTranslator()->trans(
             'bigfoot_core.crud.new.title',
-            array('%entity%' => $this->getEntityName())
+            ['%entity%' => $this->getEntityName()]
         );
     }
 
@@ -318,40 +323,40 @@ abstract class CrudController extends BaseController
      */
     protected function getActions()
     {
-        $actions = array();
+        $actions = [];
 
         if (method_exists($this, 'editAction')) {
-            $actions['edit'] = array(
+            $actions['edit'] = [
                 'label' => 'bigfoot_core.crud.actions.edit.label',
                 'route' => $this->getRouteNameForAction('edit'),
                 'icon'  => 'edit',
-                'color' => 'green'
-            );
+                'color' => 'green',
+            ];
         }
 
         if (method_exists($this, 'duplicateAction')) {
-            $actions['duplicate'] = array(
+            $actions['duplicate'] = [
                 'label' => 'bigfoot_core.crud.actions.duplicate.label',
                 'route' => $this->getRouteNameForAction('duplicate'),
                 'icon'  => 'copy',
-                'color' => 'green'
-            );
+                'color' => 'green',
+            ];
         }
 
         if (method_exists($this, 'deleteAction')) {
-            $actions['delete'] = array(
+            $actions['delete'] = [
                 'label'      => 'bigfoot_core.crud.actions.delete.label',
                 'route'      => $this->getRouteNameForAction('delete'),
                 'icon'       => 'trash',
                 'color'      => 'red',
                 'class'      => 'confirm-action',
-                'attributes' => array(
+                'attributes' => [
                     'data-confirm-message' => $this->getTranslator()->trans(
                         'bigfoot_core.crud.actions.delete.confirm',
-                        array('%entity%' => $this->getEntityLabel())
+                        ['%entity%' => $this->getEntityLabel()]
                     ),
-                )
-            );
+                ],
+            ];
         }
 
         return $actions;
@@ -364,25 +369,25 @@ abstract class CrudController extends BaseController
      */
     protected function getGlobalActions()
     {
-        $globalActions = array();
+        $globalActions = [];
 
         if ($this->generateExportCsvLink()) {
             $csvArray             = $this->generateExportCsvLink();
-            $globalActions['csv'] = array(
+            $globalActions['csv'] = [
                 'label'      => 'bigfoot_core.crud.actions.csv.label',
                 'route'      => $csvArray['route'],
                 'parameters' => $csvArray['parameters'],
                 'icon'       => 'icon-table',
-            );
+            ];
         }
 
         if (method_exists($this, 'newAction')) {
-            $globalActions['new'] = array(
+            $globalActions['new'] = [
                 'label'      => 'bigfoot_core.crud.actions.new.label',
                 'route'      => $this->getRouteNameForAction('new'),
-                'parameters' => array(),
+                'parameters' => [],
                 'icon'       => 'icon-plus-sign',
-            );
+            ];
         }
 
         return $globalActions;
@@ -395,7 +400,7 @@ abstract class CrudController extends BaseController
      */
     protected function getQuery()
     {
-        $entityName  = $this->getEntityName();
+        $entityName = $this->getEntityName();
 
         $queryBuilder = $this
             ->getContextRepository()
@@ -405,8 +410,7 @@ abstract class CrudController extends BaseController
             if (is_array($field) && isset($field['join'])) {
                 $queryBuilder
                     ->leftJoin('e.'.$key, $field['join'])
-                    ->addSelect($field['join'])
-                ;
+                    ->addSelect($field['join']);
             }
         }
 
@@ -440,6 +444,7 @@ abstract class CrudController extends BaseController
      * Meant to be used in a basic index action.
      *
      * @param Request $request
+     *
      * @return array An array containing the entities.
      */
     protected function doIndex(Request $request)
@@ -458,7 +463,7 @@ abstract class CrudController extends BaseController
         // dans une propriété protected sans getter, donc on ne peut pas récupérer les valeurs
         if ($request->query->get('sort') == null && is_array($defaultSort)) {
             // Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber lit ses valeurs dans $_GET, donc, on les écrit là, sans passer par Request
-            $_GET['sort'] = $defaultSort['sort'];
+            $_GET['sort']      = $defaultSort['sort'];
             $_GET['direction'] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
             //$paginatorParams[$paginatorSortName] = $defaultSort['sort'];
             //$paginatorParams[$paginatorDirectionName] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
@@ -469,9 +474,12 @@ abstract class CrudController extends BaseController
         try {
             $items = $this->getPagination($result, $this->getElementsPerPage(), $request);
         } catch (\Exception $e) {
-            $items = array();
+            $items = [];
             $filterManager->clearFilters($this->getEntityName());
-            $this->getSession()->getFlashBag()->add('error', $this->get('translator')->trans('bigfoot_core.crud.index.error', array('%error%' => $e->getMessage())));
+            $this->getSession()->getFlashBag()->add(
+                'error',
+                $this->get('translator')->trans('bigfoot_core.crud.index.error', ['%error%' => $e->getMessage()])
+            );
         }
 
         return $this->renderIndex($items, $result->getHint('knp_paginator.count'), $request);
@@ -501,7 +509,7 @@ abstract class CrudController extends BaseController
         $form        = $this->createForm($this->getFormType(), $entity);
         $action      = $this->generateUrl(
             $this->getRouteNameForAction('new'),
-            array('layout' => $request->get('layout', null))
+            ['layout' => $request->get('layout', null)]
         );
 
         if ('POST' === $request->getMethod()) {
@@ -514,8 +522,10 @@ abstract class CrudController extends BaseController
 
                 $this->postFlush($entity, 'new');
 
+                $this->get('event_dispatcher')->dispatch(self::POST_NEW, new GenericEvent($entity));
+
                 if (!$request->isXmlHttpRequest()) {
-                    $action = $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()));
+                    $action = $this->generateUrl($this->getRouteNameForAction('edit'), ['id' => $entity->getId()]);
 
                     $this->addSuccessFlash('bigfoot_core.flash.new.confirm');
 
@@ -560,8 +570,8 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.edit.errors.not_found',
-                    array('%entity%' => $this->getEntity() . ' (id: ' . $id . ')')
-            )
+                    ['%entity%' => $this->getEntity().' (id: '.$id.')']
+                )
             );
         }
 
@@ -574,10 +584,10 @@ abstract class CrudController extends BaseController
         }
 
         $form             = $this->createForm($formType, $entity);
-        $parameterActions = array(
+        $parameterActions = [
             'id'     => $entity->getId(),
-            'layout' => $request->get('layout', null)
-        );
+            'layout' => $request->get('layout', null),
+        ];
 
         if ($index != null) {
             $parameterActions['index'] = $index;
@@ -597,6 +607,8 @@ abstract class CrudController extends BaseController
                 $this->persistAndFlush($entity);
 
                 $this->postFlush($entity, 'edit');
+
+                $this->get('event_dispatcher')->dispatch(self::POST_EDIT, new GenericEvent($entity));
 
                 if (!$request->isXmlHttpRequest()) {
                     $this->addSuccessFlash('bigfoot_core.flash.edit.confirm');
@@ -620,7 +632,7 @@ abstract class CrudController extends BaseController
             }
 
             return $this->redirect(
-                $this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $entity->getId()))
+                $this->generateUrl($this->getRouteNameForAction('edit'), ['id' => $entity->getId()])
             );
         }
 
@@ -646,7 +658,7 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.delete.errors.not_found',
-                    array('%entity%', $this->getEntity())
+                    ['%entity%', $this->getEntity()]
                 )
             );
         }
@@ -685,7 +697,7 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.delete.errors.not_found',
-                    array('%entity%', $this->getEntity())
+                    ['%entity%', $this->getEntity()]
                 )
             );
         }
@@ -695,7 +707,7 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.delete_file.errors.not_found',
-                    array('%property%' => $property, '%class' => get_class($entity))
+                    ['%property%' => $property, '%class' => get_class($entity)]
                 )
             );
         }
@@ -716,7 +728,7 @@ abstract class CrudController extends BaseController
         if (!$request->isXmlHttpRequest()) {
             $this->addSuccessFlash('bigfoot_core.flash.delete_file.confirm');
 
-            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), array('id' => $id)));
+            return $this->redirect($this->generateUrl($this->getRouteNameForAction('edit'), ['id' => $id]));
         } else {
             return $this->renderAjax(true, $this->getTranslator()->trans('bigfoot_core.delete_file.confirm'));
         }
@@ -741,7 +753,7 @@ abstract class CrudController extends BaseController
             throw new NotFoundHttpException(
                 $this->getTranslator()->trans(
                     'bigfoot_core.crud.delete.errors.not_found',
-                    array('%entity%', $this->getEntity())
+                    ['%entity%', $this->getEntity()]
                 )
             );
         }
@@ -758,19 +770,20 @@ abstract class CrudController extends BaseController
     /**
      * Render index
      *
-     * @param array $items
-     * @param int $count
+     * @param array   $items
+     * @param int     $count
      * @param Request $request
+     *
      * @return Response
      */
     protected function renderIndex($items, $count, Request $request)
     {
-        $fields = array();
+        $fields = [];
         foreach ($this->getFields() as $key => $field) {
             if (!is_array($field)) {
-                $fields[$field] = array(
+                $fields[$field] = [
                     'label' => sprintf('bigfoot_core.crud.fields.%s.%s.label', $this->getName(), $field),
-                );
+                ];
             } else {
                 if (!isset($field['label'])) {
                     $field['label'] = sprintf('bigfoot_core.crud.fields.%s.%s.label', $this->getName(), $key);
@@ -779,12 +792,12 @@ abstract class CrudController extends BaseController
             }
         }
 
-        $actions = $this->getActions();
-        $actionsUrls = array();
+        $actions     = $this->getActions();
+        $actionsUrls = [];
         foreach ($items as $item) {
             foreach ($actions as $actionId => $action) {
                 if (array_key_exists($actionId, $actionsUrls) === false) {
-                    $actionsUrls[$actionId] = array();
+                    $actionsUrls[$actionId] = [];
                 }
                 $actionsUrls[$actionId][$item->getId()] = $this->getActionUrl($actionId, $action, $item);
             }
@@ -793,18 +806,21 @@ abstract class CrudController extends BaseController
         $isSearch = $this->getFilterManager()->hasSessionFilter(strtolower($this->getEntityName()));
 
         // pagination
-        $defaultSort = $this->getDefaultSort();
-        $paginatorParams = array();
+        $defaultSort     = $this->getDefaultSort();
+        $paginatorParams = [];
         // les configs knp_paginator.default_options.sort_field_name et sort_direction_name sont intégrées dans le service knp_paginator,
         // dans une propriété protected sans getter, donc on ne peut pas récupérer les valeurs
         if ($request->query->get('sort') == null && is_array($defaultSort)) {
-            $paginatorParams['sort'] = $defaultSort['sort'];
-            $paginatorParams['direction'] = (array_key_exists('direction', $defaultSort)) ? $defaultSort['direction'] : 'asc';
+            $paginatorParams['sort']      = $defaultSort['sort'];
+            $paginatorParams['direction'] = (array_key_exists(
+                'direction',
+                $defaultSort
+            )) ? $defaultSort['direction'] : 'asc';
         }
 
         return $this->render(
             $this->getIndexTemplate(),
-            array(
+            [
                 'list_items'       => $items,
                 'list_title'       => $this->getListEntityLabel($count, $this->countEntities(), $isSearch),
                 'list_fields'      => $fields,
@@ -813,26 +829,27 @@ abstract class CrudController extends BaseController
                 'globalActions'    => $this->getGlobalActions(),
                 'list_filters'     => $this->generateFiltersForm() ? $this->generateFiltersForm()->createView() : null,
                 'paginator_params' => $paginatorParams,
-                'formTypes'        => $this->getFormTypes()
-            )
+                'formTypes'        => $this->getFormTypes(),
+            ]
         );
     }
 
     /**
      * Render form
      *
-     * @param Request $request
-     * @param $form
-     * @param string $action
+     * @param Request  $request
+     * @param          $form
+     * @param string   $action
      * @param stdclass $entity
-     * @param string $visibility
+     * @param string   $visibility
+     *
      * @return Response
      */
     protected function renderForm(Request $request, $form, $action, $entity, $visibility = null)
     {
         return $this->render(
             $this->getFormTemplate(),
-            array(
+            [
                 'form'        => $form->createView(),
                 'form_method' => 'POST',
                 'form_title'  => $this->getFormEntityLabel($visibility),
@@ -843,8 +860,8 @@ abstract class CrudController extends BaseController
                 'layout'      => $request->query->get('layout') ?: '',
                 'form_name'   => $this->getName(),
                 'formTypes'   => $this->getFormTypes(),
-                'routeName'   => $this->getRouteNameForAction('edit')
-            )
+                'routeName'   => $this->getRouteNameForAction('edit'),
+            ]
         );
     }
 
@@ -863,32 +880,32 @@ abstract class CrudController extends BaseController
     /**
      * Add sucess flash
      */
-    protected function addSuccessFlash($message, array $additionnalActions = array())
+    protected function addSuccessFlash($message, array $additionnalActions = [])
     {
-        $actions = array();
+        $actions = [];
 
-        $actions[] = array(
+        $actions[] = [
             'route' => $this->generateUrl($this->getRouteNameForAction('index')),
             'label' => 'bigfoot_core.flash.actions.back.label',
             'type'  => 'success',
-        );
+        ];
 
         if ($this->getNewUrl()) {
-            $actions[] = array(
+            $actions[] = [
                 'route' => $this->getNewUrl(),
                 'label' => 'bigfoot_core.flash.actions.new.label',
                 'type'  => 'success',
-            );
+            ];
         }
 
         if ($additionnalActions) {
             foreach ($additionnalActions as $action) {
                 if (isset($action['route']) and isset($action['label'])) {
-                    $actions[] = array(
+                    $actions[] = [
                         'route' => $action['route'],
                         'label' => $action['label'],
                         'type'  => 'success',
-                    );
+                    ];
                 }
             }
         }
@@ -897,13 +914,13 @@ abstract class CrudController extends BaseController
             'success',
             $this->renderView(
                 $this->getThemeBundle().':admin:flash.html.twig',
-                array(
+                [
                     'icon'        => 'ok',
                     'heading'     => 'bigfoot_core.flash.header.title.success',
                     'message'     => $message,
                     'actions'     => $actions,
-                    'transParams' => array('%entity%' => $this->getEntityLabel()),
-                )
+                    'transParams' => ['%entity%' => $this->getEntityLabel()],
+                ]
             )
         );
     }
@@ -965,17 +982,18 @@ abstract class CrudController extends BaseController
     }
 
     /**
-     * @param string $env Environment, ex app, admin
-     * @param string $route
-     * @param array $parameters
+     * @param string  $env           Environment, ex app, admin
+     * @param string  $route
+     * @param array   $parameters
      * @param boolean $envAutoSuffix Indicate if actual env suffix (ex _dev) will be added to $env, or not
+     *
      * @return string
      */
-    protected function generateEnvUrl($env, $route, array $parameters = array(), $envAutoSuffix = true)
+    protected function generateEnvUrl($env, $route, array $parameters = [], $envAutoSuffix = true)
     {
         $requestContext = $this->get('router')->getContext();
-        $oldBaseUrl = $requestContext->getBaseUrl();
-        $baseUrl = '/' . $env;
+        $oldBaseUrl     = $requestContext->getBaseUrl();
+        $baseUrl        = '/'.$env;
         if ($envAutoSuffix) {
             $posSeparator = strpos($oldBaseUrl, '_');
             if ($posSeparator !== false) {
@@ -993,12 +1011,14 @@ abstract class CrudController extends BaseController
     /**
      * Get action url for an item
      *
-     * @param string $actionId
-     * @param array $action
+     * @param string   $actionId
+     * @param array    $action
      * @param stdclass $item
+     *
      * @return string
      */
-    protected function getActionUrl($actionId, array $action, $item) {
+    protected function getActionUrl($actionId, array $action, $item)
+    {
         return null;
     }
 
@@ -1039,13 +1059,13 @@ abstract class CrudController extends BaseController
     private function generateExportCsvLink()
     {
         if ($this->getCsvFields()) {
-            return array(
+            return [
                 'route'      => 'admin_csv_generate',
-                'parameters' => array(
+                'parameters' => [
                     'entity' => base64_encode($this->getEntity()),
-                    'fields' => str_replace('/', '+', base64_encode(serialize($this->getCsvFields())))
-                )
-            );
+                    'fields' => str_replace('/', '+', base64_encode(serialize($this->getCsvFields()))),
+                ],
+            ];
         }
 
         return null;
