@@ -13,6 +13,7 @@ parameters:
     bigfoot.crud.formatter.loader.class:       "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\Loader"
     bigfoot.crud.formatter.date.class:         "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\DateFormatter"
     bigfoot.crud.formatter.trans.class:        "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\TranslationFormatter"
+    bigfoot.crud.formatter.bool.class:         "Bigfoot\\Bundle\\CoreBundle\\Crud\\Formatter\\BoolFormatter"
     bigfoot.core.translation.repository.class: "Bigfoot\\Bundle\\CoreBundle\\Entity\\TranslationRepository"
     bigfoot.form.datepicker.type.class:        "Bigfoot\\Bundle\\CoreBundle\\Form\\Type\\BigfootDatepickerType"
     bigfoot.dashboard.class:                   "Bigfoot\\Bundle\\CoreBundle\\Controller\\DashboardController"
@@ -128,6 +129,10 @@ services:
             - '@translator'
         tags:
             - { name: bigfoot.crud.formatter, alias: trans }
+    bigfoot_core.crud.formatter.bool:
+        class: '%bigfoot.crud.formatter.bool.class%'
+        tags:
+            - { name: bigfoot.crud.formatter, alias: bool }
 
     # Sortable form type
     form.type.sortable:
