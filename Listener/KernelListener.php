@@ -4,6 +4,7 @@ namespace Bigfoot\Bundle\CoreBundle\Listener;
 
 use Bigfoot\Bundle\ContextBundle\Service\ContextService;
 use Gedmo\Translatable\TranslatableListener;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -102,6 +103,21 @@ class KernelListener
         }
 
         $this->context->setRequest($event->getRequest());
+    }
+
+    /**
+     * @param GetResponseEvent $event
+     */
+    public function onFinishKernelRequest(FinishRequestEvent $event)
+    {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or !in_array(
+                $this->kernel->getEnvironment(),
+                ['admin', 'admin_dev']
+            )
+        ) {
+            return;
+        }
+
         $this->translationListener->setTranslatableLocale($this->locale);
     }
 }

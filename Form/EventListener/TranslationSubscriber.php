@@ -213,7 +213,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                         }
 
                         if ($field != 'slug' || $fieldData) {
-                            if ($repository instanceof BigfootTranslationRepository && $this->currentLocale == $locale) {
+                            if ($repository instanceof BigfootTranslationRepository && $this->defaultLocale == $locale) {
                                 $fieldData = $propertyAccessor->getValue($parentData, $field);
                             }
 

@@ -38,6 +38,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onEarlyKernelRequest, priority: 40 }
             - { name: kernel.event_listener, event: kernel.request, method: onLateKernelRequest, priority: -500 }
+            - { name: kernel.event_listener, event: kernel.finish_request, method: onFinishKernelRequest, priority: -500 }
 
     bigfoot_core.doctrine_listener:
         class: Bigfoot\Bundle\CoreBundle\Listener\DoctrineListener
