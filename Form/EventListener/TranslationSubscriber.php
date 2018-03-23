@@ -3,15 +3,15 @@
 namespace Bigfoot\Bundle\CoreBundle\Form\EventListener;
 
 use Bigfoot\Bundle\ContextBundle\Service\ContextService;
-use Doctrine\Common\Annotations\Reader;
 use Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository as BigfootTranslationRepository;
+use Doctrine\Common\Annotations\Reader;
 use Gedmo\Translatable\TranslatableListener;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * Class TranslationSubscriber
@@ -34,12 +34,12 @@ class TranslationSubscriber implements EventSubscriberInterface
     protected $translationRepository;
 
     /**
-     * @param array $localeList
-     * @param RegistryInterface $doctrine
-     * @param Reader $annotationReader
+     * @param array                        $localeList
+     * @param RegistryInterface            $doctrine
+     * @param Reader                       $annotationReader
      * @param BigfootTranslationRepository $translationRepository
-     * @param string $defaultLocale
-     * @param ContextService $context
+     * @param string                       $defaultLocale
+     * @param ContextService               $context
      */
     public function __construct(
         $localeList,
@@ -82,7 +82,7 @@ class TranslationSubscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(FormEvents::PRE_SET_DATA => 'preSetData', FormEvents::POST_SUBMIT => array('postSubmit', -500));
+        return [FormEvents::PRE_SET_DATA => 'preSetData', FormEvents::POST_SUBMIT => ['postSubmit', -500]];
     }
 
     /**
@@ -107,35 +107,34 @@ class TranslationSubscriber implements EventSubscriberInterface
             $meta               = $this->doctrine->getManager()->getClassMetadata($entityClass);
             $translatableFields = $this->getTranslatableFields($entityClass);
             $propertyAccessor   = PropertyAccess::createPropertyAccessor();
-            $translations       = array();
-            $initialLocale      = ($parentData) ? $listener->getTranslatableLocale($parentData, $meta) : $this->defaultLocale;
+            $translations       = [];
+            $initialLocale      = ($parentData) ? $listener->getTranslatableLocale(
+                $parentData,
+                $meta
+            ) : $this->defaultLocale;
             unset($locales[$initialLocale]);
 
-            $form->add('_entity_locale', HiddenType::class, array(
-                'data'   => $initialLocale,
-                'mapped' => false,
-                'attr'   => array(
-                    'class' => 'entity-locale',
-                ),
-            ));
+            $form->add(
+                '_entity_locale',
+                HiddenType::class,
+                [
+                    'data'   => $initialLocale,
+                    'mapped' => false,
+                    'attr'   => [
+                        'class' => 'entity-locale',
+                    ],
+                ]
+            );
 
             if ($parentData and method_exists($parentData, 'getId') and $parentData->getId()) {
-                $translations = array();
+                $translations                       = $this->getTranslationRepository($parentData)->findTranslations(
+                    $parentData
+                );
+                $translations[$this->defaultLocale] = [];
 
-                foreach ($locales as $locale => $localeConfig) {
-                    $localeValues = array();
-                    $parentData->setTranslatableLocale($locale);
-                    $em->refresh($parentData);
-
-                    foreach ($translatableFields as $fieldName => $fieldType) {
-                        $localeValues[$fieldName] = $propertyAccessor->getValue($parentData, $fieldName);
-                    }
-
-                    $translations[$locale] = $localeValues;
+                foreach ($translatableFields as $fieldName => $fieldType) {
+                    $translations[$this->defaultLocale] = $propertyAccessor->getValue($parentData, $fieldName);
                 }
-
-                $parentData->setTranslatableLocale($initialLocale);
-                $em->refresh($parentData);
             }
 
             foreach ($locales as $locale => $localeConfig) {
@@ -152,14 +151,14 @@ class TranslationSubscriber implements EventSubscriberInterface
                         $form->add(
                             sprintf('%s-%s', $fieldName, $locale),
                             $fieldType,
-                            array(
+                            [
                                 'data'     => $data,
                                 'required' => false,
                                 'attr'     => array_merge(
                                     $fieldAttr,
-                                    array('data-field-name' => $fieldName, 'data-locale' => $locale)
-                                )
-                            )
+                                    ['data-field-name' => $fieldName, 'data-locale' => $locale]
+                                ),
+                            ]
                         );
                     }
                 }
@@ -183,22 +182,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $em                 = $this->doctrine->getManagerForClass($entityClass);
             $translatableFields = $this->getTranslatableFields($entityClass);
             $data               = $event->getData();
-
-            $reflectionClass  = new \ReflectionClass($entityClass);
-            $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
-
-            if ($gedmoAnnotations !== null &&
-                $gedmoAnnotations !== false &&
-                $gedmoAnnotations->class != '' &&
-                class_exists($gedmoAnnotations->class) &&
-                isset(class_parents($gedmoAnnotations->class)['Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation'])
-            ) {
-                $repository = $this->translationRepository;
-            } elseif (!empty($gedmoAnnotations->class) && isset(class_parents($gedmoAnnotations->class)['Gedmo\Translatable\Entity\MappedSuperclass\AbstractTranslation'])) {
-                $repository = $em->getRepository($gedmoAnnotations->class);
-            } else {
-                $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
-            }
+            $repository         = $this->getTranslationRepository($parentData);
 
             foreach ($locales as $locale => $localeConf) {
                 foreach ($translatableFields as $field => $type) {
@@ -236,7 +220,7 @@ class TranslationSubscriber implements EventSubscriberInterface
     private function getTranslatableFields($className)
     {
         $reflectionClass    = new \ReflectionClass($className);
-        $translatableFields = array();
+        $translatableFields = [];
 
         do {
             $translatableFields = array_merge(
@@ -260,7 +244,7 @@ class TranslationSubscriber implements EventSubscriberInterface
      */
     private function getTranslatableFieldsFromClass(\ReflectionClass $reflectionClass)
     {
-        $translatableFields = array();
+        $translatableFields = [];
 
         if ($this->annotationReader->getClassAnnotation($reflectionClass, 'Doctrine\\ORM\\Mapping\\Entity')) {
             $reflectionProperties = $reflectionClass->getProperties();
@@ -318,5 +302,41 @@ class TranslationSubscriber implements EventSubscriberInterface
                 }
             }
         }
+    }
+
+    /**
+     * @param $entity
+     *
+     * @return \Bigfoot\Bundle\CoreBundle\Entity\TranslationRepository
+     * @throws \ReflectionException
+     */
+    protected function getTranslationRepository($entity)
+    {
+        $em               = $this->doctrine->getManager();
+        $reflectionClass  = new \ReflectionClass($entity);
+        $gedmoAnnotations = $this->isPersonnalTranslationRecursive($reflectionClass);
+
+        if ($gedmoAnnotations !== null &&
+            $gedmoAnnotations !== false &&
+            $gedmoAnnotations->class != '' &&
+            class_exists($gedmoAnnotations->class) &&
+            isset(
+                class_parents(
+                    $gedmoAnnotations->class
+                )['Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation']
+            )
+        ) {
+            $repository = $this->translationRepository;
+        } elseif (!empty($gedmoAnnotations->class) && isset(
+                class_parents(
+                    $gedmoAnnotations->class
+                )['Gedmo\Translatable\Entity\MappedSuperclass\AbstractTranslation']
+            )) {
+            $repository = $em->getRepository($gedmoAnnotations->class);
+        } else {
+            $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+        }
+
+        return $repository;
     }
 }
