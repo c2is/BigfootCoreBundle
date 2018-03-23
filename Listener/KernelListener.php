@@ -3,10 +3,10 @@
 namespace Bigfoot\Bundle\CoreBundle\Listener;
 
 use Bigfoot\Bundle\ContextBundle\Service\ContextService;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Gedmo\Translatable\TranslatableListener;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Class KernelListener
@@ -27,15 +27,22 @@ class KernelListener
     /** @var \Bigfoot\Bundle\ContextBundle\Service\ContextService */
     protected $context;
 
+    /** @var string */
+    protected $locale;
+
     /**
-     * @param TranslatableListener                                 $translationListener
-     * @param Kernel                                               $kernel
+     * @param TranslatableListener $translationListener
+     * @param Kernel $kernel
      * @param \Bigfoot\Bundle\ContextBundle\Service\ContextService $context
      *
      * @internal param array $allowedLocales
      */
-    public function __construct(TranslatableListener $translationListener, Kernel $kernel, ContextService $context)
-    {
+    public function __construct(
+        TranslatableListener $translationListener,
+        Kernel $kernel,
+        ContextService $context,
+        $locale
+    ) {
         $contexts = $context->getContexts();
 
         $this->translationListener = $translationListener;
@@ -43,6 +50,7 @@ class KernelListener
         $this->defaultBackLocale   = $contexts['language_back']['default_value'];
         $this->context             = $context;
         $this->allowedLocales      = array_keys($context->getValues('language_back'));
+        $this->locale              = $locale;
     }
 
     /**
@@ -52,7 +60,7 @@ class KernelListener
     {
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or !in_array(
                 $this->kernel->getEnvironment(),
-                array('admin', 'admin_dev')
+                ['admin', 'admin_dev']
             )
         ) {
             return;
@@ -85,14 +93,15 @@ class KernelListener
      */
     public function onLateKernelRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or ! in_array(
-                $this->kernel->getEnvironment(), array('admin', 'admin_dev')
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() or !in_array(
+                $this->kernel->getEnvironment(),
+                ['admin', 'admin_dev']
             )
         ) {
             return;
         }
 
         $this->context->setRequest($event->getRequest());
-        $this->translationListener->setTranslatableLocale($this->context->getDefaultFrontLocale());
+        $this->translationListener->setTranslatableLocale($this->locale);
     }
 }
