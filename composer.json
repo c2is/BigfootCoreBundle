@@ -19,7 +19,7 @@
         "knplabs/knp-paginator-bundle":      "~2.4.1",
         "friendsofsymfony/jsrouting-bundle": "~1.1",
         "liip/imagine-bundle":               "1.2.*@dev",
-        "symfony-cmf/routing":               "dev-master"
+        "symfony-cmf/routing":               "^2.0"
     },
     "autoload": {
         "psr-0": { "Bigfoot\\Bundle\\CoreBundle": "" }
