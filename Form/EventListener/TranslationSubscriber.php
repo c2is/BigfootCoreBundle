@@ -183,6 +183,7 @@ class TranslationSubscriber implements EventSubscriberInterface
             $translatableFields = $this->getTranslatableFields($entityClass);
             $data               = $event->getData();
             $repository         = $this->getTranslationRepository($parentData);
+            $translations = $repository->findTranslations($parentData);
 
             foreach ($locales as $locale => $localeConf) {
                 foreach ($translatableFields as $field => $type) {
@@ -196,7 +197,7 @@ class TranslationSubscriber implements EventSubscriberInterface
                             $fieldData = $data[$field];
                         }
 
-                        if ($field != 'slug' || $fieldData) {
+                        if ($locale == $this->defaultLocale || $fieldData || (isset($translations[$locale]['field']) && $translations[$locale]['field'])) {
                             if ($repository instanceof BigfootTranslationRepository && $this->defaultLocale == $locale) {
                                 $fieldData = $propertyAccessor->getValue($parentData, $field);
                             }
