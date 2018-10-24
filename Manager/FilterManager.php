@@ -305,7 +305,7 @@ class FilterManager
                     $em   = $this->entityManager;
                     $repo = $em->getRepository($datas['referer']);
                     if (isset($options['choicesMethod'])) {
-                        $field['options']['choices'] = array_flip($repo->$options['choicesMethod']());
+                        $field['options']['choices'] = array_flip($repo->{$options['choicesMethod']}());
                     } else {
                         $field['options']['choices'] = array_flip($options['choices']);
                     }
